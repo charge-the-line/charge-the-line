@@ -7,8 +7,8 @@
    Exit code 0 = all passed. */
 global.window=global.window||{};
 const path=require('path'),fs=require('fs'),vm=require('vm'),{execFileSync}=require('child_process');
-const ALL=['syntax','balance','play','paths','human','checks','guide','stress','fuzz'];
-let want=process.argv.slice(2);if(!want.length)want=ALL;if(want.includes('quick'))want=['syntax','balance','guide','fuzz'];
+const ALL=['syntax','balance','learn','play','paths','human','checks','guide','stress','fuzz'];
+let want=process.argv.slice(2);if(!want.length)want=ALL;if(want.includes('quick'))want=['syntax','balance','learn','guide','fuzz'];
 const results=[];let failed=0;const T0=Date.now();
 function report(section,name,ok,detail=''){results.push({ok});if(!ok)failed++;console.log(`${ok?'PASS':'FAIL'}  ${section.padEnd(8)} ${name}${detail?'  — '+detail:''}`);}
 const quiet=fn=>{const l=console.log;console.log=()=>{};try{return fn();}finally{console.log=l;}};
@@ -48,6 +48,32 @@ if(want.includes('syntax')){try{new vm.Script(html.split('<script>')[1].split('<
 
   report('syntax','offline helper only clears its own old caches (other apps on the domain keep theirs)',/k\.startsWith\('charge-the-line-v'\)/.test(sw));
   {const sw2=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8');report('syntax','offline helper never caches anonymous statistics',/goatcounter\\\.com\$\|\(\^\|\\\.\)zgo\\\.at/.test(sw2)||sw2.includes('goatcounter')&&sw2.includes('zgo'));}}
+
+
+if(want.includes('learn')){const {boot}=require('./qa_mock.js');
+  {// the lesson: 12 slides, first-try scoring, no skipping, recorded apart from scenarios
+   const {api,els,store}=boot();api.lessonStart();const L=api.LESSON;let skipped=false;
+   for(let i=0;i<L.length;i++){const S=api.LS();const before=S.i;api.lessonAct({l:'next'});if(api.LS()&&api.LS().i!==before)skipped=true;const k=L[i].o.findIndex(o=>o[1]==='good');api.lessonAct({l:'ans',k});api.lessonAct({l:'next'});}
+   const ex=JSON.parse(store['e102-pump-trainer']).extra||[];report('learn','lesson: all 12 checks right first try scores 100, cannot skip a slide, recorded under extra',!skipped&&ex.length===1&&ex[0].kind==='lesson'&&ex[0].score===100&&api.LS()===null,`score ${ex[0]&&ex[0].score}`);
+   const b=boot();b.api.lessonStart();for(let i=0;i<L.length;i++){const bad=L[i].o.findIndex(o=>o[1]!=='good'),good=L[i].o.findIndex(o=>o[1]==='good');b.api.lessonAct({l:'ans',k:bad});b.api.lessonAct({l:'ans',k:good});b.api.lessonAct({l:'next'});}
+   const ex2=JSON.parse(b.store['e102-pump-trainer']).extra||[];report('learn','lesson: a wrong first answer on every slide scores 0 (retry still lets you continue)',ex2.length===1&&ex2[0].score===0,`score ${ex2[0]&&ex2[0].score}`);
+   const longest=L.filter(s=>{const len=s.o.map(o=>o[0].length);return len[s.o.findIndex(o=>o[1]==='good')]===Math.max(...len);}).length,shortest=L.filter(s=>{const len=s.o.map(o=>o[0].length);return len[s.o.findIndex(o=>o[1]==='good')]===Math.min(...len);}).length;
+   report('learn','lesson checks: right answer is not usually the longest or the shortest',longest/L.length<=.45&&shortest/L.length<=.45,`longest ${longest}/${L.length}, shortest ${shortest}/${L.length}`);
+   report('learn','every lesson check has exactly one right answer and three distinct options',L.every(s=>s.o.length===3&&s.o.filter(o=>o[1]==='good').length===1&&new Set(s.o.map(o=>o[0])).size===3));}
+  {// drills: answer keys recalculated independently from the question text (rule 7), 100 when right, 0 when wrong
+   const FL={'1¾"':15.5,'2½"':2,'3"':0.8,'5"':0.08};const r5=x=>Math.round(x/5)*5;let checked=0,bad=[];
+   for(let rep_=0;rep_<25;rep_++){const {api}=boot();for(const k of Object.keys(api.DRILLS)){for(const q of api.DRILLS[k].items()){checked++;let want=null;
+     if(k==='friction'){const m=q.q.match(/^(\d+) ft of (\S+) hose flowing (\d+) gpm/);want=r5(FL[m[2]]*Math.pow(m[3]/100,2)*(m[1]/100))+' psi';}
+     if(k==='pdp'){const m=q.q.match(/^(\d+) ft of (\S+) at (\d+) gpm, (75-psi fog|100-psi fog|smooth bore) nozzle, (ground floor|one floor up|(\d+) floors up)/);const np={'75-psi fog':75,'100-psi fog':100,'smooth bore':50}[m[4]];const fl=m[5]==='ground floor'?0:m[5]==='one floor up'?1:+m[6];want=r5(np+FL[m[2]]*Math.pow(m[3]/100,2)*(m[1]/100)+fl*5)+' psi';}
+     if(k==='hydrant'){const m=q.q.match(/Static (\d+) psi. After the first line, residual (\d+) psi/);const d=(m[1]-m[2])/m[1]*100;want=d<=10?'Three more':d<=15?'Two more':d<=25?'One more':'None';}
+     if(k==='control'){const key=Object.keys(api.GUIDE_ALL).find(x=>api.GUIDE_ALL[x].what===q.q);want=key?api.GUIDE_ALL[key].name:null;}
+     const opts=[q.a,...q.d];if(want!==q.a||new Set(opts).size!==3||q.d.includes(q.a))bad.push(`${k}: ${q.q.slice(0,50)} → ${q.a} (want ${want})`);}}}
+   report('learn',`drills: ${checked} generated questions, answer keys match an independent recalculation, three distinct options`,bad.length===0,bad.slice(0,2).join(' | '));
+   for(const k of ['friction','pdp','control','hydrant']){const {api,store}=boot();api.drillStart(k);for(let i=0;i<api.QZ().qs.length;i++){const q=api.QZ().qs[i];api.quizAct({q:'ans',i:String(q.ord.indexOf(q.a))});api.quizAct({q:'next'});}const r=api.QZ().score;
+     const b=boot();b.api.drillStart(k);for(let i=0;i<b.api.QZ().qs.length;i++){const q=b.api.QZ().qs[i];b.api.quizAct({q:'ans',i:String(q.ord.findIndex(o=>o!==q.a))});b.api.quizAct({q:'next'});}const w=b.api.QZ().score;const ex=JSON.parse(store['e102-pump-trainer']).extra||[];
+     report('learn',`${api.DRILLS[k].name}: all right = 100, all wrong = 0, recorded`,r===100&&w===0&&ex.some(x=>x.kind==='drill'&&x.id===k&&x.score===100),`${r} / ${w}`);}
+   {const {api}=boot();let n=0;for(let r_=0;r_<20;r_++)for(const k of ['friction','pdp'])for(const q of api.DRILLS[k].items()){const len=[q.a,...q.d].map(x=>x.length);if(len[0]===Math.max(...len)&&len.filter(x=>x===len[0]).length===1)n++;}
+     report('learn','numeric drills: the right answer is not usually the longest option',n/(20*2*8)<=.45,`${n} of ${20*2*8}`);}}}
 
 const env=(want.some(x=>['balance','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
 if(want.includes('balance')){const {CAMP}=env.env.api;let lo=0,sh=0,t=0,first=0;for(const c of CAMP)for(const m of c.missions)for(const s of m.steps)if(s.dec&&s.dec.opts){const L=s.dec.opts.map(x=>x.t.length),g=s.dec.opts.findIndex(x=>x.r==='good');t++;if(L[g]===Math.max(...L))lo++;else if(L[g]===Math.min(...L))sh++;}

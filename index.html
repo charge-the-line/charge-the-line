@@ -137,6 +137,8 @@ button{min-height:48px}
   .chip{padding:7px 10px;font-size:15px;border-radius:6px;background:#1d2b3d;border:1px solid #2f6fb7;color:#bcd8ff;font-family:inherit;font-weight:400;letter-spacing:0;text-transform:none;line-height:1.2;white-space:normal}
   .chip.warnchip{background:#3a1512;border-color:#b3202c;color:#ffb3a8}
   .gidx h3{font-family:"Saira Condensed",sans-serif;font-size:17px;margin:12px 0 4px;color:var(--muted);letter-spacing:.5px}
+  .slide h2{font-size:30px}.slide ul{margin:0 0 12px;padding-left:20px;font-size:16px;line-height:1.5}.slide li{margin-bottom:4px}.dots{display:flex;gap:4px;justify-content:center;margin:8px 0}.dots i{width:8px;height:8px;border-radius:50%;background:var(--panel-edge)}.dots i.on2{background:var(--acc)}
+  .opt{display:block;width:100%;text-align:left;margin-bottom:8px;padding:12px;font-size:16px}.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.big{font-family:"Saira Condensed",sans-serif;font-size:56px;font-weight:700;color:var(--acc);line-height:1}
   .hidden{display:none!important}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -236,7 +238,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.7.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.8.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -251,9 +253,10 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.7.0</span></h2>
+  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.8.0</span></h2>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
-  <div style="display:flex;gap:8px;margin-bottom:12px"><button id="b-math" style="flex:1">Pump math drills</button><button id="b-progress" style="flex:1">My progress</button><button id="b-howto">How to play</button></div>
+  <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"><button id="b-drills">Quick drills</button><button id="b-math">Pump math</button><button id="b-progress">My progress</button><button id="b-howto">How to play</button></div>
   <button id="b-gindex" class="guidebtn" style="width:100%;margin-bottom:12px;font-size:16px;padding:10px">Panel guide — every control, gauge, and concept</button>
   <h3 style="margin:0 0 4px;font-size:18px">Difficulty</h3>
   <div class="tiers"><button data-tier="0">Guided</button><button data-tier="1">Recall</button><button data-tier="2">Chaos</button></div>
@@ -302,6 +305,9 @@ button{min-height:48px}
   <div id="dec-opts"></div>
   <div id="dec-fb" class="hidden"><p id="dec-res"></p><p id="dec-real" style="font-size:15px"></p><button class="warn" id="dec-go" style="width:100%;font-size:18px">Continue</button></div>
 </div></div>
+<div class="overlay hidden" id="lessonov" style="z-index:12"><div class="box slide" id="lesson-box"></div></div>
+<div class="overlay hidden" id="quizov" style="z-index:12"><div class="box"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 id="qz-title" style="margin:0">Drills</h2><span id="qz-meta" style="font-size:14px;color:var(--muted)"></span></div><div id="qz-body" style="margin-top:10px"></div><div id="qz-foot" style="margin-top:10px"></div></div></div>
+<div class="overlay hidden" id="ldone" style="z-index:13"><div class="box"><h2>Lesson complete</h2><div class="big" id="ld-score"></div><div id="ld-body"></div><div style="display:flex;gap:8px;margin-top:10px"><button id="ld-again" style="flex:1">Again</button><button class="warn" id="ld-menu" style="flex:1">Menu</button></div></div></div>
 <div class="overlay hidden" id="briefov"><div class="box">
   <span class="tag-real" style="background:#2f6fb7;color:#fff">MISSION BRIEFING</span>
   <h2 id="brief-t" style="font-size:24px"></h2>
@@ -1036,7 +1042,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.7.0';
+const APP_VERSION='2.8.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1068,6 +1074,59 @@ $('r-send').onclick=async()=>{
   try{await navigator.clipboard.writeText(text);$('r-msg').textContent='Report copied — paste it into a text or email to the trainer admin.';}
   catch(e){$('r-note').value=text;$('r-note').select();$('r-msg').textContent='Copy the text above and send it to the trainer admin.';}
 };
+
+/* =================== Pump operations lesson (Milestone 5, shared lesson engine). Own words; the numbers are the standard ones your SOPs may refine. =================== */
+const LESSON=[
+ {t:'The engineer\'s three jobs',pts:['Get the crew water fast: the first line usually runs on tank water while someone gets a supply.','Hold the pressure they need, no more: too little and the stream fails, too much and the line fights the nozzle team.','Don\'t hurt the pump or the people on the line: no water hammer, no running dry, no cavitation.'],
+  q:'A crew is at the door with the first line. What comes first?',o:[['Tank water to the line, right now','good'],['A hydrant supply before any water flows','bad'],['Setting the governor to RPM mode','bad']],why:'The first minutes run on the tank. Supply comes next, while the line is already flowing.'},
+ {t:'Pump discharge pressure',pts:['PDP is what the pump has to make so the nozzle gets its pressure.','PDP = nozzle pressure + friction loss + elevation ± appliances.','Every term is a guess until you check the gauge and ask the nozzle team.'],
+  q:'A line needs 75 psi at the nozzle, loses 50 psi to friction, and runs up one floor (5 psi). PDP?',o:[['130 psi','good'],['75 psi','bad'],['Can\'t tell without the gpm','bad']],why:'75 + 50 + 5 = 130 psi.'},
+ {t:'Nozzle pressures',pts:['Standard fog nozzle: 100 psi. Low-pressure fog: 75 psi (most 1¾" preconnects today).','Smooth bore handline: 50 psi. Smooth bore master stream: 80 psi.','Know which nozzle is on each preconnect before the call, not during it.'],
+  q:'A smooth bore handline is designed to flow at what nozzle pressure?',o:[['50 psi at the tip','good'],['100 psi','bad'],['The same 80 psi as a master stream','bad']],why:'Smooth bore handlines want 50 psi; 80 is for master streams; 100 is a standard fog nozzle.'},
+ {t:'Friction loss',pts:['Friction loss rises with the square of the flow: double the gpm, about four times the loss.','FL = C × (gpm ÷ 100)² × (length ÷ 100). Coefficients: 1¾" 15.5, 2½" 2, 3" 0.8, 5" 0.08.','Bigger hose is the cheapest pressure you will ever buy.'],
+  q:'200 ft of 1¾" at 150 gpm. Friction loss, about?',o:[['About 70 psi','good'],['35 psi','bad'],['More than 100 psi','bad']],why:'15.5 × 1.5² × 2 = 15.5 × 2.25 × 2 ≈ 70 psi.'},
+ {t:'Elevation',pts:['Water weighs: 0.434 psi per foot of height, call it 0.5 psi per foot.','Add about 5 psi per floor above the pump; subtract when the nozzle is below it.','Standpipes: count the floors between the FDC and the nozzle, not the ground.'],
+  q:'The nozzle team is on the fourth floor (three floors above the pump). Add how much?',o:[['About 15 psi','good'],['About 5 psi','bad'],['About 40 psi, 10 per floor','bad']],why:'Three floors above the pump at about 5 psi each.'},
+ {t:'Tank water and time',pts:['Minutes of water = gallons ÷ gpm. 800 gallons on one 150-gpm line is about 5 minutes; two lines, about 2½.','Open tank-to-pump first. Close it once a supply is flowing, so the tank refills as a reserve.','Running the tank dry with a crew inside is the mistake that ends careers.'],
+  q:'Two 150-gpm lines off an 800-gallon tank. How long?',o:[['About 2½ minutes','good'],['About 5 minutes','bad'],['Closer to 10 minutes','bad']],why:'800 ÷ 300 gpm ≈ 2.7 minutes.'},
+ {t:'The governor: PSI or RPM',pts:['PSI mode holds the pressure you set: open or close a line and the engine adjusts.','RPM mode holds engine speed. Use it when the supply can surge or drop (drafting, a relay feeding you), so a lost supply doesn\'t rev the engine into a dry pump.','Idle before you change modes or shut down.'],
+  q:'You are drafting from a pond. Which governor mode?',o:[['RPM mode','good'],['PSI','bad'],['Either, it makes no difference','bad']],why:'At a draft the supply can break; RPM mode keeps the engine from racing when it does.'},
+ {t:'Hydrant residual pressure',pts:['Static pressure is the hydrant with nothing flowing. Residual is what\'s left while your first line flows.','Percent drop = (static − residual) ÷ static. Drop 0–10%: three more lines like the first. 11–15%: two. 16–25%: one. Over 25%: no more.','Keep at least 20 psi residual on the intake. Below that you risk collapsing the main or the soft sleeve.'],
+  q:'Static 80 psi, residual 70 after the first line. How many more lines like it?',o:[['Two more','good'],['Three','bad'],['One more, then stop','bad']],why:'A 10-psi drop on 80 is 12.5%: two more lines.'},
+ {t:'Open slowly, close slowly',pts:['Snapping a valve open or shut sends a pressure wave down the hose: water hammer. It can burst hose, break couplings, and hurt people.','Bleed air from the intake before you open it to the pump.','Gate a line down a quarter turn at a time when two lines need different pressures.'],
+  q:'The second line needs less pressure than the first. What do you do?',o:[['Gate its valve down until its gauge reads right','good'],['Lower the governor set point','bad'],['Snap the first line\'s valve closed, then reopen it','bad']],why:'The governor sets the pump; individual lines are trimmed at their own valves.'},
+ {t:'Drafting',pts:['The primer pulls air out so atmospheric pressure pushes water up the hard suction. The compound gauge shows the vacuum.','Theoretical lift is about 34 feet at sea level; plan on about 15 and less when hot, high, or with a long lay.','Strainer at least two feet under the surface and off the bottom. Tank-to-pump closed while priming, or the primer pulls from the tank.'],
+  q:'You are priming and the vacuum will not build. Likeliest cause?',o:[['Air getting in: a loose coupling, or tank-to-pump left open','good'],['The governor is in PSI mode','bad'],['The strainer is too deep','bad']],why:'A prime needs an airtight path. Open valves and loose couplings let air in and the primer never catches.'},
+ {t:'Cavitation and overheating',pts:['Cavitation: the pump wants more water than the supply can give. Pressure stops rising when you throttle up, the gauge needle flutters, the pump sounds like gravel. Throttle down and get more water.','Overheating: a pump running with no lines flowing heats its own water in minutes. Open the tank fill or recirculate, or flow a line.','Both are heard and felt at the panel before any gauge shows them.'],
+  q:'Throttle goes up, pressure does not, and the pump rattles. What is happening?',o:[['Cavitation: you are out of water','good'],['The governor needs to be reset','bad'],['The discharge gauge has failed','bad']],why:'That is cavitation. Throttle down now and find more supply before the pump damages itself.'},
+ {t:'Shutdown and relay basics',pts:['Shutdown: throttle to idle, close discharges slowly, open tank-to-pump to recirculate, then disengage.','Relay: the supply engine pumps into the next engine\'s intake. The receiving engine keeps about 20 psi on its intake and runs its governor in RPM mode.','Talk on the radio before you change anything that the other engine will feel.'],
+  q:'You are the receiving engine in a relay. Which intake pressure do you protect?',o:[['About 20 psi residual','good'],['About 100 psi','bad'],['Zero: let the supply engine do the work','bad']],why:'About 20 psi on the receiving intake keeps the relay stable without overpressuring either pump.'}];
+let LS=null;
+function lessonStart(){keepAwake(true);$('menu').classList.add('hidden');pca('begin','ctl','lesson',()=>LS?`slide-${LS.i+1}`:'');LS=pcLessonStart({slides:LESSON,label:'Pump lesson',onDone:lessonDone,onQuit:()=>{pca('abandon');LS=null;keepAwake(false);showMenu();}});}
+function lessonAct(ds){pcLessonAct(LS,ds);}
+function lessonDone(score,right,n){keepAwake(false);pca('end',pca('bkt',score));const prev=(load().extra||[]).filter(x=>x.kind==='lesson');recordX('lesson','lesson',score);LS=null;
+  $('ld-score').textContent='';countUp($('ld-score'),score,600);$('ld-body').innerHTML=pcDebriefBody({score,compare:pcBestPrev(prev),kicker:'Next: run a scenario and watch the gauges do what the lesson said.',metrics:[['Right on the first try',`${right} of ${n}`]],clean:false});$('ldone').classList.remove('hidden');}
+$('lesson-box').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-l]');if(b)lessonAct(b.dataset);};
+$('b-lesson').onclick=lessonStart;$('ld-again').onclick=()=>{$('ldone').classList.add('hidden');lessonStart();};$('ld-menu').onclick=()=>{$('ldone').classList.add('hidden');showMenu();};
+/* lessons and drills are recorded apart from scenario runs: p.extra = [{kind, id, score, d}] (the hub reads it) */
+function recordX(kind,id,score){const p=load();p.extra=(p.extra||[]).concat([{kind,id,score,d:new Date().toISOString()}]).slice(-300);save(p);}
+/* =================== Quick drills (shared quiz engine). Every answer key is computed, and the tests recompute it independently. =================== */
+const HOSE_LABEL={1.75:'1¾"',2.5:'2½"',3:'3"',5:'5"'};
+function flOf(size,gpm,len){return FLC[size]*Math.pow(gpm/100,2)*(len/100);}
+const r5=x=>Math.round(x/5)*5,pk=a=>a[Math.floor(Math.random()*a.length)];
+function numOpts(a,spread){const c=new Set();const tries=[a+spread,a-spread,a+2*spread,a-2*spread,Math.round(a*2/5)*5,Math.round(a/2/5)*5];for(const t of tries){if(t>0&&t!==a)c.add(t);if(c.size===2)break;}return [...c];}
+const DRILLS={
+ friction:{name:'Friction loss',why:'FL = C × (gpm ÷ 100)² × (length ÷ 100). Coefficients: 1¾" 15.5, 2½" 2, 3" 0.8, 5" 0.08.',items:()=>Array.from({length:8},()=>{const size=pk([1.75,1.75,2.5,2.5,3,5]);const gpm=size===1.75?pk([125,150,185]):size===2.5?pk([200,250,300]):size===3?pk([300,400,500]):pk([500,750,1000]);const len=pk([100,150,200,250,300]);const a=r5(flOf(size,gpm,len));return {q:`${len} ft of ${HOSE_LABEL[size]} hose flowing ${gpm} gpm. Friction loss?`,a:a+' psi',d:numOpts(a,size===5?5:10).map(x=>x+' psi')};})},
+ pdp:{name:'Pump discharge pressure',why:'PDP = nozzle pressure + friction loss + 5 psi per floor above the pump.',items:()=>Array.from({length:8},()=>{const size=pk([1.75,1.75,2.5]);const gpm=size===1.75?pk([125,150,185]):pk([200,250]);const len=pk([150,200,250]);const noz=pk([['75-psi fog',75],['100-psi fog',100],['smooth bore',50]]);const fl=pk([0,1,2,3]);const a=r5(noz[1]+flOf(size,gpm,len)+fl*5);return {q:`${len} ft of ${HOSE_LABEL[size]} at ${gpm} gpm, ${noz[0]} nozzle, ${fl===0?'ground floor':fl===1?'one floor up':fl+' floors up'}. Pump discharge pressure?`,a:a+' psi',d:numOpts(a,10).map(x=>x+' psi')};})},
+ control:{name:'Find the control',why:'Every control and gauge on the panel has one job. Know it before the call.',items:()=>{const ks=Object.keys(GUIDE).filter(k=>GUIDE[k].kind==='Control'||GUIDE[k].kind==='Gauge');return pcShuf(ks).slice(0,8).map(k=>{const others=pcShuf(ks.filter(x=>x!==k)).slice(0,2);return {q:GUIDE[k].what,a:GUIDE[k].name,d:others.map(x=>GUIDE[x].name),why:GUIDE[k].when};});}},
+ hydrant:{name:'Hydrant math',why:'Percent drop = (static − residual) ÷ static. 0–10%: three more lines like the first. 11–15%: two. 16–25%: one. Over 25%: none.',items:()=>Array.from({length:8},()=>{const st=pk([60,65,70,80,90,100]);const target=pk([0.05,0.08,0.12,0.14,0.18,0.22,0.3,0.35]);const res=Math.round(st*(1-target));const drop=(st-res)/st*100;const a=drop<=10?'Three more':drop<=15?'Two more':drop<=25?'One more':'None';return {q:`Static ${st} psi. After the first line, residual ${res} psi. How many more lines like the first?`,a,d:pcShuf(['Three more','Two more','One more','None'].filter(x=>x!==a)).slice(0,2)};})}};
+let QZ=null;
+function drillMenu(){QZ={kind:'drill'};$('menu').classList.add('hidden');$('qz-title').textContent='Quick drills';$('qz-meta').textContent='';const ex=load().extra||[];const best=k=>{const r=ex.filter(x=>x.kind==='drill'&&x.id===k);return r.length?Math.max(...r.map(x=>x.score)):null;};
+  $('qz-body').innerHTML=Object.keys(DRILLS).map(k=>{const b=best(k);return `<button class="scen" data-q="go" data-k="${k}"><b>${DRILLS[k].name}</b><span>8 questions${b!==null?' · best '+b:''}</span></button>`;}).join('')+`<button class="scen" id="dr-math"><b>Pump math</b><span>Type the PDP. Within 5 psi counts.</span></button>`;
+  $('qz-foot').innerHTML='<button data-q="quit" style="width:100%">Back to menu</button>';$('quizov').classList.remove('hidden');$('dr-math').onclick=()=>{$('quizov').classList.add('hidden');$('mathov').classList.remove('hidden');newProblem();};}
+function drillStart(k){keepAwake(true);pca('begin','ctl','drill-'+k,()=>QZ&&QZ.qs?`question-${QZ.i+1}`:'');QZ=pcQuizStart({name:DRILLS[k].name,qs:DRILLS[k].items(),kind:'drill',id:k,why:DRILLS[k].why,menuAction:'menu',menuLabel:'All drills',onDone:sc=>{keepAwake(false);pca('end',pca('bkt',sc));recordX('drill',k,sc);},onQuit:()=>{pca('abandon');keepAwake(false);$('quizov').classList.add('hidden');QZ=null;showMenu();}});}
+function quizAct(ds){const a=ds.q;if(a==='menu'){drillMenu();return;}if(a==='again'){drillStart(QZ.id);return;}if(a==='go'){drillStart(ds.k);return;}if(a==='quit'&&QZ&&!QZ.cfg){$('quizov').classList.add('hidden');QZ=null;showMenu();return;}pcQuizAct(QZ,ds);}
+$('qz-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-q]');if(b)quizAct(b.dataset);};$('qz-foot').onclick=$('qz-body').onclick;$('b-drills').onclick=drillMenu;
 applySettings();settingsBind();
 if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 

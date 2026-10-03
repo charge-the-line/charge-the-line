@@ -82,3 +82,9 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 
 - First-run card under 120 words, the full guide under How to play (`#howov`), the settings sheet wired, no Barlow left.
 - Browser check opens the Settings sheet from the menu.
+
+## Milestone 5 part one checks (added October 2026)
+
+- `learn` section: the 12-slide lesson scores 100 when every check is right first try and 0 when every first answer is wrong; a slide cannot be skipped; the right option is the longest in no more than 45% of slides and the shortest in no more than 45% (ties count both ways).
+- 800 generated drill questions have keys that match an independent recalculation (friction loss from the coefficient table, PDP from nozzle + friction + 5 psi per floor, hydrant lines from the percent-drop rule, control names from the guide); each drill scores 100 all right and 0 all wrong and records under `extra`.
+- Browser check opens the lesson, the drill menu and a drill question at every width and checks sizes and overflow.

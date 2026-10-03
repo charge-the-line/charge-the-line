@@ -1,9 +1,9 @@
-/* preconnect-core 1.1.0 sha256:21c52b7f6ce7e6b3ada266c42ad2a8029ca36b51e49455c3cb1e857e5a5637e3 */
+/* preconnect-core 1.2.0 sha256:5291e4448653cd0c2aca726816106004de7c0ad2b098079cdffaf46d4ea6179e */
 /* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all four modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
    Never define $ or esc here: every app has its own. */
-const PCORE_VERSION='1.1.0';
+const PCORE_VERSION='1.2.0';
 function pcEsc(t){return String(t===undefined||t===null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* ---------- Settings: one sheet, one key ('preconnect-settings'), honored by every module. Statistics use the Privacy page's key. ---------- */
@@ -45,6 +45,34 @@ function pcDebriefBody(o){o=o||{};const P=[];
   if(o.steps&&o.steps.length)P.push(`<div class="pc-sec">Your steps</div><table class="pc-table pc-steps">${o.steps.map(s=>`<tr><td>${s.ok?'<b class="pc-ok">✓</b>':'<b class="pc-miss">'+(s.missed?'✗':'⚠')+'</b>'} ${pcEsc(s.name)}${s.detail?` <span class="pc-detail">· ${pcEsc(s.detail)}</span>`:''}</td><td>${s.at===undefined||s.at===null?'':pcEsc(s.at)}</td></tr>`).join('')}</table>`);
   if(o.extra)P.push(o.extra);
   return P.join('');}
+/* ---------- Shared engines (Milestone 5): lesson slides with a check, and multiple-choice quizzes (exam practice, drills). Apps keep their own overlays, records and statistics calls. ---------- */
+function pcShuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+/* Lesson: cfg = {slides:[{t,pts,q,o:[[text,'good'|'partial'|'bad']],why,art?}], ov?, box?, label?, point?(text)->html, art?(key)->html, onDone(score,right,total), onQuit()} */
+function pcLessonStart(cfg){const S={i:0,first:{},answered:false,ord:[],cfg,t0:Date.now()};const ov=document.getElementById(cfg.ov||'lessonov');if(ov)ov.classList.remove('hidden');pcLessonRender(S);return S;}
+function pcLessonRender(S){const c=S.cfg,L=c.slides,s=L[S.i];S.answered=false;S.ord=pcShuf(s.o.map((o,k)=>k));const box=document.getElementById(c.box||'lesson-box');if(!box)return;const tv=!!(document.body&&document.body.classList&&document.body.classList.contains('tv'));
+  box.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><span class="tag">${pcEsc(c.label||'Lesson')} · ${S.i+1} of ${L.length}</span><button data-l="tv" style="padding:6px 10px;font-size:13px">${tv?'Phone view':'Big-screen view'}</button></div>
+   <h2>${pcEsc(s.t)}</h2>${s.art&&c.art?`<div class="art">${c.art(s.art)}</div>`:''}<ul>${s.pts.map(x=>`<li>${c.point?c.point(x):pcEsc(x)}</li>`).join('')}</ul>
+   <div style="border-top:1px solid var(--line,#2a2f37);padding-top:10px"><p style="font-size:14px;color:var(--soft,#aab2bd);margin:0 0 4px">Check your understanding</p><p style="font-size:17px;font-weight:700;margin:0 0 8px">${pcEsc(s.q)}</p>
+   ${S.ord.map(k=>`<button class="opt" data-l="ans" data-k="${k}">${pcEsc(s.o[k][0])}</button>`).join('')}<p id="l-fb" style="font-size:15px"></p></div>
+   <div class="dots">${L.map((_,k)=>`<i class="${k<=S.i?'on2':''}"></i>`).join('')}</div>
+   <div class="row"><button data-l="prev" ${S.i?'':'disabled'}>Back</button><button class="go" data-l="next" id="l-next" disabled>${S.i+1<L.length?'Next':'Finish'}</button></div>
+   <button data-l="quit" style="width:100%;margin-top:8px">Leave the lesson</button>`;const ov=document.getElementById(c.ov||'lessonov');if(ov)ov.scrollTop=0;}
+function pcLessonAct(S,ds){if(!S)return;const c=S.cfg,L=c.slides,a=ds.l,g=id=>document.getElementById(id);
+  if(a==='ans'){if(S.answered)return;const s=L[S.i],o=s.o[+ds.k];if(!o)return;const ok=o[1]==='good';if(S.first[S.i]===undefined)S.first[S.i]=ok;if(ok){S.answered=true;const n=g('l-next');if(n)n.disabled=false;}const fb=g('l-fb');if(fb)fb.innerHTML=`<b style="color:${ok?'#7fe3a4':o[1]==='partial'?'#ffc23d':'#ff9a96'}">${ok?'Right.':o[1]==='partial'?'Not quite.':'No.'}</b> ${pcEsc(ok?s.why:'Try again.')}`;}
+  else if(a==='next'){if(!S.answered)return;if(S.i+1<L.length){S.i++;pcLessonRender(S);}else{const right=Object.values(S.first).filter(Boolean).length;const ov=g(c.ov||'lessonov');if(ov)ov.classList.add('hidden');if(c.onDone)c.onDone(Math.round(right/L.length*100),right,L.length);}}
+  else if(a==='prev'){if(S.i){S.i--;pcLessonRender(S);}}
+  else if(a==='tv'){if(document.body&&document.body.classList)document.body.classList.toggle('tv');pcLessonRender(S);}
+  else if(a==='quit'){const ov=g(c.ov||'lessonov');if(ov)ov.classList.add('hidden');if(c.onQuit)c.onQuit();}}
+/* Quiz: cfg = {name, qs:[{q,a,d:[distractors],why?}], kind, id, ov?, titleEl?, metaEl?, bodyEl?, footEl?, why?, note?(score)->text, quitLabel?, menuAction?, menuLabel?, onDone(score,right,total), onQuit()}.
+   Renders data-q buttons; the app's click handler passes the dataset to pcQuizAct and handles its own extra actions first. Every option list is shuffled once. */
+function pcQuizStart(cfg){const qs=cfg.qs.map(x=>Object.assign({},x,{ord:pcShuf([x.a,...x.d])}));const S={cfg,qs,i:0,right:0,kind:cfg.kind,id:cfg.id,name:cfg.name};const ov=document.getElementById(cfg.ov||'quizov');if(ov)ov.classList.remove('hidden');pcQuizQ(S);return S;}
+function pcQuizQ(S){const c=S.cfg,q=S.qs[S.i],g=id=>document.getElementById(id);const t=g(c.titleEl||'qz-title'),m=g(c.metaEl||'qz-meta');if(t)t.textContent=c.name;if(m)m.textContent=`${S.i+1} of ${S.qs.length} · ${S.right} right`;
+  const b=g(c.bodyEl||'qz-body');if(b)b.innerHTML=`<p style="font-size:18px;margin:0 0 10px">${pcEsc(q.q)}</p>${q.ord.map((o,i)=>`<button class="opt" data-q="ans" data-i="${i}">${pcEsc(o)}</button>`).join('')}<p id="qz-fb" style="font-size:15px"></p>`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<button data-q="quit" style="width:100%">${pcEsc(c.quitLabel||'Quit')}</button>`;}
+function pcQuizAct(S,ds){if(!S||!S.cfg)return false;const c=S.cfg,a=ds.q,g=id=>document.getElementById(id);
+  if(a==='quit'){if(c.onQuit)c.onQuit();else{const ov=g(c.ov||'quizov');if(ov)ov.classList.add('hidden');}return true;}
+  if(a==='ans'){const q=S.qs[S.i];if(!q||q.done)return true;q.done=true;const ok=q.ord[+ds.i]===q.a;if(ok)S.right++;const fb=g('qz-fb');if(fb)fb.innerHTML=`<b style="color:${ok?'#7fe3a4':'#ff9a96'}">${ok?'Right.':'Answer: '+pcEsc(q.a)+'.'}</b> ${pcEsc(q.why||c.why||'')}`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<button data-q="next" class="go" style="width:100%">${S.i+1<S.qs.length?'Next':'Results'}</button>`;return true;}
+  if(a==='next'){S.i++;if(S.i<S.qs.length)pcQuizQ(S);else{const sc=Math.round(S.right/S.qs.length*100);S.score=sc;const b=g(c.bodyEl||'qz-body');if(b)b.innerHTML=`<div class="big">${sc}</div><p>${S.right} of ${S.qs.length} right.${c.note?' '+pcEsc(c.note(sc)):''}</p>`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<div class="row"><button data-q="${c.menuAction||'quit'}">${pcEsc(c.menuLabel||'Done')}</button><button data-q="again" class="go">Again</button></div>`;if(c.onDone)c.onDone(sc,S.right,S.qs.length);}return true;}
+  return false;}
 /* The Station look shared by every app (Milestone 4) plus the debrief styles, injected once in <head>; each app's own tokens apply, with safe fallbacks. */
 const PC_LOOK_CSS=`html[data-contrast="high"]{--bg:#000;--deck:#0e1013;--deck2:#181b20;--line:#4b535e;--ink:#fff;--soft:#d6dce3}html[data-text="large"] body{zoom:1.12}
 .sec{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft,#aab2bd);margin:22px 0 8px;display:flex;align-items:center;gap:10px}.sec:after{content:"";flex:1;height:1px;background:var(--line,#2a2f37)}
