@@ -113,3 +113,7 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 
 - `qa2`'s elements-exist check allows the ids the core's accessibility hook probes on every page (`A11Y` list); they are not all present here.
 - Browser check: landscape, Daylight and landscape-settings rows.
+
+## Spacing on the core (added October 3, 2026)
+
+- `inject` boot block: `dueInfo(i)` reads Not yet cleared with no runs, Next in N d right after a clear at 70+, Due for review once the interval has passed, and Try again after a failed run, all computed by the core's `pcSpacing` (not `scen.level`).

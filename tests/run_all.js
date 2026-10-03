@@ -92,6 +92,9 @@ if(want.includes('variants')){const {boot}=require('./qa_mock.js');const VARIANT
    report('variants','random pick covers every layout; Standard layouts always gives A; Real Saves keep the default hose',seen.size===3&&std.size===1&&std.has('A')&&real,`seen ${[...seen].sort().join('')}, standard ${[...std].join('')}`);}}
 
 if(want.includes('inject')){const {boot}=require('./qa_mock.js');
+  {// scenario spacing comes from the shared core now
+   const d=n=>new Date(Date.now()-n*864e5).toISOString();const {api}=boot({'e102-pump-trainer':JSON.stringify({name:'',scen:{},math:{right:0,total:0},log:[{i:0,score:90,tier:0,d:d(0)},{i:1,score:90,tier:0,d:d(10)},{i:2,score:90,tier:0,d:d(5)},{i:2,score:40,tier:0,d:d(1)}]})});
+   const a=api.dueInfo(0),b=api.dueInfo(1),c=api.dueInfo(2),n=api.dueInfo(3);report('inject','menu due text follows the core spacing: cleared today → next in 1 d, overdue → Due for review, a miss → Try again, never → Not yet cleared',a.txt==='Next in 1 d'&&!a.due&&b.txt==='Due for review'&&b.due&&c.txt==='Try again'&&c.due&&n.txt==='Not yet cleared'&&n.due,`${a.txt} / ${b.txt} / ${c.txt} / ${n.txt}`);}
   {global.__loc={search:'?drill=hydrant'};const {api,els}=boot();global.__loc={search:'?drill=nope'};const b=boot();global.__loc=undefined;
    report('inject','daily-drill deep link: ?drill=hydrant opens Hydrant math on load with the intro hidden; an unknown id is ignored',!!api.QZ()&&api.QZ().cfg&&api.QZ().cfg.id==='hydrant'&&!els.quizov.classList.contains('hidden')&&els.intro.classList.contains('hidden')&&!b.api.QZ(),`title ${els['qz-title'].textContent}`);}
   {// Milestone 6: sound and haptics through the shared core
