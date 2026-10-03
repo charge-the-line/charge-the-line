@@ -75,6 +75,7 @@ Each of these cost a real bug. Don't relearn them.
 10. **Startup order:** load saved settings in the boot section at the bottom. Earlier, `load()` fails silently and settings stop being remembered.
 11. **Randomness makes bugs intermittent.** Run each suite several times before release (`for i in 1 2 3 4 5; do node tests/run_all.js | tail -1; done`). An intermittent failure is usually a real bug in one random variant; it found one.
 12. **Prove a test can fail.** For important checks, plant the bug in a scratch copy and confirm the suite catches it.
+13. **Every overlay has a way back.** A briefing, card, sheet, drill, or station always offers Back, Close, Quit, or Stop and go back, so nobody is trapped into starting something. Max found Charge the Line's briefing with only "Start mission" (fixed in 2.5.1). The one deliberate exception: a decision point, which must be answered.
 
 ## Content and legal rules
 
@@ -139,7 +140,7 @@ Max's likely picks after 1: 2, then 3, then either Charge the Line catch-up or D
 
 # This repo: Charge the Line (`charge-the-line` → `/charge-the-line/`)
 
-**Current version: 2.5.0.** Pump panel simulator for **Engine 10-2**: HME 1871-Spectr, Cummins ISL9 400 hp, Allison 3000EVS, Hale Q-Flo 1250 GPM single-stage pump, 800-gallon tank (2024, Kodiak Emergency Vehicles, HME build #23104).
+**Current version: 2.5.1.** Pump panel simulator for **Engine 10-2**: HME 1871-Spectr, Cummins ISL9 400 hp, Allison 3000EVS, Hale Q-Flo 1250 GPM single-stage pump, 800-gallon tank (2024, Kodiak Emergency Vehicles, HME build #23104).
 
 ## Repo housekeeping (done October 3, 2026)
 1. **This repo's name matches the account name, which makes it GitHub's special *profile* repository.** A `README.md` at the root appears on Max's **public GitHub profile.** **Never add a root `README.md`.** (`README.txt` is fine.)

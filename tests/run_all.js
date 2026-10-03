@@ -18,6 +18,9 @@ const short=n=>n.length>38?n.slice(0,37)+'…':n;
 if(want.includes('syntax')){try{new vm.Script(html.split('<script>')[1].split('</script>')[0]);report('syntax','index.html script compiles',true);}catch(e){report('syntax','index.html script compiles',false,e.message);}
   const ver=(html.match(/APP_VERSION='([^']+)'/)||[])[1],sw=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8'),cache=(sw.match(/CACHE = '([^']+)'/)||[])[1];
   report('syntax','service-worker cache matches app version',cache===`charge-the-line-v${ver}`,`app ${ver}, cache ${cache}`);
+  {// Every overlay has a way back (Max, October 3, 2026). The briefing used to offer only "Start mission".
+   const {boot}=require('./qa_mock.js');const {api,els}=boot();api.loadCampaign(0);api.showBrief();const open=!els.briefov.classList.contains('hidden');els['brief-back'].onclick();
+   report('syntax','mission briefing has a way back to the menu',open&&els.briefov.classList.contains('hidden')&&!els.menu.classList.contains('hidden')&&api.S.briefing===false&&api.S.running===false);}
   {const lits=[...html.matchAll(/(?:Version |>v)(\d+\.\d+\.\d+)/g)].map(m=>m[1]);report('syntax','intro and menu show the current version',lits.length>=2&&lits.every(v=>v===ver),`found ${lits.join(', ')}; app ${ver}`);}
   {// Milestone 1: fonts are served from this site; nothing loads from Google (offline fidelity + privacy). Every font file exists and is in the offline cache list.
    const sw3=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8');const urls=[...html.matchAll(/url\((fonts\/[^)]+)\)/g)].map(m=>m[1]);

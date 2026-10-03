@@ -237,13 +237,13 @@ button{min-height:48px}
   <p>Three tiers per scenario: <b>Guided</b> shows every step and the target pressure. <b>Recall</b> hides the checklist and makes you figure the PDP from the hose layout. <b>Chaos</b> is Recall plus things going wrong.</p>
   <p><b>New: Panel guide.</b> Tap <b>Panel guide</b> (top right) during any mission, then tap any control to learn what it does, when to use it, and what goes wrong. Free in Guided, 2 points per lookup in Recall, locked in Chaos.</p>
   <p style="font-size:15px">Training aid only. Department SOPs and the preconnect chart on the rig are the real numbers.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.5.0 · Found a problem? Use "Report an issue" under any mission.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.5.1 · Found a problem? Use "Report an issue" under any mission.</p>
   <button class="warn" id="b-start" style="width:100%;font-size:18px">Continue</button>
 </div></div>
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a></div>
-  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.5.0</span></h2>
+  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.5.1</span></h2>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div style="display:flex;gap:8px;margin-bottom:12px"><button id="b-math" style="flex:1">Pump math drills</button><button id="b-progress" style="flex:1">My progress</button><button id="b-howto">How to play</button></div>
   <button id="b-gindex" class="guidebtn" style="width:100%;margin-bottom:12px;font-size:16px;padding:10px">Panel guide — every control, gauge, and concept</button>
@@ -301,7 +301,7 @@ button{min-height:48px}
   <div style="font-family:'Barlow Condensed';font-size:16px;letter-spacing:1px;color:var(--yellow)">CONTROLS YOU'LL USE — TAP TO LEARN</div>
   <div class="chips" id="brief-chips"></div>
   <p id="brief-tier" style="font-size:14px;color:var(--muted)"></p>
-  <button class="warn" id="brief-go" style="width:100%;font-size:18px">Start mission</button>
+  <div style="display:flex;gap:8px"><button class="warn" id="brief-go" style="flex:1;font-size:18px">Start mission</button><button id="brief-back">Back to menu</button></div>
 </div></div>
 <div class="overlay hidden" id="guideov"><div class="box gcard">
   <div id="g-body"></div>
@@ -1015,7 +1015,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.5.0';
+const APP_VERSION='2.5.1';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1133,6 +1133,7 @@ function showBrief(){const c=CAMP[S.camp],m=c.missions[S.mission];S.briefing=tru
   $('brief-tier').textContent=TIER===0?'Guided: every step is listed, and the Panel guide is free any time.':'Recall: the checklist is hidden. Guide lookups during the mission cost 2 points each — study here first, it\'s free.';
   $('briefov').classList.remove('hidden');}
 $('brief-chips').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]');if(b)openCard(b.dataset.k,true);};
+$('brief-back').onclick=()=>{$('briefov').classList.add('hidden');S.briefing=false;showMenu();};
 $('brief-go').onclick=()=>{keepAwake(true);$('briefov').classList.add('hidden');S.briefing=false;if(S.active)S.running=true;};
 
 /* ===== boot ===== */
