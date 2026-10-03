@@ -108,3 +108,8 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 ## Milestone 9 checks (added October 2026)
 
 - `?drill=hydrant` on load opens Hydrant math with the intro hidden; an unknown id is ignored. The mocks pass `global.__loc` through to `location` for this. Browser check adds a daily-link row.
+
+## Milestone 10 checks (added October 2026)
+
+- `qa2`'s elements-exist check allows the ids the core's accessibility hook probes on every page (`A11Y` list); they are not all present here.
+- Browser check: landscape, Daylight and landscape-settings rows.

@@ -1,4 +1,5 @@
 const q=require('./qa.js');const {api,missing}=q.env;const {S,CAMP,$}=api;
+const A11Y=['run-now','run-coach','g-now','l-fb','qz-fb','dr-fb','b-msg','d-msg','r-msg','m-session','rc','st-live'];  // ids the shared core's accessibility hook probes on every page; not all exist here
 let fails=0;const log=(ok,msg)=>{if(!ok)fails++;console.log((ok?'  ✓ ':'  ✗ ')+msg);};
 console.log('A. Chaos tier — 10 randomized runs per scenario (faults fire at random times)');
 for(let ci=0;ci<CAMP.length;ci++){let pass=0,f=new Set(),minScore=100;for(let k=0;k<10;k++){const r=q.play(ci,2);if(r.ok)pass++;(r.faults||[]).forEach(x=>f.add(x));minScore=Math.min(minScore,r.score);}
@@ -44,7 +45,7 @@ setTimeout(()=>{log(/From: QA \(Test FD\)/.test(global.__clip||''),'Report falls
   log(e2.els.intro._cls.has('hidden')&&!e2.els.menu._cls.has('hidden'),'Returning users skip the intro and land on the menu');
   const e3=boot({});log(!e3.els.intro._cls.has('hidden'),'First-time users see the intro');
   console.log('\nE. Integrity');
-  log(missing.size===0||[...missing].every(id=>/^(st-|hold-|open-|pct-|valve-|rc$)/.test(id)),'Every element the code touches exists in the page'+(missing.size?' (dynamic only: '+[...missing].filter(x=>!/^(st-|hold-|open-|pct-|valve-)/.test(x)).join(',')+')':''));
+  log(missing.size===0||[...missing].every(id=>/^(st-|hold-|open-|pct-|valve-|rc$)/.test(id)||A11Y.includes(id)),'Every element the code touches exists in the page'+(missing.size?' (dynamic only: '+[...missing].filter(x=>!/^(st-|hold-|open-|pct-|valve-)/.test(x)&&!A11Y.includes(x)).join(',')+')':''));
   const html=require('fs').readFileSync(require('path').join(__dirname,'..','index.html'),'utf8');const idl=[...html.matchAll(/ id="([^"$]+)"/g)].map(m=>m[1]);const dup=idl.filter((x,i)=>idl.indexOf(x)!==i);
   log(dup.length===0,'No duplicate element IDs'+(dup.length?': '+dup.join(','):''));
   const t0=Date.now();api.loadCampaign(5);$('brief-go').onclick();for(let i=0;i<4000;i++){if(api.DEC()){$('dec-opts').onclick({target:{closest:()=>({dataset:{i:'0'}})}});$('dec-go').onclick();}S.running=true;api.tick(0.25);}const ms=(Date.now()-t0)/4000;

@@ -1,9 +1,9 @@
-/* preconnect-core 1.4.0 sha256:b3973248a11a66602eaeebce9d8160e48543a4a05b0c8f167ea391b5e61cd206 */
+/* preconnect-core 1.5.0 sha256:ab80f5789d1aa5064d7693049f2d393a55090d68244140f4b97a374719542eb7 */
 /* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all four modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
    Never define $ or esc here: every app has its own. */
-const PCORE_VERSION='1.4.0';
+const PCORE_VERSION='1.5.0';
 function pcEsc(t){return String(t===undefined||t===null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* ---------- Settings: one sheet, one key ('preconnect-settings'), honored by every module. Statistics use the Privacy page's key. ---------- */
@@ -13,9 +13,15 @@ function pcSetSetting(k,v){if(k==='stats'){try{if(v==='off')localStorage.setItem
   else{let s={};try{s=JSON.parse(localStorage.getItem(SETKEY))||{};}catch(e){}s[k]=v;try{localStorage.setItem(SETKEY,JSON.stringify(s));}catch(e){}}
   applySettings();settingsRender();try{if(typeof window!=='undefined'&&typeof window.onPreconnectSettings==='function')window.onPreconnectSettings(settings());}catch(e){}}
 function setSetting(k,v){pcSetSetting(k,v);if(k==='sound'&&v==='on')pcCue('good');if(k==='haptics'&&v==='on')pcBuzz('good');}  /* the preview plays after the switch is saved, so it is audible */
-function applySettings(){const s=settings();const de=(typeof document!=='undefined')&&document.documentElement;if(!de||!de.dataset)return;de.dataset.text=s.text;de.dataset.contrast=s.contrast;de.dataset.motion=s.motion;}
+function pcPrefersContrast(){try{return typeof matchMedia==='function'&&matchMedia('(prefers-contrast: more)').matches;}catch(e){return false;}}
+/* contrast: normal | high (brighter text on black) | day (white text, bold edges, for sun and glare). A phone asking for more contrast gets high unless a stronger choice was made. */
+function applySettings(){const s=settings();const de=(typeof document!=='undefined')&&document.documentElement;if(!de||!de.dataset)return;de.dataset.text=s.text;de.dataset.contrast=(s.contrast==='normal'&&pcPrefersContrast())?'high':s.contrast;de.dataset.motion=s.motion;}
 function settingsRender(){const s=settings();if(typeof document==='undefined'||!document.querySelectorAll)return;document.querySelectorAll('[data-set]').forEach(g=>{const k=g.dataset.set;g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.val===s[k]));});}
-function settingsBind(){const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const gear=g('h-set');if(gear)gear.onclick=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};}
+/* accessibility (Milestone 10): feedback lines announce themselves, overlays are dialogs, pads are buttons. Runs from settingsBind(), after the page exists. */
+function pcA11y(){if(typeof document==='undefined')return;const set=(e,k,v)=>{if(e&&e.setAttribute&&!(e.getAttribute&&e.getAttribute(k)))e.setAttribute(k,v);};
+  ['run-now','run-coach','g-now','radio','l-fb','qz-fb','dr-fb','b-msg','d-msg','r-msg','m-session','rc','st-live'].forEach(id=>set(document.getElementById(id),'aria-live','polite'));
+  if(document.querySelectorAll){document.querySelectorAll('.overlay').forEach(o=>{set(o,'role','dialog');set(o,'aria-modal','true');});document.querySelectorAll('.pad').forEach(p=>set(p,'role','button'));}}
+function settingsBind(){pcA11y();const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const gear=g('h-set');if(gear)gear.onclick=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};}
 function motionOK(){if(settings().motion==='off')return false;try{if(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches)return false;}catch(e){}return true;}
 /* A score that counts up to its final value (about 0.6 s). Stamps data-final at once; without animation frames or with motion off it lands immediately. */
 function countUp(el,to,ms){if(!el)return;if(el.setAttribute)el.setAttribute('data-final',String(to));if(el.dataset)el.dataset.final=String(to);const n=+to||0,raf=(typeof requestAnimationFrame==='function')?requestAnimationFrame:null;if(!raf||!motionOK()){el.textContent=String(to);return;}const t0=performance.now();const step=t=>{const p=Math.min(1,(t-t0)/(ms||600)),e=1-Math.pow(1-p,3);el.textContent=String(Math.round(n*e));if(p<1)raf(step);else el.textContent=String(to);};raf(step);}
@@ -118,6 +124,9 @@ function pcDrillBind(){const g=id=>document.getElementById(id);const bar=g('pc-d
   pcDrillBar();const d=pcDrill();if(d&&!d.who&&!(bar.dataset&&bar.dataset.auto==='no'))pcDrillPick();}
 
 const PC_LOOK_CSS=`html[data-contrast="high"]{--bg:#000;--deck:#0e1013;--deck2:#181b20;--line:#4b535e;--ink:#fff;--soft:#d6dce3}html[data-text="large"] body{zoom:1.12}
+html[data-contrast="day"]{--bg:#000;--deck:#000;--deck2:#14181d;--line:#9aa5b1;--ink:#fff;--soft:#e6ebf0;--muted:#e6ebf0}html[data-contrast="day"] body{background:#000;color:#fff}html[data-contrast="day"] .card,html[data-contrast="day"] .scen{border:2px solid var(--line);border-left-width:5px}html[data-contrast="day"] button{border:2px solid var(--line)}html[data-contrast="day"] .go,html[data-contrast="day"] .warn,html[data-contrast="day"] .pad{border-color:#fff}html[data-contrast="day"] .small,html[data-contrast="day"] .stat,html[data-contrast="day"] .pc-table td.l{color:var(--soft)}html[data-contrast="day"] input,html[data-contrast="day"] textarea{border:2px solid var(--line);background:#000;color:#fff}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc,#ff7a1a);outline-offset:2px}
+@media (orientation:landscape) and (max-height:520px){.overlay{padding-top:8px!important;padding-bottom:8px!important}.overlay .box{max-width:760px}.pad{min-height:100px}}
 .sec{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft,#aab2bd);margin:22px 0 8px;display:flex;align-items:center;gap:10px}.sec:after{content:"";flex:1;height:1px;background:var(--line,#2a2f37)}
 .chip{display:inline-block;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:var(--acc,#ff7a1a);color:var(--acc-ink,#0a0c0f);white-space:nowrap;line-height:1.5}.chip.dim{background:var(--deck2,#1c2026);color:var(--soft,#aab2bd)}.chip.due{background:#ffc23d;color:#0a0c0f}
 .num{font-family:"Saira Condensed",sans-serif;font-weight:700;font-size:34px;line-height:1;color:var(--acc,#ff7a1a)}.small{font-size:13px;color:var(--soft,#aab2bd)}.flex{display:flex;align-items:center;gap:12px}.sp{flex:1}
