@@ -1,9 +1,9 @@
-/* preconnect-core 1.0.0 sha256:736a52909ed7567a4c9f4e5de9cc261b2beafa873f6f90f0eb1297f09b20fe6d */
+/* preconnect-core 1.1.0 sha256:21c52b7f6ce7e6b3ada266c42ad2a8029ca36b51e49455c3cb1e857e5a5637e3 */
 /* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all four modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
    Never define $ or esc here: every app has its own. */
-const PCORE_VERSION='1.0.0';
+const PCORE_VERSION='1.1.0';
 function pcEsc(t){return String(t===undefined||t===null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* ---------- Settings: one sheet, one key ('preconnect-settings'), honored by every module. Statistics use the Privacy page's key. ---------- */
@@ -11,7 +11,7 @@ const SETKEY='preconnect-settings',SETDEF={sound:'off',haptics:'on',text:'normal
 function settings(){let s={};try{s=JSON.parse(localStorage.getItem(SETKEY))||{};}catch(e){}const out=Object.assign({},SETDEF,s);let st='on';try{st=localStorage.getItem('preconnect-stats')==='off'?'off':'on';}catch(e){}out.stats=st;return out;}
 function setSetting(k,v){if(k==='stats'){try{if(v==='off')localStorage.setItem('preconnect-stats','off');else localStorage.removeItem('preconnect-stats');}catch(e){}try{if(window.PCA)window.PCA.off=(v==='off');}catch(e){}}
   else{let s={};try{s=JSON.parse(localStorage.getItem(SETKEY))||{};}catch(e){}s[k]=v;try{localStorage.setItem(SETKEY,JSON.stringify(s));}catch(e){}}
-  applySettings();settingsRender();}
+  applySettings();settingsRender();try{if(typeof window!=='undefined'&&typeof window.onPreconnectSettings==='function')window.onPreconnectSettings(settings());}catch(e){}}
 function applySettings(){const s=settings();const de=(typeof document!=='undefined')&&document.documentElement;if(!de||!de.dataset)return;de.dataset.text=s.text;de.dataset.contrast=s.contrast;de.dataset.motion=s.motion;}
 function settingsRender(){const s=settings();if(typeof document==='undefined'||!document.querySelectorAll)return;document.querySelectorAll('[data-set]').forEach(g=>{const k=g.dataset.set;g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.val===s[k]));});}
 function settingsBind(){const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const gear=g('h-set');if(gear)gear.onclick=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};}
@@ -45,9 +45,19 @@ function pcDebriefBody(o){o=o||{};const P=[];
   if(o.steps&&o.steps.length)P.push(`<div class="pc-sec">Your steps</div><table class="pc-table pc-steps">${o.steps.map(s=>`<tr><td>${s.ok?'<b class="pc-ok">✓</b>':'<b class="pc-miss">'+(s.missed?'✗':'⚠')+'</b>'} ${pcEsc(s.name)}${s.detail?` <span class="pc-detail">· ${pcEsc(s.detail)}</span>`:''}</td><td>${s.at===undefined||s.at===null?'':pcEsc(s.at)}</td></tr>`).join('')}</table>`);
   if(o.extra)P.push(o.extra);
   return P.join('');}
-/* Styles the debrief needs, injected once; uses each app's own tokens with safe fallbacks. */
+/* The Station look shared by every app (Milestone 4) plus the debrief styles, injected once in <head>; each app's own tokens apply, with safe fallbacks. */
+const PC_LOOK_CSS=`html[data-contrast="high"]{--bg:#000;--deck:#0e1013;--deck2:#181b20;--line:#4b535e;--ink:#fff;--soft:#d6dce3}html[data-text="large"] body{zoom:1.12}
+.sec{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft,#aab2bd);margin:22px 0 8px;display:flex;align-items:center;gap:10px}.sec:after{content:"";flex:1;height:1px;background:var(--line,#2a2f37)}
+.chip{display:inline-block;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:var(--acc,#ff7a1a);color:var(--acc-ink,#0a0c0f);white-space:nowrap;line-height:1.5}.chip.dim{background:var(--deck2,#1c2026);color:var(--soft,#aab2bd)}.chip.due{background:#ffc23d;color:#0a0c0f}
+.num{font-family:"Saira Condensed",sans-serif;font-weight:700;font-size:34px;line-height:1;color:var(--acc,#ff7a1a)}.small{font-size:13px;color:var(--soft,#aab2bd)}.flex{display:flex;align-items:center;gap:12px}.sp{flex:1}
+.seg{display:flex;gap:3px;margin-top:8px}.seg i{flex:1;height:8px;background:var(--line,#2a2f37);border-radius:1px}.seg i.on{background:var(--acc,#ff7a1a);transform-origin:left;animation:fill .5s ease-out both}@keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes slidein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}.in{animation:slidein .25s ease-out both}
+.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line,#2a2f37)}.set:first-of-type{border-top:0}.set .k{font-size:16px}.set .k small{display:block;font-size:13px;color:var(--soft,#aab2bd);line-height:1.35}
+.seg2{display:inline-flex;border:2px solid var(--line,#2a2f37);border-radius:6px;overflow:hidden;flex:none}.seg2 button{border:0;border-radius:0;min-height:46px;padding:8px 12px;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:15px;text-transform:uppercase;letter-spacing:.5px;background:transparent;color:var(--ink,#f6f7f9)}.seg2 button.on{background:var(--ink,#f6f7f9)!important;border-color:var(--ink,#f6f7f9)!important;color:#0a0c0f!important}
+.gear{min-height:46px;padding:8px 10px;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:15px;letter-spacing:.5px;text-transform:uppercase;background:transparent;border:2px solid var(--line,#2a2f37);color:var(--ink,#f6f7f9);border-radius:6px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}html[data-motion="off"] *{animation:none!important;transition:none!important}`;
 function pcInstallCSS(){if(typeof document==='undefined'||!document.head||!document.createElement||document.getElementById('pc-core-css'))return;const st=document.createElement('style');st.id='pc-core-css';
-  st.textContent='.pc-sec{font-family:"Saira Condensed","Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft,#aab2bd);margin:14px 0 6px;display:flex;align-items:center;gap:10px}.pc-sec:after{content:"";flex:1;height:1px;background:var(--line,#2a2f37)}'
+  st.textContent=PC_LOOK_CSS+'.pc-sec{font-family:"Saira Condensed","Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft,#aab2bd);margin:14px 0 6px;display:flex;align-items:center;gap:10px}.pc-sec:after{content:"";flex:1;height:1px;background:var(--line,#2a2f37)}'
   +'.pc-table{width:100%;border-collapse:collapse;font-size:15px}.pc-table td{padding:8px 0;border-top:1px solid var(--line,#2a2f37);vertical-align:top}.pc-table tr:first-child td{border-top:0}.pc-table td.l{color:var(--soft,#aab2bd)}.pc-table td:last-child{text-align:right;font-family:"Saira Condensed","Barlow Condensed","Arial Narrow",sans-serif;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}'
   +'.pc-compare{font-size:14px;color:var(--soft,#aab2bd);margin:0 0 8px}.pc-kicker{font-size:15px;line-height:1.45;margin:0 0 10px}.pc-feedback{margin:0;padding-left:18px;font-size:15px;line-height:1.45}.pc-clean{font-size:15px;color:var(--soft,#aab2bd);margin:8px 0 0}.pc-ok{color:#7fe3a4}.pc-miss{color:#ffc23d}.pc-detail{color:var(--soft,#aab2bd)}';
   document.head.appendChild(st);}

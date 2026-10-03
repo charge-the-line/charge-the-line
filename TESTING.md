@@ -77,3 +77,8 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 - Spacing: 1, 3, 7, 14, 30 days after each clear at 70+; a miss resets; overdue reads as due.
 - Debrief body: compare line (best, last time, new best), metrics table, what cost points, lesson chips, steps table.
 - The mission debrief uses Debrief 2.0 (steps table, clean-run line, counted-up score).
+
+## Milestone 4 checks (added October 2026)
+
+- First-run card under 120 words, the full guide under How to play (`#howov`), the settings sheet wired, no Barlow left.
+- Browser check opens the Settings sheet from the menu.

@@ -14,6 +14,8 @@ with sync_playwright() as p:
         pg = b.new_page(viewport={'width': w, 'height': 800}, device_scale_factor=2, is_mobile=True, has_touch=True)
         pg.on('pageerror', lambda e: errs.append(str(e)))
         pg.goto(URL); pg.wait_for_timeout(300)
+        if pg.is_visible('#b-start'): pg.click('#b-start')
+        pg.click('#h-set'); pg.wait_for_timeout(150); rows.append((w, 'settings', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('#set-close')
         n = pg.evaluate("CAMP.length")
         for i in range(n):
             pg.goto(URL); pg.wait_for_timeout(250)

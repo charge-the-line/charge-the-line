@@ -16,6 +16,6 @@ global.window=Object.assign(global.window||{},{addEventListener(){}});global.loc
 Object.defineProperty(globalThis,'navigator',{value:{userAgent:'qa-bot',clipboard:{writeText:async t=>{global.__clip=t;}}},configurable:true,writable:true});
 global.performance={now:()=>0};global.setInterval=()=>{};
 global.Blob=function(parts){this.text=parts.join('');global.__blob=this.text;};global.URL={createObjectURL:()=>'blob:x'};
-const api=new Function(require('fs').readFileSync(require('path').join(__dirname,'..','preconnect-core.js'),'utf8')+'\n'+js+';return {showBrief,finish,pcSpacing,pcBestPrev,pcDebriefBody,GUIDE,DECG,missionControls,incidentKey,openCard,enterLearn,exitLearn,LEARN:()=>LEARN,S,CAMP,loadCampaign,tick,stepsDone:()=>stepsDone,DEC:()=>DEC,setValve,$,residual,supplied,linePsi,totalFlow,snapshot,pdp,describe,load,save,showMenu,setTier:t=>{TIER=t;},VALVES,dischargesClosed};')();
+const api=new Function(require('fs').readFileSync(require('path').join(__dirname,'..','preconnect-core.js'),'utf8')+'\n'+js+';return {showBrief,finish,settings,setSetting,pcSpacing,pcBestPrev,pcDebriefBody,GUIDE,DECG,missionControls,incidentKey,openCard,enterLearn,exitLearn,LEARN:()=>LEARN,S,CAMP,loadCampaign,tick,stepsDone:()=>stepsDone,DEC:()=>DEC,setValve,$,residual,supplied,linePsi,totalFlow,snapshot,pdp,describe,load,save,showMenu,setTier:t=>{TIER=t;},VALVES,dischargesClosed};')();
 return {api,els,missing,store};}
 module.exports={boot};

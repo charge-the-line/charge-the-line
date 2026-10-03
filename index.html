@@ -28,46 +28,46 @@
 </script>
 
 <title>Charge the Line</title>
+<script src="preconnect-core.js"></script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Charge the Line">
 <style>
 /* Fonts are served from this site (fonts/, SIL Open Font License). Nothing loads from Google: works offline and makes no outside request. */
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-condensed-latin-400-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-condensed-latin-500-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
-@font-face{font-family:"Barlow";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/atkinson-hyperlegible-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/atkinson-hyperlegible-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Saira Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/saira-condensed-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Saira Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/saira-condensed-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Saira Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/saira-condensed-latin-700-normal.woff2) format("woff2")}
 /* Milestone 1: every button is at least 48 px tall (finger-sized, gloves on). */
 button{min-height:48px}
 </style>
 <style>
-  :root{--panel:#23262b;--panel-2:#2c3036;--panel-edge:#3a3f47;--chrome:#c9ccd1;--red:#b3202c;--yellow:#f0b323;--green:#2f9e5b;--blue:#2f6fb7;--text:#ecebe6;--muted:#9aa0a8}
+  :root{--bg:#0a0c0f;--panel:#14171c;--panel-2:#1c2026;--panel-edge:#2a2f37;--deck:#14171c;--deck2:#1c2026;--line:#2a2f37;--ink:#f6f7f9;--soft:#aab2bd;--chrome:#8b9199;--red:#b3202c;--yellow:#f0b323;--acc:#f0b323;--acc-ink:#0a0c0f;--green:#2f9e5b;--blue:#2f6fb7;--text:#f6f7f9;--muted:#aab2bd}
   *{box-sizing:border-box}
-  html,body{margin:0;background:#15171a;color:var(--text);font-family:"Barlow",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;-webkit-text-size-adjust:100%}
   body{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top,0px)) calc(12px + env(safe-area-inset-right,0px)) calc(40px + env(safe-area-inset-bottom,0px)) calc(12px + env(safe-area-inset-left,0px))}
-  h1,h2,h3,.cond{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+  h1,h2,h3,.cond{font-family:"Saira Condensed","Arial Narrow",sans-serif}
   button{font-family:inherit;font-size:15px;border-radius:6px;padding:10px 12px;cursor:pointer;color:var(--text);background:var(--panel-2);border:1px solid var(--panel-edge)}
   button{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
   button:active{transform:translateY(1px)} button:disabled{opacity:.4;cursor:default}
   button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
   input{font-family:inherit;font-size:18px;padding:10px;border-radius:6px;border:1px solid var(--panel-edge);background:#0e0f11;color:var(--text);width:100%}
   .on{background:var(--green)!important;border-color:var(--green)!important;color:#fff}
-  .warn{background:var(--yellow);border-color:var(--yellow);color:#1a1c20}
-  .brand{font-family:"Barlow Condensed",sans-serif;font-weight:700;letter-spacing:2px;font-size:14px;color:var(--yellow);padding:2px 2px 0}
+  .warn{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:18px;letter-spacing:.5px;text-transform:uppercase}
+  .brand{font-family:"Saira Condensed",sans-serif;font-weight:700;letter-spacing:2px;font-size:14px;color:var(--yellow);padding:2px 2px 0}
   .strip{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:4px 2px 10px}
   .strip h1{font-size:24px;font-weight:600;margin:0} .strip .meta{font-size:15px;color:var(--muted)} .strip .meta b{color:var(--text);font-weight:500}
   .panel{background:linear-gradient(#2a2e34,#1f2226);border:2px solid var(--chrome);border-radius:8px;padding:10px;box-shadow:inset 0 0 0 1px #000,0 6px 20px rgba(0,0,0,.5)}
   .gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
   .gauge{background:var(--panel);border-radius:8px;padding:6px 3px 4px;text-align:center;border:1px solid var(--panel-edge)}
   .gauge svg{width:100%;height:auto;display:block} .gauge .lab{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.1}
-  .gauge .val{font-family:"Barlow Condensed";font-size:20px;font-weight:600;line-height:1}
+  .gauge .val{font-family:"Saira Condensed";font-size:20px;font-weight:600;line-height:1}
   .row2{display:grid;grid-template-columns:1fr 64px;gap:8px;margin-bottom:10px}
   .gov{background:#0d1a2a;border:2px solid var(--blue);border-radius:8px;padding:8px}
   .gov .readouts{display:flex;justify-content:space-around;margin-bottom:6px} .gov .ro{text-align:center}
-  .gov .digits{font-family:"Barlow Condensed";font-size:34px;font-weight:700;color:#ff5d3a;letter-spacing:1px;line-height:1;text-shadow:0 0 8px rgba(255,93,58,.5)}
+  .gov .digits{font-family:"Saira Condensed";font-size:34px;font-weight:700;color:#ff5d3a;letter-spacing:1px;line-height:1;text-shadow:0 0 8px rgba(255,93,58,.5)}
   .gov .lab{font-size:13px;color:#7fa7d6} .gov .btns{display:grid;grid-template-columns:repeat(5,1fr);gap:4px} .gov .btns button{padding:8px 4px;font-size:15px}
   .tank{background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;display:flex;flex-direction:column;align-items:center;padding:6px 4px}
   .tank .bar{width:22px;height:110px;background:#0e0f11;border-radius:4px;position:relative;overflow:hidden;border:1px solid #000}
@@ -90,7 +90,7 @@ button{min-height:48px}
   .valve .top{display:flex;justify-content:space-between;align-items:baseline} .valve .name{font-size:15px}
   .valve .tag{font-size:13px;color:#1a1c20;background:var(--yellow);border-radius:3px;padding:1px 6px;font-weight:500}
   .valve .tag.red{background:var(--red);color:#fff} .valve .tag.blue{background:#5aa9ff} .valve .tag.grn{background:#8fd39a} .valve .tag.org{background:#f19a4a}
-  .valve .pct{font-family:"Barlow Condensed";font-size:18px;color:var(--muted)}
+  .valve .pct{font-family:"Saira Condensed";font-size:18px;color:var(--muted)}
   .valve .track{height:8px;background:#0e0f11;border-radius:4px;overflow:hidden;margin-top:6px} .valve .open{height:100%;background:var(--red);width:0;transition:width .15s}
   .valve .acts{display:flex;gap:4px;grid-column:1/-1} .valve .acts button{flex:1;padding:8px 4px;font-size:15px}
   .card{background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;padding:12px;margin-top:12px}
@@ -98,16 +98,17 @@ button{min-height:48px}
   .steps{list-style:none;padding:0;margin:0} .steps li{display:flex;gap:10px;padding:6px 0;font-size:15px;border-top:1px solid #33373e} .steps li:first-child{border-top:0}
   .steps .box{width:18px;height:18px;border:2px solid var(--muted);border-radius:4px;flex:0 0 auto;margin-top:1px}
   .steps li.done .box{background:var(--green);border-color:var(--green)} .steps li.done{color:var(--muted);text-decoration:line-through}
-  .radio{font-family:"Barlow Condensed";font-size:16px;line-height:1.35;max-height:150px;overflow:auto}
+  .radio{font-family:"Saira Condensed";font-size:16px;line-height:1.35;max-height:150px;overflow:auto}
   .radio div{padding:3px 0;border-top:1px dashed #33373e} .radio div:first-child{border-top:0}
   .radio .who{color:var(--yellow);font-weight:600} .radio .bad{color:#ff7b6b} .radio .good{color:#5fd88a}
   .actions{display:flex;gap:8px;margin-top:10px} .actions button{flex:1}
   .overlay{position:fixed;inset:0;padding-top:calc(16px + env(safe-area-inset-top,0px))!important;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))!important;background:rgba(0,0,0,.9);display:flex;align-items:flex-start;justify-content:center;padding:16px;z-index:10;overflow:auto}
-  .overlay .box{background:var(--panel);border:2px solid var(--chrome);border-radius:10px;padding:18px;max-width:460px;width:100%;margin:auto}
+  .overlay .box{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;max-width:460px;width:100%;margin:auto}
   .overlay h2{font-size:28px;margin:0 0 8px;font-weight:600} .overlay p{font-size:16px;line-height:1.5;color:#cfd2d6;margin:0 0 12px}
-  .overlay .big{font-family:"Barlow Condensed";font-size:56px;font-weight:700;color:var(--yellow);line-height:1}
-  .scen{display:block;width:100%;text-align:left;margin-bottom:8px;padding:12px;position:relative}
-  .scen b{display:block;font-family:"Barlow Condensed";font-size:20px;font-weight:600;margin-bottom:2px} .scen span{font-size:15px;color:var(--muted)}
+  .overlay .big{font-family:"Saira Condensed";font-size:56px;font-weight:700;color:var(--yellow);line-height:1}
+  .scen{display:block;width:100%;text-align:left;margin-bottom:8px;padding:12px 14px;position:relative;background:var(--panel);border:0;border-left:4px solid var(--acc);border-radius:6px}
+  #menu h3{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft);margin:18px 0 8px;display:flex;align-items:center;gap:10px}#menu h3:after{content:"";flex:1;height:1px;background:var(--line)}
+  .scen b{display:block;font-family:"Saira Condensed";font-size:20px;font-weight:600;margin-bottom:2px} .scen span{font-size:15px;color:var(--muted)}
   .scen .due{position:static;display:table;margin-top:6px;font-size:13px;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--yellow);color:#1a1c20}
   .scen .ok{background:var(--green);color:#fff}
   .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 12px} .tiers button{padding:8px 4px;font-size:15px}
@@ -118,7 +119,7 @@ button{min-height:48px}
   .wcol{position:relative;width:34px;height:96px;border-radius:5px;overflow:hidden;border:1px solid #000;background:linear-gradient(#2f6fb7,#1d4f86 70%,#6b5a3a 88%,#8a744a);flex:0 0 auto}
   .wcol .zone{position:absolute;left:0;right:0;bottom:35%;height:30%;background:rgba(56,214,106,.22);border-top:1px dashed #38d66a;border-bottom:1px dashed #38d66a}
   .wcol .wmark{position:absolute;left:3px;right:3px;height:8px;border-radius:3px;background:#f0b323;box-shadow:0 0 6px #f0b323;transform:translateY(50%)}
-  .tag-real{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.6px;color:#1a1c20;background:var(--yellow);border-radius:3px;padding:2px 7px;margin-bottom:8px}
+  .tag-real{display:inline-block;font-family:"Saira Condensed",sans-serif;font-size:14px;font-weight:600;letter-spacing:.6px;color:#1a1c20;background:var(--yellow);border-radius:4px;padding:2px 7px;margin-bottom:8px}
   .guidebtn{padding:6px 10px;font-size:15px;background:#1d2b3d;border-color:#2f6fb7;color:#bcd8ff}
   body.learn [data-g]{outline:2px dashed var(--yellow);outline-offset:1px;cursor:help;position:relative}
   body.learn .panel{box-shadow:0 0 0 3px rgba(240,179,35,.35)}
@@ -129,13 +130,13 @@ button{min-height:48px}
   #guideov{z-index:30}#briefov{z-index:12}
   .gcard h2{margin-bottom:2px}
   .gcard .gsub{font-size:14px;color:var(--muted);margin:0 0 12px}
-  .gsec{margin:0 0 12px}.gsec b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:2px}
+  .gsec{margin:0 0 12px}.gsec b{display:block;font-family:"Saira Condensed",sans-serif;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:2px}
   .gsec p{margin:0;font-size:15px;line-height:1.45;color:#dcdcd6}
   .gsec.rig{background:#13202f;border:1px solid #2f6fb7;border-radius:8px;padding:8px 10px}.gsec.rig b{color:#7fc0ff}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
-  .chip{padding:7px 10px;font-size:15px;border-radius:16px;background:#1d2b3d;border:1px solid #2f6fb7;color:#bcd8ff}
+  .chip{padding:7px 10px;font-size:15px;border-radius:6px;background:#1d2b3d;border:1px solid #2f6fb7;color:#bcd8ff;font-family:inherit;font-weight:400;letter-spacing:0;text-transform:none;line-height:1.2;white-space:normal}
   .chip.warnchip{background:#3a1512;border-color:#b3202c;color:#ffb3a8}
-  .gidx h3{font-family:"Barlow Condensed",sans-serif;font-size:17px;margin:12px 0 4px;color:var(--muted);letter-spacing:.5px}
+  .gidx h3{font-family:"Saira Condensed",sans-serif;font-size:17px;margin:12px 0 4px;color:var(--muted);letter-spacing:.5px}
   .hidden{display:none!important}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -181,7 +182,7 @@ button{min-height:48px}
   </div>
   <div class="miv" id="miv" data-g="miv">
     <h3 id="mivtitle">Hale MIV — left master intake valve</h3>
-    <div class="r"><button id="miv-open">Open</button><button id="miv-close">Close</button><div class="trk"><div id="miv-bar"></div></div><span id="miv-pct" style="font-family:'Barlow Condensed';font-size:16px;min-width:48px;text-align:right">closed</span></div>
+    <div class="r"><button id="miv-open">Open</button><button id="miv-close">Close</button><div class="trk"><div id="miv-bar"></div></div><span id="miv-pct" style="font-family:'Saira Condensed';font-size:16px;min-width:48px;text-align:right">closed</span></div>
   </div>
   <div class="miv hidden" id="xferp" data-g="transfer">
     <h3>Transfer valve — two-stage pump</h3>
@@ -189,7 +190,7 @@ button{min-height:48px}
   </div>
   <div class="miv hidden" id="pondp" data-g="pond">
     <h3>Portable pond · dump site</h3>
-    <div class="r"><div class="trk" style="height:14px"><div id="pondbar" style="background:#5aa9ff"></div></div><span id="pondgal" style="font-family:'Barlow Condensed';font-size:16px;min-width:92px;text-align:right">0 gal</span></div>
+    <div class="r"><div class="trk" style="height:14px"><div id="pondbar" style="background:#5aa9ff"></div></div><span id="pondgal" style="font-family:'Saira Condensed';font-size:16px;min-width:92px;text-align:right">0 gal</span></div>
     <div id="pondtxt" style="font-size:14px;color:var(--muted);margin-top:6px"></div>
     <div id="coldtxt" style="font-size:14px;color:#7fc0ff;margin-top:2px"></div>
   </div>
@@ -230,20 +231,27 @@ button{min-height:48px}
 <div class="card"><h2>Radio</h2><div class="radio" id="radio"></div></div>
 
 <div class="overlay" id="intro"><div class="box">
-  <h2 style="font-size:34px;letter-spacing:.5px">Charge the Line</h2>
-  <p style="font-family:'Barlow Condensed';font-size:18px;color:var(--yellow);margin-top:-6px">Every call starts at the panel.</p>
+  <span class="tag-real">CHARGE THE LINE</span>
+  <h2 style="font-size:32px;line-height:1.05">Every call starts at the panel.</h2>
+  <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
+  <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
+  <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.7.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
+</div></div>
+<div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
+  <h2>How to play</h2>
   <p>Modeled on 10-2: HME rescue pumper, Hale Q-Flo 1250 GPM, 800-gallon tank, FRC pressure governor, Hale MIV electric master intake valve.</p>
   <p><b>Crack +</b> opens a valve a quarter turn at a time; <b>Gate −</b> closes it a quarter turn, to give one line less pressure than another. <b>Snap</b> throws it wide open — water hammer, or a lost prime at draft. The MIV travels on its own; that's what it's for.</p>
   <p>Three tiers per scenario: <b>Guided</b> shows every step and the target pressure. <b>Recall</b> hides the checklist and makes you figure the PDP from the hose layout. <b>Chaos</b> is Recall plus things going wrong.</p>
   <p><b>New: Panel guide.</b> Tap <b>Panel guide</b> (top right) during any mission, then tap any control to learn what it does, when to use it, and what goes wrong. Free in Guided, 2 points per lookup in Recall, locked in Chaos.</p>
   <p style="font-size:15px">Training aid only. Department SOPs and the preconnect chart on the rig are the real numbers.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.6.0 · Found a problem? Use "Report an issue" under any mission.</p>
-  <button class="warn" id="b-start" style="width:100%;font-size:18px">Continue</button>
+  <button class="warn" id="how-close" style="width:100%;font-size:18px">Close</button>
 </div></div>
 
 <div class="overlay hidden" id="menu"><div class="box">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a></div>
-  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.6.0</span></h2>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
+  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.7.0</span></h2>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div style="display:flex;gap:8px;margin-bottom:12px"><button id="b-math" style="flex:1">Pump math drills</button><button id="b-progress" style="flex:1">My progress</button><button id="b-howto">How to play</button></div>
   <button id="b-gindex" class="guidebtn" style="width:100%;margin-bottom:12px;font-size:16px;padding:10px">Panel guide — every control, gauge, and concept</button>
@@ -298,7 +306,7 @@ button{min-height:48px}
   <span class="tag-real" style="background:#2f6fb7;color:#fff">MISSION BRIEFING</span>
   <h2 id="brief-t" style="font-size:24px"></h2>
   <p id="brief-intro" style="font-size:15px"></p>
-  <div style="font-family:'Barlow Condensed';font-size:16px;letter-spacing:1px;color:var(--yellow)">CONTROLS YOU'LL USE — TAP TO LEARN</div>
+  <div style="font-family:'Saira Condensed';font-size:16px;letter-spacing:1px;color:var(--yellow)">CONTROLS YOU'LL USE — TAP TO LEARN</div>
   <div class="chips" id="brief-chips"></div>
   <p id="brief-tier" style="font-size:14px;color:var(--muted)"></p>
   <div style="display:flex;gap:8px"><button class="warn" id="brief-go" style="flex:1;font-size:18px">Start mission</button><button id="brief-back">Back to menu</button></div>
@@ -315,7 +323,19 @@ button{min-height:48px}
   <button class="warn" id="b-next" style="width:100%;font-size:18px">Next mission</button>
 </div></div>
 
-<script src="preconnect-core.js"></script>
+<div class="overlay hidden" id="setov" style="z-index:20"><div class="box">
+ <div class="flex"><h2 style="margin:0">Settings</h2><div class="sp"></div><button class="gear" id="set-close">Done</button></div>
+ <div class="sec">Display</div>
+ <div class="set"><div class="k">Text size</div><div class="seg2" data-set="text"><button data-val="normal">Normal</button><button data-val="large">Large</button></div></div>
+ <div class="set"><div class="k">High contrast<small>Black background, brighter text: for daylight.</small></div><div class="seg2" data-set="contrast"><button data-val="normal">Off</button><button data-val="high">On</button></div></div>
+ <div class="set"><div class="k">Motion<small>Auto follows your phone's Reduce Motion setting.</small></div><div class="seg2" data-set="motion"><button data-val="auto">Auto</button><button data-val="off">Off</button></div></div>
+ <div class="sec">Feedback</div>
+ <div class="set"><div class="k">Sound<small>Monitor beeps, metronome, voice prompts, in modules that have them.</small></div><div class="seg2" data-set="sound"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
+ <div class="set"><div class="k">Haptics<small>A tap you can feel on compressions and mistakes.</small></div><div class="seg2" data-set="haptics"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
+ <div class="sec">Privacy</div>
+ <div class="set"><div class="k">Anonymous statistics<small>Counts like "someone finished the infant station." Never names. <a href="../privacy.html" style="color:var(--acc)">Details</a></small></div><div class="seg2" data-set="stats"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
+ <p class="stat" style="margin-top:10px">Settings apply to every Preconnect module on this phone.</p>
+</div></div>
 <script>
 /* ===== hydraulics ===== */
 const FLC={1.75:15.5,2.5:2,3:0.8,5:0.08};
@@ -336,7 +356,7 @@ function drawGauge(svg,val,min,max,redFrom){
   const ang=a0+(a1-a0)*frac(val),step=(max-min)>200?50:10,bigEvery=(max-min)>200?100:20;let ticks='';
   for(let p=min;p<=max;p+=step){const t=a0+(a1-a0)*frac(p),big=(p-min)%bigEvery===0;
     ticks+=`<line x1="${cx+Math.cos(rad(t))*r}" y1="${cy+Math.sin(rad(t))*r}" x2="${cx+Math.cos(rad(t))*(r-(big?7:4))}" y2="${cy+Math.sin(rad(t))*(r-(big?7:4))}" stroke="#1a1c20" stroke-width="${big?2:1}"/>`;
-    if(big)ticks+=`<text x="${cx+Math.cos(rad(t))*(r-15)}" y="${cy+Math.sin(rad(t))*(r-15)+3}" font-size="7" text-anchor="middle" fill="#1a1c20" font-family="Barlow Condensed">${p}</text>`;}
+    if(big)ticks+=`<text x="${cx+Math.cos(rad(t))*(r-15)}" y="${cy+Math.sin(rad(t))*(r-15)+3}" font-size="7" text-anchor="middle" fill="#1a1c20" font-family="Saira Condensed">${p}</text>`;}
   const ra=a0+(a1-a0)*frac(redFrom);
   svg.innerHTML=`<path d="M4 58 A46 46 0 1 1 96 58 Z" fill="#f2f0e8"/><path d="M${cx+Math.cos(rad(ra))*r} ${cy+Math.sin(rad(ra))*r} A${r} ${r} 0 0 1 ${cx+Math.cos(rad(a1))*r} ${cy+Math.sin(rad(a1))*r}" fill="none" stroke="#b3202c" stroke-width="3"/>${ticks}<line x1="${cx}" y1="${cy}" x2="${cx+Math.cos(rad(ang))*(r-4)}" y2="${cy+Math.sin(rad(ang))*(r-4)}" stroke="#b3202c" stroke-width="2" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="3" fill="#1a1c20"/>`;
 }
@@ -941,7 +961,7 @@ function checkMission(dt){
 let DEC=null;
 function openDecision(s,j){S.running=false;DEC={s,j};const d=s.dec;
   $('dec-q').textContent=typeof d.q==='function'?d.q():d.q;
-  $('dec-opts').innerHTML=d.opts.map((o,i)=>[o,i]).sort(()=>Math.random()-.5).map(([o,i])=>`<button class="scen" data-i="${i}"><b style="font-size:17px;font-family:Barlow,system-ui,sans-serif;font-weight:500">${o.t}</b></button>`).join('');
+  $('dec-opts').innerHTML=d.opts.map((o,i)=>[o,i]).sort(()=>Math.random()-.5).map(([o,i])=>`<button class="scen" data-i="${i}"><b style="font-size:17px;font-family:Atkinson Hyperlegible,system-ui,sans-serif;font-weight:500">${o.t}</b></button>`).join('');
   $('dec-opts').classList.remove('hidden');$('dec-fb').classList.add('hidden');$('decov').classList.remove('hidden');}
 $('dec-opts').onclick=e=>{const b=e.target.closest('button');if(!b||!DEC)return;const d=DEC.s.dec,o=d.opts[+b.dataset.i];
   const lab={good:'Matches what crews did.',partial:'Workable — but not what crews chose.',bad:'That would have hurt you.'}[o.r];
@@ -984,7 +1004,8 @@ $('menu').querySelectorAll('[data-tier]').forEach(b=>b.onclick=()=>{TIER=+b.data
 $('scenlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('menu').classList.add('hidden');const i=+b.dataset.i;if(CAMP[i].real)showCase(i);else loadCampaign(i);};
 $('b-start').onclick=()=>{$('intro').classList.add('hidden');const p=load();if(!p.seenIntro){p.seenIntro=true;save(p);}showMenu();};
 $('b-resume').onclick=()=>{$('menu').classList.add('hidden');if(S.briefing)$('briefov').classList.remove('hidden');else if(S.active)S.running=true;};
-$('b-howto').onclick=()=>{$('menu').classList.add('hidden');$('intro').classList.remove('hidden');};
+$('b-howmore').onclick=()=>$('howov').classList.remove('hidden');$('how-close').onclick=()=>$('howov').classList.add('hidden');
+$('b-howto').onclick=()=>{$('howov').classList.remove('hidden');return;$('menu').classList.add('hidden');$('intro').classList.remove('hidden');};
 $('b-progress').onclick=()=>{const p=load();$('uname').value=p.name||'';
   $('proglist').innerHTML=CAMP.map((c,i)=>{const s=p.scen[i];return `<div class="stat"><span>${c.name}</span><b>${s?`best ${s.best} · ${s.runs} run${s.runs>1?'s':''} · ${['Guided','Recall','Chaos'][s.tier]} · ${dueInfo(i).txt}`:'—'}</b></div>`;}).join('')+`<div class="stat"><span>Pump math</span><b>${p.math.total?Math.round(p.math.right/p.math.total*100)+'% of '+p.math.total:'—'}</b></div>`;
   $('progov').classList.remove('hidden');};
@@ -1015,7 +1036,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.6.0';
+const APP_VERSION='2.7.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1047,6 +1068,7 @@ $('r-send').onclick=async()=>{
   try{await navigator.clipboard.writeText(text);$('r-msg').textContent='Report copied — paste it into a text or email to the trainer admin.';}
   catch(e){$('r-note').value=text;$('r-note').select();$('r-msg').textContent='Copy the text above and send it to the trainer admin.';}
 };
+applySettings();settingsBind();
 if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 
 /* ===== PANEL GUIDE: content ===== */
