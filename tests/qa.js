@@ -52,7 +52,11 @@ function stepAct(c,m,j,s){
   if(/open #|open discharge/.test(tl)){const k=valveKeyFromText(t,c);if(!k){errors.push(c.name+' / '+m.title+': cannot map valve for "'+t+'"');return;}if(S.valves[k].open===0)api.setValve(k,'crack');return;}
   if(/both lines in band/.test(tl)){
     if(/Discharge 4 140–160/.test(t)){S.valves.rear4.open=100;S.valves.rear2.open=25;setPsi(150);return;}
-    S.valves.front.open=100;if(S.valves.front3)S.valves.front3.open=100;setPsi(150);return;}
+    // two lines, two bands: pump for the line that needs more, gate the other down a quarter turn at a time until its gauge reads in band (what Gate − is for)
+    const bs=[...t.matchAll(/(\d+)–(\d+) at #(\d)/g)].map(x=>({lo:+x[1],hi:+x[2],k:x[3]==='1'?'front':'front3'}));
+    if(bs.length<2){S.valves.front.open=100;if(S.valves.front3)S.valves.front3.open=100;setPsi(150);return;}
+    bs.sort((p,q)=>q.lo-p.lo);const top=bs[0],other=bs[1];const psi=(top.lo+top.hi)/2;S.valves[top.k].open=100;setPsi(psi);
+    const pick=[100,75,50,25].find(o=>{const lp=psi*(0.45+0.55*o/100);return lp>=other.lo&&lp<=other.hi;});S.valves[other.k].open=pick||100;return;}
   const b=band(t);
   if(b&&/(bring|at|raise|line|get above|water back)/i.test(t)){const k=valveKeyFromText(t,c)||(m.chat&&m.chat.k);if(!k){errors.push(c.name+': no valve for "'+t+'"');return;}openFull(k);setPsi((b[0]+b[1])/2);return;}
   if(s.hold&&s.k&&s.lo){openFull(s.k);setPsi((s.lo+s.hi)/2);return;}
@@ -71,7 +75,7 @@ function upkeep(c){
   if(c.heat&&S.heatT>4&&!S.fill)click('s-fill');
 }
 function play(ci,tier,choice='good',opts={}){
-  api.setTier(tier);api.loadCampaign(ci);const c=CAMP[ci];reopen=null;strainerFix=0;
+  api.setTier(tier);global.window.FORCE_V=opts.variant?{[ci]:opts.variant}:undefined;api.loadCampaign(ci);global.window.FORCE_V=undefined;const c=CAMP[ci];reopen=null;strainerFix=0;
   const res={name:c.name,tier:['Guided','Recall','Chaos'][tier],missions:[],ok:true,decLatency:[]};
   for(let mi=0;mi<c.missions.length;mi++){
     const m=c.missions[mi];let t=0,done=false,decAt=null;const T=300;res.faults=res.faults||[];
@@ -81,6 +85,7 @@ function play(ci,tier,choice='good',opts={}){
       if(api.DEC()&&opts.human&&((opts._d=(opts._d||0)+.25)<3)){t+=.25;continue;}opts._d=0;
       if(api.DEC()){if(decAt===null)decAt=S.t-S.mStart;const d=api.DEC().s.dec;let i=d.opts.findIndex(o=>o.r===choice);if(i<0)i=0;$('dec-opts').onclick({target:{closest:()=>({dataset:{i:String(i)}})}});$('dec-go').onclick();}
       if(!S.running&&!$('done')._cls.has('hidden')){done=true;break;}
+      if(opts.inject&&mi===opts.inject.mission&&t>=opts.inject.at&&!opts._inj){if(api.inject(opts.inject.f)){opts._inj=true;res.injected=true;}else if(res.injected===undefined)res.injected=false;}
       const sd=api.stepsDone();const j=sd.findIndex(x=>!x);if(j>=0&&(!opts.human||(opts._a=(opts._a||0)+.25)>=1.25)){opts._a=0;stepAct(c,m,j,m.steps[j]);}
       if(S.fault&&!res.faults.includes(S.fault))res.faults.push(S.fault);
       upkeep(c);
@@ -91,7 +96,7 @@ function play(ci,tier,choice='good',opts={}){
     if(!done){res.ok=false;res.stuck=m.steps[api.stepsDone().findIndex(x=>!x)]?.t;break;}
     if(mi<c.missions.length-1)$('b-next').onclick();
   }
-  res.score=S.score;res.incidents=[...S.incidents];res.title=$('done-title').textContent;
+  res.score=S.score;res.incidents=[...S.incidents];res.title=$('done-title').textContent;res.variant=S.variant;res.vtext=S.vtext;
   return res;
 }
 module.exports={play,env,errors,click};

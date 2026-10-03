@@ -3,11 +3,11 @@
    Usage:  node tests/run_all.js          (everything, about a minute)
            node tests/run_all.js quick    (syntax, balance, guide, short fuzz)
            node tests/run_all.js play human    (pick sections)
-   Sections: syntax balance play paths human checks guide stress fuzz
+   Sections: syntax balance learn variants inject play paths human checks guide stress fuzz
    Exit code 0 = all passed. */
 global.window=global.window||{};
 const path=require('path'),fs=require('fs'),vm=require('vm'),{execFileSync}=require('child_process');
-const ALL=['syntax','balance','learn','play','paths','human','checks','guide','stress','fuzz'];
+const ALL=['syntax','balance','learn','variants','inject','play','paths','human','checks','guide','stress','fuzz'];
 let want=process.argv.slice(2);if(!want.length)want=ALL;if(want.includes('quick'))want=['syntax','balance','learn','guide','fuzz'];
 const results=[];let failed=0;const T0=Date.now();
 function report(section,name,ok,detail=''){results.push({ok});if(!ok)failed++;console.log(`${ok?'PASS':'FAIL'}  ${section.padEnd(8)} ${name}${detail?'  — '+detail:''}`);}
@@ -75,7 +75,54 @@ if(want.includes('learn')){const {boot}=require('./qa_mock.js');
    {const {api}=boot();let n=0;for(let r_=0;r_<20;r_++)for(const k of ['friction','pdp'])for(const q of api.DRILLS[k].items()){const len=[q.a,...q.d].map(x=>x.length);if(len[0]===Math.max(...len)&&len.filter(x=>x===len[0]).length===1)n++;}
      report('learn','numeric drills: the right answer is not usually the longest option',n/(20*2*8)<=.45,`${n} of ${20*2*8}`);}}}
 
-const env=(want.some(x=>['balance','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
+/* boot-based checks run before the play harness is created: a later boot() would swap the harness's document and storage out from under it */
+if(want.includes('variants')){const {boot}=require('./qa_mock.js');const VARIANTS=boot().api.VARIANTS;const NZ={lpfog:[75,150],fog100:[100,150],sb1516:[50,185]},FLC2={1.75:15.5,2.5:2,3:0.8,5:0.08};const fl=(d,g,l)=>FLC2[d]*(g/100)*(g/100)*(l/100);
+  {// the Guided step text and the crew's band match an independent PDP recalculation for the variant's hose and nozzle (never the app's own pdp())
+   const {boot}=require('./qa_mock.js');let bad=[];for(const v of VARIANTS[0]){const b=boot();global.window.FORCE_V={0:v.id};b.api.loadCampaign(0);global.window.FORCE_V=undefined;const [np,gpm]=NZ[v.pre200.noz];const t=Math.round(np+fl(1.75,gpm,v.pre200.len));const st=b.api.CAMP[0].missions[0].steps.find(s=>/^Bring/.test(s.t));
+     const m=st&&st.t.match(/(\d+)–(\d+) PSI \(PDP (\d+)\)/);if(!m||+m[3]!==t||+m[1]!==t-10||+m[2]!==t+10)bad.push(`${v.id}: expected PDP ${t}, text "${st&&st.t}"`);const ch=b.api.CAMP[0].missions[0].chat;if(ch.lo!==t-10||ch.hi!==t+10)bad.push(v.id+' chat band');
+     if(!b.api.S.vtext.includes(v.pre200.len+' ft')||b.api.S.hydCap!==v.hyd||b.api.S.hydBase!==v.hyd)bad.push(v.id+' text/hydrant');}
+   report('variants','residential layouts: Guided target and crew band equal an independent PDP recalculation; dispatch names the hose and hydrant',bad.length===0,bad.join(' | '));}
+  {// relay: band follows the lay length (20 psi at the far intake plus 5" friction loss, rounded to 5), and the intro quotes the same numbers
+   const {boot}=require('./qa_mock.js');let bad=[];for(const v of VARIANTS[4]){const b=boot();global.window.FORCE_V={4:v.id};b.api.loadCampaign(4);global.window.FORCE_V=undefined;const lo=Math.round((20+Math.round(0.08*25*v.lay/100))/5)*5;const m=b.api.CAMP[4].missions[1];const hold=m.steps.find(s=>s.hold);
+     if(hold.lo!==lo||hold.hi!==lo+15||m.chat.lo!==lo)bad.push(`${v.id}: band ${hold.lo}-${hold.hi}, expected ${lo}-${lo+15}`);if(!m.intro().includes(`${v.lay} ft`)||!m.intro().includes(`Give them ${lo+5}`))bad.push(v.id+' intro');}
+   report('variants','relay layouts: band and intro follow the lay length',bad.length===0,bad.join(' | '));}
+  {// random pick covers every layout; Standard layouts always gives A; Real Saves are never varied and keep the default hose; a run records its layout
+   const {boot}=require('./qa_mock.js');const b=boot();const seen=new Set();for(let k=0;k<60;k++){b.api.loadCampaign(0);seen.add(b.api.S.variant);}const b2=boot({'e102-pump-trainer':JSON.stringify({name:'',scen:{},math:{right:0,total:0},std:true})});const std=new Set();for(let k=0;k<12;k++){b2.api.loadCampaign(0);std.add(b2.api.S.variant);}
+   b.api.loadCampaign(0);const corv=b.api.CAMP.findIndex(c=>/Corvallis/.test(c.name));b.api.loadCampaign(corv);const real=b.api.S.variant===''&&b.api.LINE.pre200.len===200&&b.api.LINE.pre200.noz==='lpfog';
+   report('variants','random pick covers every layout; Standard layouts always gives A; Real Saves keep the default hose',seen.size===3&&std.size===1&&std.has('A')&&real,`seen ${[...seen].sort().join('')}, standard ${[...std].join('')}`);}}
+
+if(want.includes('inject')){const {boot}=require('./qa_mock.js');
+  {// the panel: hidden unless instructor mode is on and a scenario is active; opening it pauses, closing resumes, freeze holds the clock until resumed; unavailable injects are disabled; a run with injects is marked in the record and the debrief
+   const {api,els}=boot();api.setTier(0);const fabHiddenOff=els['inst-fab'].classList.contains('hidden');api.setInst(true);const fabHiddenMenu=els['inst-fab'].classList.contains('hidden');api.loadCampaign(0);const fabShown=!els['inst-fab'].classList.contains('hidden');els['brief-go'].onclick();els['s-pump'].onclick();for(let k=0;k<4;k++)api.tick(.25);
+   api.instOpen();const paused=!api.S.running&&!els.instov.classList.contains('hidden');const html=els['inst-body'].innerHTML;const burstDisabled=/data-inj="burst" disabled/.test(html),govEnabled=/data-inj="gov">/.test(html);api.instClose();const resumed=api.S.running;
+   api.instOpen();api.instAct('freeze');const frozen=!api.S.running&&api.INSTHOLD()&&els['inst-fab'].textContent.startsWith('Frozen');for(let k=0;k<4;k++)api.tick(.25);const still=!api.S.running;api.instOpen();api.instAct('resume');const back=api.S.running&&!api.INSTHOLD();
+   api.instOpen();api.instAct('gov');const injected=api.S.fault==='gov'&&api.S.mode==='rpm'&&api.S.injects.length===1&&api.S.running;
+   report('inject','instructor panel: hidden until on and active, pauses while open, freeze holds the clock, unavailable injects disabled',fabHiddenOff&&fabHiddenMenu&&fabShown&&paused&&burstDisabled&&govEnabled&&resumed&&frozen&&still&&back&&injected,`fab ${fabHiddenOff&&fabHiddenMenu&&fabShown}, pause ${paused}/${resumed}, freeze ${frozen}/${still}/${back}, disabled ${burstDisabled}/${govEnabled}, injected ${injected}`);}
+  {// progress screen lists lesson and drill bests, and the CSV carries them
+   const {api,els}=boot({'e102-pump-trainer':JSON.stringify({name:'',scen:{0:{best:90,runs:2,last:new Date().toISOString(),tier:1,level:1}},math:{right:3,total:4},log:[{i:0,score:90,tier:1,d:new Date().toISOString(),v:'B'}],extra:[{kind:'lesson',id:'lesson',score:92,d:new Date().toISOString()},{kind:'drill',id:'hydrant',score:75,d:new Date().toISOString()},{kind:'drill',id:'hydrant',score:100,d:new Date().toISOString()}]})});
+   els['b-progress'].onclick();const h=els.proglist.innerHTML;els['b-export'].onclick();const csv=global.__blob||'';
+   report('inject','progress screen: lesson and drill bests, layouts seen, pump math; CSV has the same rows',/Pump lesson<\/td><td>best 92 · 1 run/.test(h)&&/Hydrant math<\/td><td>best 100 · 2 runs/.test(h)&&/layouts B/.test(h)&&/75% of 4/.test(h)&&/Friction loss<\/td><td>—/.test(h)&&/"Pump lesson",,1,92,/.test(csv)&&/"Hydrant math",,2,100,/.test(csv)&&/"Friction loss",,0,,,/.test(csv),'');}}
+
+
+
+const env=(want.some(x=>['balance','variants','inject','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
+if(want.includes('variants')){const {CAMP,VARIANTS}=env.env.api;
+  // every named layout of every regular scenario completes on Guided and Recall, and a Chaos run too; the briefing names the layout
+  for(const i of Object.keys(VARIANTS)){let ok=0,n=0,perfect=0,named=0;for(const v of VARIANTS[i])for(const tier of [0,1,2]){n++;const r=quiet(()=>env.play(+i,tier,'good',{variant:v.id}));if(r.ok)ok++;if(r.ok&&r.score===100&&tier<2)perfect++;if(r.variant===v.id)named++;}
+    report('variants',`${short(CAMP[i].name)}: every layout completes on every tier`,ok===n&&named===n&&perfect===VARIANTS[i].length*2,`${ok}/${n} complete, ${perfect}/${VARIANTS[i].length*2} perfect on Guided and Recall`);}
+  {// a finished run records its layout, and a run without injects is not marked as an instructor run
+   const r=quiet(()=>env.play(0,0,'good',{variant:'B'}));const log=env.env.api.load().log||[];const lastLog=log[log.length-1]||{};
+   report('variants','the training record keeps the layout of each run',r.ok&&lastLog.v==='B'&&!lastLog.inst,`logged ${lastLog.v}`);}}
+
+if(want.includes('inject')){const {CAMP}=env.env.api;
+  {// each inject applies on Guided through the instructor panel, the crew calls it, and the mission still completes
+   const cases=[[0,'burst',0],[0,'gov',0],[0,'hydrant',1,1],[3,'strainer',2],[0,'lowtank',0]];const out=[];let ok=0;
+   for(const [ci,f,mi,at] of cases){const r=quiet(()=>env.play(ci,0,'good',{inject:{mission:mi,at:at||12,f}}));const good=r.ok&&r.injected===true&&(f==='lowtank'||r.faults.includes(f));if(good)ok++;out.push(`${f} ${good?'ok':'FAIL'} (${r.ok?'completed':'stuck at '+r.stuck}, injected ${r.injected}, score ${r.score})`);}
+   report('inject','every inject lands on Guided and the engineer can still finish the mission',ok===cases.length,out.join(' | '));}
+  {// a run with an inject is marked in the record and the debrief names the inject
+   const p=quiet(()=>env.play(0,0,'good',{inject:{mission:0,at:12,f:'gov'}}));const log=env.env.api.load().log||[];const marked=(log[log.length-1]||{}).inst===1&&/Instructor injects/.test(env.env.api.$('done-body').innerHTML);
+   report('inject','a run with an inject is marked in the record and named in the debrief',p.ok&&marked,`completed ${p.ok}, marked ${marked}`);}}
+
 if(want.includes('balance')){const {CAMP}=env.env.api;let lo=0,sh=0,t=0,first=0;for(const c of CAMP)for(const m of c.missions)for(const s of m.steps)if(s.dec&&s.dec.opts){const L=s.dec.opts.map(x=>x.t.length),g=s.dec.opts.findIndex(x=>x.r==='good');t++;if(L[g]===Math.max(...L))lo++;else if(L[g]===Math.min(...L))sh++;}
   report('balance','right answer is not usually the longest',lo/t<=.45,`${lo} of ${t} (${Math.round(lo/t*100)}%)`);report('balance','right answer is not usually the shortest',sh/t<=.45,`${sh} of ${t} (${Math.round(sh/t*100)}%)`);
   report('balance','answer order is shuffled on screen',/d\.opts\.map\(\(o,i\)=>\[o,i\]\)\.sort\(\(\)=>Math\.random\(\)-\.5\)/.test(html));}

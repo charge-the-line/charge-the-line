@@ -128,6 +128,8 @@ button{min-height:48px}
   .learnbar span{flex:1;font-size:15px;line-height:1.25}
   .learnbar button{background:#1a1c20;color:#fff;border-color:#1a1c20;padding:8px 12px}
   #guideov{z-index:30}#briefov{z-index:12}
+  .fab{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:9;border-radius:24px;padding:12px 16px;background:#3b2a6b;border-color:#7a5cff;color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+  #b-inst.on,#b-std.on{background:#3b2a6b;border-color:#7a5cff;color:#fff}
   .gcard h2{margin-bottom:2px}
   .gcard .gsub{font-size:14px;color:var(--muted);margin:0 0 12px}
   .gsec{margin:0 0 12px}.gsec b{display:block;font-family:"Saira Condensed",sans-serif;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:2px}
@@ -238,7 +240,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.8.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.9.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -253,7 +255,7 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.8.0</span></h2>
+  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.9.0</span></h2>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"><button id="b-drills">Quick drills</button><button id="b-math">Pump math</button><button id="b-progress">My progress</button><button id="b-howto">How to play</button></div>
@@ -261,6 +263,7 @@ button{min-height:48px}
   <h3 style="margin:0 0 4px;font-size:18px">Difficulty</h3>
   <div class="tiers"><button data-tier="0">Guided</button><button data-tier="1">Recall</button><button data-tier="2">Chaos</button></div>
   <p class="tierhelp" id="tierhelp"></p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px"><button id="b-std">Layouts: varied</button><button id="b-inst">Instructor mode: off</button></div>
   <h3 style="margin:0 0 6px;font-size:18px">Scenarios</h3>
   <div id="scenlist"></div>
 </div></div>
@@ -320,6 +323,11 @@ button{min-height:48px}
 <div class="overlay hidden" id="guideov"><div class="box gcard">
   <div id="g-body"></div>
   <div style="display:flex;gap:8px;margin-top:6px"><button id="g-index" style="flex:1">All topics</button><button class="warn" id="g-close" style="flex:1">Close</button></div>
+</div></div>
+<button id="inst-fab" class="fab hidden">Instructor</button>
+<div class="overlay hidden" id="instov" style="z-index:22"><div class="box">
+  <div style="display:flex;justify-content:space-between;align-items:center"><span class="tag-real" style="background:#7a5cff;color:#fff;margin:0">INSTRUCTOR</span><button id="inst-close" class="warn">Close — resume</button></div>
+  <div id="inst-body" style="margin-top:10px"></div>
 </div></div>
 <div class="learnbar hidden" id="learnbar"><span>Learn mode — tap any control on the panel. The clock is paused.</span><button id="lb-rig">This rig</button><button id="lb-done">Done</button></div>
 <div class="overlay hidden" id="done"><div class="box">
@@ -387,7 +395,7 @@ function freshState(){
     miv:0,mivDir:0,hardSuction:false,strainer:false,primerOn:false,primerT:0,primeHold:0,primed:false,vac:0,warnedOpen:false,
     foamOn:false,foamPct:3,foamTank:20,flushing:false,flushT:0,flushed:false,foamEmptyWarned:false,residWarned:false,residLow:0,
     tank:TANK,tankMax:TANK,xfer:'pressure',xferWarned:false,rpm:700,mode:'psi',set:150,psi:0,score:100,t:0,mission:0,hold:0,cav:0,incidents:[],running:false,dry:false,
-    fault:null,faultT:0,faultDue:0,burstT:0,bldg:false,sysPsi:300,pond:0,pondMax:3000,pondSet:false,nextTk:0,tkN:0,gapUntil:0,pondVortexT:0,freezeT:0,frozen:0,freezeWarned:false,primedEver:false,downClosed:false,downUntil:0,downStarted:false,downEnd:0,briefing:false,earpiece:false,noiseHint:false,educt:false,pickup:false,eductPct:6,eductOK:true,rerigT:0,conc:15,foamFlowing:false,noFoamT:0,foamOkT:0,heatT:0,heatWarned:false,susp:15,clog:0,clearing:0,vortexT:0,clogWarned:false,decisions:[],mStart:0,valves:{}});
+    fault:null,faultT:0,faultDue:0,burstT:0,bldg:false,sysPsi:300,pond:0,pondMax:3000,pondSet:false,nextTk:0,tkN:0,gapUntil:0,pondVortexT:0,freezeT:0,frozen:0,freezeWarned:false,primedEver:false,downClosed:false,downUntil:0,downStarted:false,downEnd:0,briefing:false,earpiece:false,noiseHint:false,educt:false,pickup:false,eductPct:6,eductOK:true,rerigT:0,conc:15,foamFlowing:false,noFoamT:0,foamOkT:0,heatT:0,heatWarned:false,susp:15,clog:0,clearing:0,vortexT:0,clogWarned:false,decisions:[],mStart:0,injects:[],variant:'',vtext:'',hydBase:60,valves:{}});
   for(const k in VALVES)S.valves[k]={...VALVES[k],open:0,burst:false};
 }
 
@@ -530,21 +538,24 @@ function tick(dt){
 
 /* ===== faults (Chaos) ===== */
 function faults(dt){
-  if(TIER<2||!S.running)return;
-  const m=CAMP[S.camp].missions[S.mission];if(!m.faults)return;
+  if(!S.running)return;
+  const m=CAMP[S.camp].missions[S.mission];
   if(S.fault){S.faultT+=dt;
     if(S.fault==='gov'&&S.mode==='psi'){radio('Engineer','Governor back in pressure mode','good');S.fault=null;}
     if(S.fault==='strainer'&&S.primed){radio('Engineer','Re-primed off the cleared strainer','good');S.fault=null;}
-    if(S.fault==='hydrant'&&S.faultT>25){S.hydCap=60;radio('Engine 10-1','We are off your main now, residual should come back');S.fault=null;}
-    if(S.fault==='burst'&&!S.valves[m.chat.k].burst&&S.burstT>=0)S.fault=null;
+    if(S.fault==='hydrant'&&S.faultT>25){S.hydCap=S.hydBase||60;radio('Engine 10-1','We are off your main now, residual should come back');S.fault=null;}
+    if(S.fault==='burst'&&m.chat&&!S.valves[m.chat.k].burst&&S.burstT>=0)S.fault=null;
     return;}
+  if(TIER<2||!m.faults)return;
   if((S.faultCount||0)>=2)return;
   if(S.faultDue===0)S.faultDue=8+Math.random()*20;
   if(!m.chat)return;
   const watching=S.valves[m.chat.k].open>0&&S.psi>30;
   if(!watching)return;
   S.faultT+=dt;if(S.faultT<S.faultDue)return;
-  const f=m.faults[Math.floor(Math.random()*m.faults.length)];S.fault=f;S.faultCount=(S.faultCount||0)+1;S.faultT=0;S.faultDue=0;
+  applyFault(m.faults[Math.floor(Math.random()*m.faults.length)]);
+}
+function applyFault(f){const m=CAMP[S.camp].missions[S.mission];S.fault=f;S.faultCount=(S.faultCount||0)+1;S.faultT=0;S.faultDue=0;
   if(f==='gov'){S.mode='rpm';modeUI();radio('Engineer','Governor dropped out of pressure mode — reading RPM only','bad');}
   if(f==='burst'){S.valves[m.chat.k].burst=true;S.burstT=0;radio('FF Nowak','BURST LENGTH! We lost pressure, shut it down!','bad');$('valve-'+m.chat.k).classList.add('burst');}
   if(f==='hydrant'){S.hydCap=32;radio('Engine 10-1','10-1 is laying in off the same main, expect your residual to drop','bad');}
@@ -589,15 +600,20 @@ const LINE={
   rear250:{dia:2.5,len:200,noz:'sb118',floor:1},
   pre250:{dia:1.75,len:250,noz:'sb1516',floor:1}
 };
+const LINE_DEF=JSON.parse(JSON.stringify(LINE));const RELAY={lay:800};
+function resetLayout(){for(const k in LINE_DEF)Object.assign(LINE[k],LINE_DEF[k]);RELAY.lay=800;}
+/* relay band from the lay length: 20 psi at the far intake plus the friction loss in the 5" at 500 gpm, rounded to 5; a 15-psi window above that */
+function relayBand(){const fl=Math.round(FL(5,500,RELAY.lay));const lo=Math.round((20+fl)/5)*5;return {fl,lo,hi:lo+15,give:lo+5};}
 function bandOf(cfg,w=10){const t=pdp(cfg).total;return [t-w,t+w,t];}
-function lineStep(k,cfg,who){const [lo,hi,t]=bandOf(cfg);return {t:TIER===0?`Bring ${VALVES[k].n} to ${lo}–${hi} PSI (PDP ${t})`:`Bring ${VALVES[k].n} to your calculated PDP`,f:()=>inB(k,lo,hi)};}
+/* step text always carries the band: Guided shows it, Recall hides the list, and the debrief shows it afterwards as the answer */
+function lineStep(k,cfg,who){const [lo,hi,t]=bandOf(cfg);return {t:`Bring ${VALVES[k].n} to ${lo}–${hi} PSI (PDP ${t})`,f:()=>inB(k,lo,hi)};}
 function holdStep(k,cfg,secs,extra=()=>true){const [lo,hi]=bandOf(cfg);return {t:`Hold it ${secs} seconds`,hold:secs,k,lo,hi,f:()=>inB(k,lo,hi)&&extra()};}
 function chat(who,k,cfg){const [lo,hi]=bandOf(cfg);return {k,lo,hi,low:()=>radio(who,'Weak stream, give me more','bad'),high:()=>radio(who,'Too much pressure, back it down','bad'),ok:()=>radio(who,'Good pressure','good')};}
 const shutdown=(extra=[])=>({title:'Shut it down',intro:'Fire is out. Throttle down first, then valves, then the pump.',jpr:'Driver/Operator JPR — shut down pumping operations in the correct sequence.',
   steps:[{t:'Throttle to idle',f:()=>S.mode==='idle'||S.rpm<=950},{t:'Close all discharges',f:()=>dischargesClosed()},...extra,{t:'Open tank-to-pump to recirculate',f:()=>S.ttp},{t:'Disengage the pump',f:()=>!S.pump}]});
 const hydrantSteps=[{t:'Connect the 5" supply to the left intake',f:()=>S.supply},{t:'Open the hydrant',f:()=>S.hydrant},{t:'Open the MIV',f:()=>S.miv>0},{t:'Bleed the air',f:()=>S.bled},{t:'Close tank-to-pump',f:()=>S.bled&&!S.ttp}];
 
-const CAMP=[
+function regularCamp(){const RB=relayBand();return [
  {name:'Residential structure fire',desc:'Hydrant district. First line off the tank, hydrant supply, second line, shutdown.',valves:['front','front3','rear2','deck','booster'],aux:'rear2',show:['sw-supply','sw-hyd','sw-bleed','miv'],
   jpr:'Driver/Operator JPRs — pump from tank and from a pressurized source; produce effective hand streams.',
   missions:[
@@ -606,17 +622,17 @@ const CAMP=[
    {title:'Get hydrant water',intro:()=>'You are on tank water with 800 gallons. Get on the hydrant without dropping the line. The MIV does the slow open for you — use it.',faults:['gov','hydrant'],
     steps:[...hydrantSteps,{...holdStep('front',LINE.pre200,10,()=>supplied().hyd),t:'Line still on pressure, hold 10 seconds on hydrant'}],chat:chat('FF Nowak','front',LINE.pre200)},
    {title:'Second line, second floor',intro:()=>`Backup crew is stretching #3 front to the second floor: ${describe(LINE.pre200f2)}. Charge it and hold both.`,faults:['gov','burst','hydrant'],
-    steps:[{t:'Open #3 front (slowly)',f:()=>S.valves.front3.open>0},{t:TIER===0?`Both lines in band (${bandOf(LINE.pre200)[0]}–${bandOf(LINE.pre200)[1]} at #1, ${bandOf(LINE.pre200f2)[0]}–${bandOf(LINE.pre200f2)[1]} at #3)`:'Both lines at their PDP — the second floor line needs more',f:()=>inB('front',...bandOf(LINE.pre200).slice(0,2))&&inB('front3',...bandOf(LINE.pre200f2).slice(0,2))},{t:'Hold both 10 seconds',hold:10,f:()=>inB('front',...bandOf(LINE.pre200).slice(0,2))&&inB('front3',...bandOf(LINE.pre200f2).slice(0,2))}],chat:chat('FF Cruz','front3',LINE.pre200f2)},
+    steps:[{t:'Open #3 front (slowly)',f:()=>S.valves.front3.open>0},{t:`Both lines in band (${bandOf(LINE.pre200)[0]}–${bandOf(LINE.pre200)[1]} at #1, ${bandOf(LINE.pre200f2)[0]}–${bandOf(LINE.pre200f2)[1]} at #3)`,f:()=>inB('front',...bandOf(LINE.pre200).slice(0,2))&&inB('front3',...bandOf(LINE.pre200f2).slice(0,2))},{t:'Hold both 10 seconds',hold:10,f:()=>inB('front',...bandOf(LINE.pre200).slice(0,2))&&inB('front3',...bandOf(LINE.pre200f2).slice(0,2))}],chat:chat('FF Cruz','front3',LINE.pre200f2)},
    shutdown()]},
  {name:'Commercial building — FDC',desc:'Sprinklered strip mall, fire on the second floor. Supply the FDC, then support a standpipe crew.',valves:['front','rear3','deck'],aux:'rear3',auxLabel:'#3 rear · FDC',show:['sw-supply','sw-hyd','sw-bleed','sw-fdc','miv'],
   jpr:'Driver/Operator JPRs — supply water to fire sprinkler and standpipe systems; pump from a pressurized source.',
   missions:[
    {title:'Hydrant first',intro:()=>'Sprinklers are flowing and the building supply is marginal. Nobody goes in until you have hydrant water.',steps:[{t:'Engage the pump',f:()=>S.pump},...hydrantSteps]},
    {title:'Supply the FDC',intro:()=>'FF Nowak is on the FDC with a 2½" off #3 rear. Department standard: 150 PSI at the FDC unless the placard says otherwise.',faults:['gov','hydrant'],
-    steps:[{t:'Connect 2½" to the FDC',f:()=>S.fdcLine},{t:'Open #3 rear (slowly)',f:()=>S.valves.rear3.open>0},{t:TIER===0?'FDC line 140–160 PSI':'FDC line at the department standard',f:()=>inB('rear3',140,160)},{t:'Hold 15 seconds',hold:15,k:'rear3',lo:140,hi:160,f:()=>inB('rear3',140,160)}],
+    steps:[{t:'Connect 2½" to the FDC',f:()=>S.fdcLine},{t:'Open #3 rear (slowly)',f:()=>S.valves.rear3.open>0},{t:'FDC line 140–160 PSI',f:()=>inB('rear3',140,160)},{t:'Hold 15 seconds',hold:15,k:'rear3',lo:140,hi:160,f:()=>inB('rear3',140,160)}],
     chat:{k:'rear3',lo:140,hi:160,low:()=>radio('IC','Sprinkler heads are losing pattern, more pressure at the FDC','bad'),high:()=>radio('FF Nowak','Easy on the FDC, that 2½" is jumping','bad'),ok:()=>radio('IC','Sprinklers are holding the fire','good')}},
    {title:'Standpipe crew on 3',intro:()=>'Attack crew is on the third floor off the standpipe. Add 5 PSI per floor above the connection.',faults:['gov','hydrant'],
-    steps:[{t:TIER===0?'Raise the FDC line to 160–175 PSI':'Raise the FDC line for a third-floor crew',f:()=>inB('rear3',160,175)},{t:'Hold 15 seconds',hold:15,k:'rear3',lo:160,hi:175,f:()=>inB('rear3',160,175)}],
+    steps:[{t:'Raise the FDC line to 160–175 PSI',f:()=>inB('rear3',160,175)},{t:'Hold 15 seconds',hold:15,k:'rear3',lo:160,hi:175,f:()=>inB('rear3',160,175)}],
     chat:{k:'rear3',lo:160,hi:175,low:()=>radio('FF Cruz','Third floor, weak stream off the standpipe','bad'),high:()=>radio('FF Cruz','Back it down, we can barely hold the line','bad'),ok:()=>radio('FF Cruz','Third floor, good water','good')}},
    shutdown([{t:'FDC dropped only after IC confirms',f:()=>S.valves.rear3.open===0}])]},
  {name:'Vehicle fire — Class B foam',desc:'10-2 on the highway. Fully involved sedan, gasoline running out from under it.',valves:['front','rearbody','booster'],aux:'rearbody',show:['sw-supply','sw-hyd','sw-bleed','foam','miv'],
@@ -640,15 +656,29 @@ const CAMP=[
     steps:[{t:'Open #1 front (crack it)',f:()=>S.valves.front.open>0&&S.primed},lineStep('front',LINE.pre200),holdStep('front',LINE.pre200,20,()=>supplied().draft)],chat:chat('FF Nowak','front',LINE.pre200)},
    {title:'Fill the tank, then shut down',intro:()=>'Good draft. Top off the tank so you have a reserve if the strainer fouls, then shut down.',
     steps:[{t:'Open tank fill',f:()=>S.fill},{t:'Tank above 700 gallons',f:()=>S.tank>=700},{t:'Close tank fill',f:()=>S.tank>=700&&!S.fill},{t:'Throttle to idle',f:()=>S.mode==='idle'||S.rpm<=950},{t:'Close all discharges',f:()=>dischargesClosed()},{t:'Disengage the pump',f:()=>!S.pump}]}]},
- {name:'Relay — supply Engine 10-1',desc:'Big fire, long lay. 10-1 is at the fire, you are at the hydrant pumping 500 GPM through 800 ft of 5" to their intake.',valves:['rear4','front','deck'],aux:'rear4',auxLabel:'#4 rear · LDH',show:['sw-supply','sw-hyd','sw-bleed','sw-relay','miv'],
+ {name:'Relay — supply Engine 10-1',desc:'Big fire, long lay. 10-1 is at the fire, you are at the hydrant pumping 500 GPM through a long 5" line to their intake.',valves:['rear4','front','deck'],aux:'rear4',auxLabel:'#4 rear · LDH',show:['sw-supply','sw-hyd','sw-bleed','sw-relay','miv'],
   jpr:'Driver/Operator JPRs — pump a supply line of 2½" or larger (relay operations); pump from a pressurized source.',
   missions:[
    {title:'Hydrant, then the LDH',intro:()=>'You are the source pumper. Get hydrant water first, then charge the 5" off #4 rear.',steps:[{t:'Engage the pump',f:()=>S.pump},...hydrantSteps,{t:'Confirm 5" connected to 10-1',f:()=>S.relayLine}]},
-   {title:'Feed the relay',faults:['gov','hydrant','burst'],intro:()=>'10-1 wants 20 PSI residual at their intake. 800 ft of 5" at 500 GPM loses about 16 PSI. Give them 40 at #4 rear and hold it — and watch your own residual.',faults:['gov','hydrant'],
-    steps:[{t:'Open #4 rear (slowly)',f:()=>S.valves.rear4.open>0},{t:TIER===0?'LDH at 35–50 PSI':'LDH at the calculated relay pressure',f:()=>inB('rear4',35,50)},{t:'Hold 20 seconds with intake residual above 20',hold:20,k:'rear4',lo:35,hi:50,f:()=>inB('rear4',35,50)&&residual()>=20}],
-    chat:{k:'rear4',lo:35,hi:50,low:()=>radio('Engine 10-1','Our intake is dropping, we need more from you','bad'),high:()=>radio('Engine 10-1','Too much, our intake relief is dumping','bad'),ok:()=>radio('Engine 10-1','Good water, holding 20 on our intake','good')}},
+   {title:'Feed the relay',faults:['gov','hydrant','burst'],intro:()=>`10-1 wants 20 PSI residual at their intake. ${RELAY.lay} ft of 5" at 500 GPM loses about ${RB.fl} PSI. Give them ${RB.give} at #4 rear and hold it — and watch your own residual.`,faults:['gov','hydrant'],
+    steps:[{t:'Open #4 rear (slowly)',f:()=>S.valves.rear4.open>0},{t:`LDH at ${RB.lo}–${RB.hi} PSI`,f:()=>inB('rear4',RB.lo,RB.hi)},{t:'Hold 20 seconds with intake residual above 20',hold:20,k:'rear4',lo:RB.lo,hi:RB.hi,f:()=>inB('rear4',RB.lo,RB.hi)&&residual()>=20}],
+    chat:{k:'rear4',lo:RB.lo,hi:RB.hi,low:()=>radio('Engine 10-1','Our intake is dropping, we need more from you','bad'),high:()=>radio('Engine 10-1','Too much, our intake relief is dumping','bad'),ok:()=>radio('Engine 10-1','Good water, holding 20 on our intake','good')}},
    shutdown([{t:'Drop the relay only after 10-1 calls for it',f:()=>S.valves.rear4.open===0}])]}
-];
+];}
+const CAMP=regularCamp();
+/* ===== scenario variants (Milestone 5 part two). Hose length, nozzle, hydrant strength and relay lay length change between runs, so Recall means working the layout the officer gives you, not remembering last time's number. Regular scenarios only: the Real Saves follow their published accounts. ===== */
+const VARIANTS={
+ 0:[{id:'A',pre200:{len:200,noz:'lpfog'},pre200f2:{len:200,noz:'lpfog'},hyd:60},{id:'B',pre200:{len:250,noz:'sb1516'},pre200f2:{len:250,noz:'sb1516'},hyd:50},{id:'C',pre200:{len:150,noz:'fog100'},pre200f2:{len:200,noz:'fog100'},hyd:70}],
+ 1:[{id:'A',hyd:60},{id:'B',hyd:50},{id:'C',hyd:70}],
+ 2:[{id:'A',pre200:{len:200,noz:'lpfog'}},{id:'B',pre200:{len:150,noz:'fog100'}},{id:'C',pre200:{len:250,noz:'lpfog'}}],
+ 3:[{id:'A',pre200:{len:200,noz:'lpfog'}},{id:'B',pre200:{len:300,noz:'lpfog'}},{id:'C',pre200:{len:250,noz:'sb1516'}}],
+ 4:[{id:'A',hyd:60,lay:800},{id:'B',hyd:50,lay:1000},{id:'C',hyd:70,lay:600}]};
+const HYDTXT={50:'weak hydrant on the map, expect the residual to sag',60:'average hydrant',70:'strong hydrant'};
+function pickVariant(i){const vs=VARIANTS[i];if(!vs)return null;const f=(typeof window!=='undefined'&&window.FORCE_V&&window.FORCE_V[i]);if(f)return vs.find(v=>v.id===f)||vs[0];if(load().std)return vs[0];return vs[Math.floor(Math.random()*vs.length)];}
+function applyVariant(i){resetLayout();const v=pickVariant(i);S.variant=v?v.id:'';S.vtext='';if(!v)return;
+  for(const k in LINE_DEF)if(v[k])Object.assign(LINE[k],v[k]);if(v.lay)RELAY.lay=v.lay;if(v.hyd)S.hydCap=v.hyd;
+  const parts=[];if(v.pre200)parts.push(describe(LINE.pre200));if(v.lay)parts.push(`${v.lay} ft of 5" to 10-1`);if(v.hyd)parts.push(HYDTXT[v.hyd]||'');S.vtext=parts.filter(Boolean).join(' · ');
+  CAMP[i]=regularCamp()[i];}
 
 CAMP.push({name:'Breezy Point — Superstorm Sandy, 2012',real:true,
  desc:'Hurricane-driven conflagration. Hydrants dead, engines sitting in three feet of floodwater. You are the Engine 10 chauffeur.',
@@ -922,11 +952,11 @@ for(const c of CAMP)for(const m of c.missions)for(const st of m.steps)if(st.dec&
 let crewState='none',crewT=0,stepsDone=[];
 function loadCampaign(i){
   exitLearn(false);DEC=null;['decov','done','caseov','menu','briefov','guideov'].forEach(id=>$(id).classList.add('hidden'));
-  freshState();S.active=true;S.camp=i;pca('begin','ctl',`scenario-${i+1}`,()=>`mission-${S.mission+1}`);const c=CAMP[i];S.running=true;if(c.tank)S.tank=c.tank;
+  freshState();S.active=true;S.camp=i;INSTHOLD=false;applyVariant(i);pca('begin','ctl',`scenario-${i+1}`,()=>`mission-${S.mission+1}`);const c=CAMP[i];S.running=true;if(c.tank)S.tank=c.tank;
   document.querySelectorAll('#sw-supply,#sw-hyd,#sw-bleed,#sw-fdc,#sw-relay,#sw-hard,#sw-strainer,#sw-primer,#foam,#miv,#depthp,#pondp,#eductp').forEach(el=>el.classList.add('hidden'));
   document.querySelectorAll('.sw .lab').forEach(l=>{if(!l.dataset.def)l.dataset.def=l.textContent;l.textContent=l.dataset.def;});
   if(c.labels)for(const id in c.labels)$(id).querySelector('.lab').textContent=c.labels[id];
-  if(c.hydCap)S.hydCap=c.hydCap;
+  if(c.hydCap)S.hydCap=c.hydCap;S.hydBase=S.hydCap;
   if(!$('rigtitle').dataset.def){$('rigtitle').dataset.def=$('rigtitle').textContent;$('mivtitle').dataset.def=$('mivtitle').textContent;}
   $('rigtitle').textContent=c.rig?c.rig.title:$('rigtitle').dataset.def;$('mivtitle').textContent=c.rig&&c.rig.intakeTitle||$('mivtitle').dataset.def;
   $('xferp').classList.toggle('hidden',!(c.rig&&c.rig.twoStage));
@@ -937,7 +967,7 @@ function loadCampaign(i){
   c.show.forEach(id=>$(id).classList.remove('hidden'));
   $('l-aux').textContent=c.auxLabel||VALVES[c.aux].n;$('s-hyd').disabled=true;$('s-bleed').disabled=true;$('s-fill').disabled=true;
   buildValves(c.valves);$('radio').innerHTML='';refreshSwitches();modeUI();
-  radio('Dispatch',c.name+' — '+c.desc+(TIER?` [${['','Recall','Chaos'][TIER]} tier]`:''));loadMission(0);
+  radio('Dispatch',c.name+' — '+c.desc+(S.vtext?` Layout ${S.variant}: ${S.vtext}.`:'')+(TIER?` [${['','Recall','Chaos'][TIER]} tier]`:''));loadMission(0);instSync();
 }
 function loadMission(i){
   const c=CAMP[S.camp],m=c.missions[i];S.mission=i;S.hold=0;S.mStart=S.t;S.faultCount=0;if(m.onStart)m.onStart();S.incidents=[];S.fault=null;S.faultT=0;S.faultDue=0;stepsDone=m.steps.map(()=>false);crewState='none';
@@ -987,10 +1017,12 @@ function finish(){keepAwake(false);
   const learnKeys=[...new Set(S.incidents.map(incidentKey).filter(Boolean))];
   const prev=(load().log||[]).filter(r=>+r.i===S.camp);const compare=last?pcBestPrev(prev.map(r=>({d:r.d,score:r.score}))):null;
   let extra='';if(c.real&&last){const g=S.decisions.filter(d=>d.r==='good').length;extra=`<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:14px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
+  if(S.injects&&S.injects.length)extra=`<p><b>Instructor injects:</b> ${esc(S.injects.join(', '))}.</p>`+extra;
+  if(S.vtext&&last)extra=`<p style="font-size:14px;color:var(--muted)">Layout ${S.variant}: ${esc(S.vtext)}</p>`+extra;
   $('done-body').innerHTML=pcDebriefBody({score:S.score,compare,feedback:S.incidents,lessons:learnKeys.map(k=>({k,name:GUIDE[k].name})),steps:m.steps.map((st,j)=>({name:st.t,ok:!!stepsDone[j],missed:!stepsDone[j]})),extra});
   $('b-next').textContent=last?'Back to menu':'Next mission';
   if(last){const pr=load(),ps=pr.scen&&pr.scen[S.camp];pca('end',`${['guided','recall','chaos'][TIER]}/${pca('att',(ps?ps.runs:0)+1)}/${pca('bkt',S.score)}`);recordClear(S.camp,S.score);}
-  $('done').classList.remove('hidden');
+  $('done').classList.remove('hidden');instSync();
 }
 $('done-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]');if(b)openCard(b.dataset.k,true);};
 $('b-next').onclick=()=>{$('done').classList.add('hidden');const c=CAMP[S.camp];if(S.mission<c.missions.length-1){loadMission(S.mission+1);if(!S.briefing)S.running=true;}else showMenu();};
@@ -1000,24 +1032,27 @@ $('b-reset').onclick=()=>loadCampaign(S.camp);$('b-menu').onclick=showMenu;
 const KEY='e102-pump-trainer';const INT=[1,3,7,14,30];
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{name:'',scen:{},math:{right:0,total:0}};}catch(e){return {name:'',scen:{},math:{right:0,total:0}};}}
 function save(p){try{localStorage.setItem(KEY,JSON.stringify(p));}catch(e){}}
-function recordClear(i,score){const p=load();const s=p.scen[i]||{level:0,best:0,runs:0,last:null,tier:0};s.runs++;s.best=Math.max(s.best,score);s.last=new Date().toISOString();s.tier=Math.max(s.tier,TIER);s.level=score>=70?Math.min(INT.length-1,s.level+1):0;p.scen[i]=s;p.log=(p.log||[]).concat([{i,score,tier:TIER,d:new Date().toISOString()}]).slice(-500);save(p);}
+function recordClear(i,score){const p=load();const s=p.scen[i]||{level:0,best:0,runs:0,last:null,tier:0};s.runs++;s.best=Math.max(s.best,score);s.last=new Date().toISOString();s.tier=Math.max(s.tier,TIER);s.level=score>=70?Math.min(INT.length-1,s.level+1):0;p.scen[i]=s;p.log=(p.log||[]).concat([{i,score,tier:TIER,d:new Date().toISOString(),v:S.variant||undefined,inst:(S.injects&&S.injects.length)?1:undefined}]).slice(-500);save(p);}
 function dueInfo(i){const p=load(),s=p.scen[i];if(!s||!s.last)return {txt:'Not yet cleared',due:true};const days=(Date.now()-new Date(s.last))/86400000,gap=INT[Math.max(0,s.level-1)];return days>=gap?{txt:'Due for review',due:true}:{txt:`Next in ${Math.ceil(gap-days)} d`,due:false};}
 function showMenu(){keepAwake(false);exitLearn(false);$('briefov').classList.add('hidden');S.running=false;$('b-resume').classList.toggle('hidden',!S.active||!!DEC);$('tierhelp').textContent=TIERTXT[TIER];$('menu').querySelectorAll('[data-tier]').forEach(b=>b.classList.toggle('on',+b.dataset.tier===TIER));
   const card=(c,i)=>{const d=dueInfo(i);return `<button class="scen" data-i="${i}"><b>${c.name}</b><span>${c.desc}</span><span class="due ${d.due?'':'ok'}">${d.txt}</span></button>`;};
   $('scenlist').innerHTML=CAMP.map((c,i)=>c.real?'':card(c,i)).join('')+(CAMP.some(c=>c.real)?`<h3 style="margin:16px 0 6px;font-size:18px">Real saves <span style="font-size:14px;color:var(--muted);font-weight:400">· based on real events</span></h3>`+CAMP.map((c,i)=>c.real?card(c,i):'').join(''):'');
-  $('menu').classList.remove('hidden');}
+  $('menu').classList.remove('hidden');instSync();}
 $('menu').querySelectorAll('[data-tier]').forEach(b=>b.onclick=()=>{TIER=+b.dataset.tier;showMenu();});
 $('scenlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('menu').classList.add('hidden');const i=+b.dataset.i;if(CAMP[i].real)showCase(i);else loadCampaign(i);};
 $('b-start').onclick=()=>{$('intro').classList.add('hidden');const p=load();if(!p.seenIntro){p.seenIntro=true;save(p);}showMenu();};
-$('b-resume').onclick=()=>{$('menu').classList.add('hidden');if(S.briefing)$('briefov').classList.remove('hidden');else if(S.active)S.running=true;};
+$('b-resume').onclick=()=>{$('menu').classList.add('hidden');INSTHOLD=false;if(S.briefing)$('briefov').classList.remove('hidden');else if(S.active)S.running=true;instSync();};
 $('b-howmore').onclick=()=>$('howov').classList.remove('hidden');$('how-close').onclick=()=>$('howov').classList.add('hidden');
 $('b-howto').onclick=()=>{$('howov').classList.remove('hidden');return;$('menu').classList.add('hidden');$('intro').classList.remove('hidden');};
-$('b-progress').onclick=()=>{const p=load();$('uname').value=p.name||'';
-  $('proglist').innerHTML=CAMP.map((c,i)=>{const s=p.scen[i];return `<div class="stat"><span>${c.name}</span><b>${s?`best ${s.best} · ${s.runs} run${s.runs>1?'s':''} · ${['Guided','Recall','Chaos'][s.tier]} · ${dueInfo(i).txt}`:'—'}</b></div>`;}).join('')+`<div class="stat"><span>Pump math</span><b>${p.math.total?Math.round(p.math.right/p.math.total*100)+'% of '+p.math.total:'—'}</b></div>`;
+$('b-progress').onclick=()=>{const p=load();$('uname').value=p.name||'';const ex=p.extra||[];const bestOf=(kind,id)=>{const r=ex.filter(x=>x.kind===kind&&x.id===id);return r.length?{best:Math.max(...r.map(x=>x.score)),runs:r.length,last:r[r.length-1].d}:null;};
+  const row=(n,v)=>`<tr><td class="l">${n}</td><td>${v}</td></tr>`;const lay=i=>{const vs=[...new Set((p.log||[]).filter(r=>+r.i===i&&r.v).map(r=>r.v))].sort();return vs.length?` · layouts ${vs.join(' ')}`:'';};const runs=n=>`${n} run${n>1?'s':''}`;
+  $('proglist').innerHTML=`<div class="sec">Scenarios</div><table class="pc-table">`+CAMP.map((c,i)=>{const sc=p.scen[i];return row(esc(c.name),sc?`best ${sc.best} · ${runs(sc.runs)} · ${['Guided','Recall','Chaos'][sc.tier]}${lay(i)} · ${dueInfo(i).txt}`:'—');}).join('')+`</table><div class="sec">Lesson and drills</div><table class="pc-table">`+learnRows().map(([k,id,n])=>{const b=bestOf(k,id);return row(esc(n),b?`best ${b.best} · ${runs(b.runs)} · ${b.last.slice(0,10)}`:'—');}).join('')+row('Pump math',p.math.total?Math.round(p.math.right/p.math.total*100)+'% of '+p.math.total:'—')+'</table>';
   $('progov').classList.remove('hidden');};
+function learnRows(){return [['lesson','lesson','Pump lesson'],...Object.keys(DRILLS).map(k=>['drill',k,DRILLS[k].name])];}
 $('uname').onchange=()=>{const p=load();p.name=$('uname').value;save(p);};
 $('b-progclose').onclick=()=>$('progov').classList.add('hidden');
 $('b-export').onclick=()=>{const p=load();let csv='Name,Scenario,Tier,Runs,Best score,Last cleared,Spacing level\n';CAMP.forEach((c,i)=>{const s=p.scen[i];csv+=`"${p.name||''}","${c.name}",${s?['Guided','Recall','Chaos'][s.tier]:''},${s?s.runs:0},${s?s.best:''},${s?s.last.slice(0,10):''},${s?s.level:0}\n`;});
+  const ex=p.extra||[];learnRows().forEach(([k,id,n])=>{const r=ex.filter(x=>x.kind===k&&x.id===id);csv+=`"${p.name||''}","${n}",,${r.length},${r.length?Math.max(...r.map(x=>x.score)):''},${r.length?r[r.length-1].d.slice(0,10):''},\n`;});
   csv+=`"${p.name||''}","Pump math drills",,${p.math.total},${p.math.total?Math.round(p.math.right/p.math.total*100)+'%':''},,\n`;
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='charge-the-line-training-record.csv';a.click();};
 
@@ -1042,7 +1077,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.8.0';
+const APP_VERSION='2.9.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1061,7 +1096,9 @@ function snapshot(){
     `Master ${Math.round(S.psi)} · Intake ${$('v-intake').textContent} · #1 front ${Math.round(linePsi(S.valves.front))} · ${c.auxLabel||VALVES[c.aux].n} ${Math.round(linePsi(aux))}`,
     `RPM ${Math.round(S.rpm)} · Governor ${S.mode.toUpperCase()}${S.mode==='psi'?' set '+S.set:''} · Tank ${Math.round(S.tank)} gal`,
     `Pump ${S.pump?'engaged':'off'} · Tank-to-pump ${S.ttp?'open':'closed'} · MIV ${Math.round(S.miv)}% · Open valves: ${open}`,
+    S.vtext?`Layout ${S.variant}: ${S.vtext}`:'',
     S.fault?`Active fault: ${S.fault}`:'',
+    (S.injects&&S.injects.length)?`Instructor injects: ${S.injects.join('; ')}`:'',
     S.incidents.length?`Incidents: ${S.incidents.join('; ')}`:'',
     `Device: ${navigator.userAgent.replace(/\s+/g,' ').slice(0,120)}`].filter(Boolean).join('\n');
 }
@@ -1209,7 +1246,7 @@ $('b-gindex').onclick=()=>openIndex(!S.active);
 document.addEventListener('click',e=>{if(!LEARN)return;const t=e.target;if(!t.closest||t.closest('.overlay')||t.closest('.learnbar')||t.closest('#b-guide'))return;const g=t.closest('[data-g]');if(g){e.stopPropagation();e.preventDefault();openCard(g.dataset.g);}else if(t.closest('.panel')){e.stopPropagation();e.preventDefault();}},true);
 /* mission briefing */
 function showBrief(){const c=CAMP[S.camp],m=c.missions[S.mission];S.briefing=true;S.running=false;
-  $('brief-t').textContent=`${S.mission+1}/${c.missions.length} · ${m.title}`;$('brief-intro').textContent=typeof m.intro==='function'?m.intro():m.intro;
+  $('brief-t').textContent=`${S.mission+1}/${c.missions.length} · ${m.title}`+(S.variant?` · layout ${S.variant}`:'');$('brief-intro').textContent=typeof m.intro==='function'?m.intro():m.intro;
   $('brief-chips').innerHTML=missionControls(c,m).map(k=>`<button class="chip" data-k="${k}">${esc(GUIDE[k].name)}</button>`).join('');
   $('brief-tier').textContent=TIER===0?'Guided: every step is listed, and the Panel guide is free any time.':'Recall: the checklist is hidden. Guide lookups during the mission cost 2 points each — study here first, it\'s free.';
   $('briefov').classList.remove('hidden');}
@@ -1217,8 +1254,29 @@ $('brief-chips').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k
 $('brief-back').onclick=()=>{$('briefov').classList.add('hidden');S.briefing=false;showMenu();};
 $('brief-go').onclick=()=>{keepAwake(true);$('briefov').classList.add('hidden');S.briefing=false;if(S.active)S.running=true;};
 
+/* ===== instructor mode (Milestone 5 part two): live injects and a freeze for drill nights. Injects reuse the Chaos faults, so the crew radio traffic and the way out are the same ones players meet on their own. ===== */
+let INST=false,INSTHOLD=false;
+const INJECTS=[
+ {id:'burst',label:'Burst length on the working line',ok:()=>{const m=CAMP[S.camp].missions[S.mission];return !S.fault&&!!m.chat&&S.valves[m.chat.k].open>0&&!S.valves[m.chat.k].burst;}},
+ {id:'gov',label:'Governor drops out of pressure mode',ok:()=>!S.fault&&S.pump&&S.mode==='psi'},
+ {id:'hydrant',label:'Another engine lays in off your main',ok:()=>!S.fault&&supplied().hyd},
+ {id:'strainer',label:'Strainer fouls in the mud',ok:()=>{const c=CAMP[S.camp];return !S.fault&&!!c.draft&&!c.depth&&!c.pond&&S.primed;}},
+ {id:'lowtank',label:'Tank gauge drops to 100 gallons',ok:()=>{const sup=supplied();return sup.tank&&!sup.hyd&&!sup.draft&&S.tank>150;},run:()=>{S.tank=100;radio('FF Cruz','Tank gauge just dropped — about a hundred gallons left','bad');}}];
+function inject(id){const x=INJECTS.find(y=>y.id===id);if(!x||!S.active||!x.ok())return false;if(x.run)x.run();else applyFault(id);S.injects=(S.injects||[]).concat(x.label);return true;}
+function instSync(){$('b-inst').textContent='Instructor mode: '+(INST?'on':'off');$('b-inst').classList.toggle('on',INST);$('inst-fab').classList.toggle('hidden',!(INST&&S.active));$('inst-fab').textContent=INSTHOLD?'Frozen — tap to resume':'Instructor';}
+function instOpen(){if(!S.active)return;S.instWasRunning=S.running;S.running=false;const c=CAMP[S.camp],m=c.missions[S.mission];
+  $('inst-body').innerHTML=`<p style="font-size:15px;color:var(--muted)">${esc(c.name)} · mission ${S.mission+1}: ${esc(m.title)} · score ${S.score}${S.variant?' · layout '+S.variant:''}${S.fault?' · active fault: '+esc(S.fault):''}</p><div class="sec">Inject now</div>`+INJECTS.map(x=>{const ok=x.ok();return `<button class="scen" data-inj="${x.id}"${ok?'':' disabled'}><b>${esc(x.label)}</b><span>${ok?'Tap to inject. The crew will call it on the radio.':'Not available at this point'}</span></button>`;}).join('')+`<div class="sec">Clock</div><button data-inj="${INSTHOLD?'resume':'freeze'}" style="width:100%">${INSTHOLD?'Resume the clock':'Freeze and discuss'}</button>`;
+  $('instov').classList.remove('hidden');}
+function instClose(){$('instov').classList.add('hidden');if(S.active&&!DEC&&!S.briefing&&!INSTHOLD&&S.instWasRunning!==false)S.running=true;instSync();}
+function instAct(a){if(a==='freeze'){INSTHOLD=true;S.running=false;}else if(a==='resume'){INSTHOLD=false;S.instWasRunning=true;}else{inject(a);S.instWasRunning=true;}instClose();}
+$('inst-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-inj]');if(!b||b.disabled)return;instAct(b.dataset.inj);};
+$('inst-fab').onclick=instOpen;$('inst-close').onclick=instClose;
+$('b-inst').onclick=()=>{INST=!INST;const p=load();p.inst=INST;save(p);instSync();};
+function stdSync(){const std=!!load().std;$('b-std').textContent='Layouts: '+(std?'standard':'varied');$('b-std').classList.toggle('on',std);}
+$('b-std').onclick=()=>{const p=load();p.std=!p.std;save(p);stdSync();};
+
 /* ===== boot ===== */
-freshState();S.camp=0;buildValves(CAMP[0].valves);refreshSwitches();modeUI();render();
+freshState();INST=!!load().inst;instSync();stdSync();S.camp=0;buildValves(CAMP[0].valves);refreshSwitches();modeUI();render();
 if(load().seenIntro){$('intro').classList.add('hidden');showMenu();}
 let last=performance.now();
 setInterval(()=>{const now=performance.now();const dt=Math.min(0.5,(now-last)/1000);last=now;if(S.running)tick(dt);else render();},250);
