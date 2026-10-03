@@ -70,3 +70,10 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 - Screen wake lock: requested when a mission starts (`brief-go`), released at the menu.
 - Intro and menu version text equal `APP_VERSION`.
 - Browser check: any visible button under 44 px tall fails the screen.
+
+## Milestone 3 checks (added October 2026)
+
+- Shared core: `preconnect-core.js` is loaded before the app script, listed in the service worker's cache, and its header hash matches its body (edit it, re-stamp with the hub's `node tests/core_hash.js`, copy to every repo).
+- Spacing: 1, 3, 7, 14, 30 days after each clear at 70+; a miss resets; overdue reads as due.
+- Debrief body: compare line (best, last time, new best), metrics table, what cost points, lesson chips, steps table.
+- The mission debrief uses Debrief 2.0 (steps table, clean-run line, counted-up score).

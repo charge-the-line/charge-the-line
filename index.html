@@ -237,13 +237,13 @@ button{min-height:48px}
   <p>Three tiers per scenario: <b>Guided</b> shows every step and the target pressure. <b>Recall</b> hides the checklist and makes you figure the PDP from the hose layout. <b>Chaos</b> is Recall plus things going wrong.</p>
   <p><b>New: Panel guide.</b> Tap <b>Panel guide</b> (top right) during any mission, then tap any control to learn what it does, when to use it, and what goes wrong. Free in Guided, 2 points per lookup in Recall, locked in Chaos.</p>
   <p style="font-size:15px">Training aid only. Department SOPs and the preconnect chart on the rig are the real numbers.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.5.1 · Found a problem? Use "Report an issue" under any mission.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.6.0 · Found a problem? Use "Report an issue" under any mission.</p>
   <button class="warn" id="b-start" style="width:100%;font-size:18px">Continue</button>
 </div></div>
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a></div>
-  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.5.1</span></h2>
+  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.6.0</span></h2>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div style="display:flex;gap:8px;margin-bottom:12px"><button id="b-math" style="flex:1">Pump math drills</button><button id="b-progress" style="flex:1">My progress</button><button id="b-howto">How to play</button></div>
   <button id="b-gindex" class="guidebtn" style="width:100%;margin-bottom:12px;font-size:16px;padding:10px">Panel guide — every control, gauge, and concept</button>
@@ -315,6 +315,7 @@ button{min-height:48px}
   <button class="warn" id="b-next" style="width:100%;font-size:18px">Next mission</button>
 </div></div>
 
+<script src="preconnect-core.js"></script>
 <script>
 /* ===== hydraulics ===== */
 const FLC={1.75:15.5,2.5:2,3:0.8,5:0.08};
@@ -956,12 +957,11 @@ function showCase(i){const c=CAMP[i];$('case-t').textContent=c.name;$('case-body
 $('case-back').onclick=()=>{$('caseov').classList.add('hidden');showMenu();};
 function finish(){keepAwake(false);
   const c=CAMP[S.camp],m=c.missions[S.mission],last=S.mission>=c.missions.length-1;
-  $('done-title').textContent=m.title+(last?' — scenario complete':' — complete');$('done-score').textContent=S.score;
+  $('done-title').textContent=m.title+(last?' — scenario complete':' — complete');countUp($('done-score'),S.score,600);
   const learnKeys=[...new Set(S.incidents.map(incidentKey).filter(Boolean))];
-  const incHtml=S.incidents.length?`<p><b>Incidents:</b> ${S.incidents.map(esc).join(' · ')}</p>`+(learnKeys.length?`<div style="font-family:'Barlow Condensed';letter-spacing:1px;color:var(--yellow);font-size:15px">LEARN FROM IT</div><div class="chips">${learnKeys.map(k=>`<button class="chip warnchip" data-k="${k}">${esc(GUIDE[k].name)}</button>`).join('')}</div>`:''):'<p>Clean run — no incidents.</p>';
-  $('done-body').innerHTML=incHtml;
-  if(c.real&&last){const g=S.decisions.filter(d=>d.r==='good').length;
-    $('done-body').innerHTML=`${incHtml}<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:14px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
+  const prev=(load().log||[]).filter(r=>+r.i===S.camp);const compare=last?pcBestPrev(prev.map(r=>({d:r.d,score:r.score}))):null;
+  let extra='';if(c.real&&last){const g=S.decisions.filter(d=>d.r==='good').length;extra=`<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:14px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
+  $('done-body').innerHTML=pcDebriefBody({score:S.score,compare,feedback:S.incidents,lessons:learnKeys.map(k=>({k,name:GUIDE[k].name})),steps:m.steps.map((st,j)=>({name:st.t,ok:!!stepsDone[j],missed:!stepsDone[j]})),extra});
   $('b-next').textContent=last?'Back to menu':'Next mission';
   if(last){const pr=load(),ps=pr.scen&&pr.scen[S.camp];pca('end',`${['guided','recall','chaos'][TIER]}/${pca('att',(ps?ps.runs:0)+1)}/${pca('bkt',S.score)}`);recordClear(S.camp,S.score);}
   $('done').classList.remove('hidden');
@@ -1015,7 +1015,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.5.1';
+const APP_VERSION='2.6.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
