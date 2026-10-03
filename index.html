@@ -7,6 +7,26 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#15171a">
+<script data-pca>window.PCA_MOD="ctl";
+/* Preconnect anonymous statistics (GoatCounter). Sends only activity paths — never names, organizations, or typed text.
+   Turn off per device on the Privacy page (localStorage 'preconnect-stats' = 'off'). Not sent from file:// or localhost. */
+(function(){var off=false;try{off=localStorage.getItem('preconnect-stats')==='off';}catch(e){}
+ var P=window.PCA={mod:window.PCA_MOD||'app',off:off,q:[],seen:{},cur:null,
+  clean:function(p){return String(p).toLowerCase().replace(/[^a-z0-9\/\-]+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'').slice(0,120);},
+  ev:function(path){if(this.off)return;var p=this.clean(path);if(this.q.length<60)this.q.push({path:p,title:p,event:true});this.flush();},
+  flush:function(){var g=window.goatcounter,s=this;if(!g||typeof g.count!=='function'){if(!s.t)s.t=setTimeout(function(){s.t=null;s.flush();},1500);return;}while(s.q.length){try{g.count(s.q.shift());}catch(e){}}},
+  bkt:function(n){n=+n;return n>=90?'score-90-100':n>=80?'score-80s':n>=70?'score-70s':n>=60?'score-60s':'score-under-60';},
+  att:function(n){return 'attempt-'+(n>=5?'5plus':n);},
+  begin:function(mod,act,where){this.abandon();this.cur={mod:mod,act:act,where:where};this.ev(mod+'/start/'+act);},
+  end:function(detail){var c=this.cur;if(!c)return;this.cur=null;this.ev(c.mod+'/finish/'+c.act+(detail?'/'+detail:''));},
+  abandon:function(){var c=this.cur;if(!c)return;this.cur=null;var w='';try{w=c.where?c.where():'';}catch(e){}this.ev(c.mod+'/quit/'+c.act+(w?'/'+w:''));},
+  err:function(mod,msg){var k=mod+'|'+msg;if(this.seen[k])return;this.seen[k]=1;this.ev('error/'+mod+'/'+String(msg).slice(0,60));}};
+ if(!off){var s=document.createElement('script');s.async=true;s.src='https://gc.zgo.at/count.js';s.setAttribute('data-goatcounter','https://preconnect.goatcounter.com/count');(document.head||document.documentElement).appendChild(s);}
+ window.addEventListener('error',function(e){P.err(P.mod||'app',e&&e.message||'error');});
+ window.addEventListener('pagehide',function(){P.abandon();});
+})();
+</script>
+
 <title>Charge the Line</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -212,8 +232,8 @@
 </div></div>
 
 <div class="overlay hidden" id="menu"><div class="box">
-  <a href="../" style="display:inline-block;font-size:13px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0 0 6px">◂ PRECONNECT</a>
-  <h2>Menu <span style="font-size:14px;color:var(--muted);font-weight:400">v2.3.0</span></h2>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:13px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:13px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a></div>
+  <h2>Menu <span style="font-size:14px;color:var(--muted);font-weight:400">v2.4.0</span></h2>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div style="display:flex;gap:8px;margin-bottom:12px"><button id="b-math" style="flex:1">Pump math drills</button><button id="b-progress" style="flex:1">My progress</button><button id="b-howto">How to play</button></div>
   <button id="b-gindex" class="guidebtn" style="width:100%;margin-bottom:12px;font-size:16px;padding:10px">Panel guide — every control, gauge, and concept</button>
@@ -865,7 +885,7 @@ for(const c of CAMP)for(const m of c.missions)for(const st of m.steps)if(st.dec&
 let crewState='none',crewT=0,stepsDone=[];
 function loadCampaign(i){
   exitLearn(false);DEC=null;['decov','done','caseov','menu','briefov','guideov'].forEach(id=>$(id).classList.add('hidden'));
-  freshState();S.active=true;S.camp=i;const c=CAMP[i];S.running=true;if(c.tank)S.tank=c.tank;
+  freshState();S.active=true;S.camp=i;pca('begin','ctl',`scenario-${i+1}`,()=>`mission-${S.mission+1}`);const c=CAMP[i];S.running=true;if(c.tank)S.tank=c.tank;
   document.querySelectorAll('#sw-supply,#sw-hyd,#sw-bleed,#sw-fdc,#sw-relay,#sw-hard,#sw-strainer,#sw-primer,#foam,#miv,#depthp,#pondp,#eductp').forEach(el=>el.classList.add('hidden'));
   document.querySelectorAll('.sw .lab').forEach(l=>{if(!l.dataset.def)l.dataset.def=l.textContent;l.textContent=l.dataset.def;});
   if(c.labels)for(const id in c.labels)$(id).querySelector('.lab').textContent=c.labels[id];
@@ -933,7 +953,7 @@ function finish(){
   if(c.real&&last){const g=S.decisions.filter(d=>d.r==='good').length;
     $('done-body').innerHTML=`${incHtml}<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:13px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
   $('b-next').textContent=last?'Back to menu':'Next mission';
-  if(last)recordClear(S.camp,S.score);
+  if(last){const pr=load(),ps=pr.scen&&pr.scen[S.camp];pca('end',`${['guided','recall','chaos'][TIER]}/${pca('att',(ps?ps.runs:0)+1)}/${pca('bkt',S.score)}`);recordClear(S.camp,S.score);}
   $('done').classList.remove('hidden');
 }
 $('done-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]');if(b)openCard(b.dataset.k,true);};
@@ -984,7 +1004,8 @@ $('b-math').onclick=()=>{$('menu').classList.add('hidden');$('mathov').classList
 $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
-const APP_VERSION='2.3.0';
+const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
+const APP_VERSION='2.4.0';
 function snapshot(){
   const c=CAMP[S.camp],m=c.missions[S.mission];const done=stepsDone.filter(Boolean).length;
   const open=Object.keys(S.valves).filter(k=>S.valves[k].open>0).map(k=>`${S.valves[k].n} ${S.valves[k].open}%${S.valves[k].burst?' (burst)':''}`).join(', ')||'none';

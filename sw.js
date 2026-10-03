@@ -1,5 +1,5 @@
 // Bump CACHE when you upload a new version so phones pick it up.
-const CACHE = 'charge-the-line-v2.3.0';
+const CACHE = 'charge-the-line-v2.4.0';
 const CORE = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
@@ -10,6 +10,9 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
+  // Anonymous statistics must always reach the network — never cache them (each count is unique).
+  const u = new URL(req.url);
+  if (/(^|\.)goatcounter\.com$|(^|\.)zgo\.at$/.test(u.hostname)) return;
   // Pages: network first so updates arrive; fall back to cache offline.
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put('index.html', copy)); return r; })
