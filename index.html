@@ -32,7 +32,17 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Charge the Line">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Fonts are served from this site (fonts/, SIL Open Font License). Nothing loads from Google: works offline and makes no outside request. */
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-condensed-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-condensed-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Barlow";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/barlow-latin-500-normal.woff2) format("woff2")}
+/* Milestone 1: every button is at least 48 px tall (finger-sized, gloves on). */
+button{min-height:48px}
+</style>
 <style>
   :root{--panel:#23262b;--panel-2:#2c3036;--panel-edge:#3a3f47;--chrome:#c9ccd1;--red:#b3202c;--yellow:#f0b323;--green:#2f9e5b;--blue:#2f6fb7;--text:#ecebe6;--muted:#9aa0a8}
   *{box-sizing:border-box}
@@ -46,7 +56,7 @@
   input{font-family:inherit;font-size:18px;padding:10px;border-radius:6px;border:1px solid var(--panel-edge);background:#0e0f11;color:var(--text);width:100%}
   .on{background:var(--green)!important;border-color:var(--green)!important;color:#fff}
   .warn{background:var(--yellow);border-color:var(--yellow);color:#1a1c20}
-  .brand{font-family:"Barlow Condensed",sans-serif;font-weight:700;letter-spacing:2px;font-size:13px;color:var(--yellow);padding:2px 2px 0}
+  .brand{font-family:"Barlow Condensed",sans-serif;font-weight:700;letter-spacing:2px;font-size:14px;color:var(--yellow);padding:2px 2px 0}
   .strip{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:4px 2px 10px}
   .strip h1{font-size:24px;font-weight:600;margin:0} .strip .meta{font-size:15px;color:var(--muted)} .strip .meta b{color:var(--text);font-weight:500}
   .panel{background:linear-gradient(#2a2e34,#1f2226);border:2px solid var(--chrome);border-radius:8px;padding:10px;box-shadow:inset 0 0 0 1px #000,0 6px 20px rgba(0,0,0,.5)}
@@ -58,33 +68,33 @@
   .gov{background:#0d1a2a;border:2px solid var(--blue);border-radius:8px;padding:8px}
   .gov .readouts{display:flex;justify-content:space-around;margin-bottom:6px} .gov .ro{text-align:center}
   .gov .digits{font-family:"Barlow Condensed";font-size:34px;font-weight:700;color:#ff5d3a;letter-spacing:1px;line-height:1;text-shadow:0 0 8px rgba(255,93,58,.5)}
-  .gov .lab{font-size:12px;color:#7fa7d6} .gov .btns{display:grid;grid-template-columns:repeat(5,1fr);gap:4px} .gov .btns button{padding:8px 4px;font-size:14px}
+  .gov .lab{font-size:13px;color:#7fa7d6} .gov .btns{display:grid;grid-template-columns:repeat(5,1fr);gap:4px} .gov .btns button{padding:8px 4px;font-size:15px}
   .tank{background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;display:flex;flex-direction:column;align-items:center;padding:6px 4px}
   .tank .bar{width:22px;height:110px;background:#0e0f11;border-radius:4px;position:relative;overflow:hidden;border:1px solid #000}
-  .tank .fill{position:absolute;bottom:0;left:0;right:0;background:var(--blue);transition:height .3s} .tank .lab{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;line-height:1.1}
+  .tank .fill{position:absolute;bottom:0;left:0;right:0;background:var(--blue);transition:height .3s} .tank .lab{font-size:13px;color:var(--muted);text-align:center;margin-top:4px;line-height:1.1}
   .switches{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-bottom:10px}
   .sw{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;padding:8px 10px;gap:6px}
   .sw{flex-wrap:wrap;row-gap:6px}
-  .sw .lab{font-size:14px;line-height:1.15;min-width:0;flex:1 1 84px}
+  .sw .lab{font-size:15px;line-height:1.15;min-width:0;flex:1 1 84px}
   .sw>div{flex:0 0 auto;margin-left:auto} .sw .lamp{width:12px;height:12px;border-radius:50%;background:#3a1010;border:1px solid #000;margin-left:8px;flex:0 0 auto}
-  .sw .lamp.on{background:#38d66a;box-shadow:0 0 8px #38d66a} .sw .lamp.amber{background:#f0b323;box-shadow:0 0 8px #f0b323} .sw button{padding:6px 10px;font-size:14px}
+  .sw .lamp.on{background:#38d66a;box-shadow:0 0 8px #38d66a} .sw .lamp.amber{background:#f0b323;box-shadow:0 0 8px #f0b323} .sw button{padding:6px 10px;font-size:15px}
   .miv{background:#1b1e22;border:1px solid var(--panel-edge);border-radius:8px;padding:8px 10px;margin-bottom:10px}
   .miv h3{margin:0 0 4px;font-size:16px;font-weight:600;color:#7fc0ff} .miv .r{display:flex;gap:6px;align-items:center}
-  .miv .r button{padding:8px 10px;font-size:14px} .miv .trk{flex:1;height:8px;background:#0e0f11;border-radius:4px;overflow:hidden} .miv .trk div{height:100%;background:#5aa9ff;width:0}
+  .miv .r button{padding:8px 10px;font-size:15px} .miv .trk{flex:1;height:8px;background:#0e0f11;border-radius:4px;overflow:hidden} .miv .trk div{height:100%;background:#5aa9ff;width:0}
   .sub{background:#1b1e22;border:1px dashed var(--panel-edge);border-radius:8px;padding:8px 10px;margin-bottom:10px}
   .sub h3{margin:0 0 6px;font-size:18px;font-weight:600;color:var(--yellow)}
-  .foamrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap} .foamrow button{padding:8px 10px;font-size:14px}
+  .foamrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap} .foamrow button{padding:8px 10px;font-size:15px}
   .foambar{flex:1;min-width:90px;height:10px;background:#0e0f11;border-radius:5px;overflow:hidden} .foambar div{height:100%;background:#d8c25a}
   .valve{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;padding:8px 10px;margin-bottom:8px}
   .valve.burst{border-color:#ff5d3a;box-shadow:0 0 0 1px #ff5d3a}
   .valve .top{display:flex;justify-content:space-between;align-items:baseline} .valve .name{font-size:15px}
-  .valve .tag{font-size:12px;color:#1a1c20;background:var(--yellow);border-radius:3px;padding:1px 6px;font-weight:500}
+  .valve .tag{font-size:13px;color:#1a1c20;background:var(--yellow);border-radius:3px;padding:1px 6px;font-weight:500}
   .valve .tag.red{background:var(--red);color:#fff} .valve .tag.blue{background:#5aa9ff} .valve .tag.grn{background:#8fd39a} .valve .tag.org{background:#f19a4a}
   .valve .pct{font-family:"Barlow Condensed";font-size:18px;color:var(--muted)}
   .valve .track{height:8px;background:#0e0f11;border-radius:4px;overflow:hidden;margin-top:6px} .valve .open{height:100%;background:var(--red);width:0;transition:width .15s}
-  .valve .acts{display:flex;gap:4px;grid-column:1/-1} .valve .acts button{flex:1;padding:8px 4px;font-size:14px}
+  .valve .acts{display:flex;gap:4px;grid-column:1/-1} .valve .acts button{flex:1;padding:8px 4px;font-size:15px}
   .card{background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;padding:12px;margin-top:12px}
-  .card h2{margin:0 0 8px;font-size:22px;font-weight:600} .card .jpr{font-size:13px;color:var(--muted);margin:0 0 8px;line-height:1.35}
+  .card h2{margin:0 0 8px;font-size:22px;font-weight:600} .card .jpr{font-size:14px;color:var(--muted);margin:0 0 8px;line-height:1.35}
   .steps{list-style:none;padding:0;margin:0} .steps li{display:flex;gap:10px;padding:6px 0;font-size:15px;border-top:1px solid #33373e} .steps li:first-child{border-top:0}
   .steps .box{width:18px;height:18px;border:2px solid var(--muted);border-radius:4px;flex:0 0 auto;margin-top:1px}
   .steps li.done .box{background:var(--green);border-color:var(--green)} .steps li.done{color:var(--muted);text-decoration:line-through}
@@ -97,19 +107,19 @@
   .overlay h2{font-size:28px;margin:0 0 8px;font-weight:600} .overlay p{font-size:16px;line-height:1.5;color:#cfd2d6;margin:0 0 12px}
   .overlay .big{font-family:"Barlow Condensed";font-size:56px;font-weight:700;color:var(--yellow);line-height:1}
   .scen{display:block;width:100%;text-align:left;margin-bottom:8px;padding:12px;position:relative}
-  .scen b{display:block;font-family:"Barlow Condensed";font-size:20px;font-weight:600;margin-bottom:2px} .scen span{font-size:14px;color:var(--muted)}
-  .scen .due{position:static;display:table;margin-top:6px;font-size:12px;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--yellow);color:#1a1c20}
+  .scen b{display:block;font-family:"Barlow Condensed";font-size:20px;font-weight:600;margin-bottom:2px} .scen span{font-size:15px;color:var(--muted)}
+  .scen .due{position:static;display:table;margin-top:6px;font-size:13px;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--yellow);color:#1a1c20}
   .scen .ok{background:var(--green);color:#fff}
-  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 12px} .tiers button{padding:8px 4px;font-size:14px}
-  .tierhelp{font-size:13px;color:var(--muted);margin:0 0 10px;line-height:1.4}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 12px} .tiers button{padding:8px 4px;font-size:15px}
+  .tierhelp{font-size:14px;color:var(--muted);margin:0 0 10px;line-height:1.4}
   .stat{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #33373e;font-size:15px} .stat:first-child{border-top:0} .stat span{color:var(--muted)}
   .math .prob{font-size:17px;line-height:1.5;margin-bottom:12px} .math .prob b{color:var(--yellow);font-weight:500}
-  .math .work{font-size:14px;color:var(--muted);line-height:1.5;margin-top:10px;white-space:pre-line}
+  .math .work{font-size:15px;color:var(--muted);line-height:1.5;margin-top:10px;white-space:pre-line}
   .wcol{position:relative;width:34px;height:96px;border-radius:5px;overflow:hidden;border:1px solid #000;background:linear-gradient(#2f6fb7,#1d4f86 70%,#6b5a3a 88%,#8a744a);flex:0 0 auto}
   .wcol .zone{position:absolute;left:0;right:0;bottom:35%;height:30%;background:rgba(56,214,106,.22);border-top:1px dashed #38d66a;border-bottom:1px dashed #38d66a}
   .wcol .wmark{position:absolute;left:3px;right:3px;height:8px;border-radius:3px;background:#f0b323;box-shadow:0 0 6px #f0b323;transform:translateY(50%)}
-  .tag-real{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.6px;color:#1a1c20;background:var(--yellow);border-radius:3px;padding:2px 7px;margin-bottom:8px}
-  .guidebtn{padding:6px 10px;font-size:14px;background:#1d2b3d;border-color:#2f6fb7;color:#bcd8ff}
+  .tag-real{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.6px;color:#1a1c20;background:var(--yellow);border-radius:3px;padding:2px 7px;margin-bottom:8px}
+  .guidebtn{padding:6px 10px;font-size:15px;background:#1d2b3d;border-color:#2f6fb7;color:#bcd8ff}
   body.learn [data-g]{outline:2px dashed var(--yellow);outline-offset:1px;cursor:help;position:relative}
   body.learn .panel{box-shadow:0 0 0 3px rgba(240,179,35,.35)}
   body.learn{padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
@@ -118,12 +128,12 @@
   .learnbar button{background:#1a1c20;color:#fff;border-color:#1a1c20;padding:8px 12px}
   #guideov{z-index:30}#briefov{z-index:12}
   .gcard h2{margin-bottom:2px}
-  .gcard .gsub{font-size:13px;color:var(--muted);margin:0 0 12px}
-  .gsec{margin:0 0 12px}.gsec b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:2px}
+  .gcard .gsub{font-size:14px;color:var(--muted);margin:0 0 12px}
+  .gsec{margin:0 0 12px}.gsec b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:2px}
   .gsec p{margin:0;font-size:15px;line-height:1.45;color:#dcdcd6}
   .gsec.rig{background:#13202f;border:1px solid #2f6fb7;border-radius:8px;padding:8px 10px}.gsec.rig b{color:#7fc0ff}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
-  .chip{padding:7px 10px;font-size:14px;border-radius:16px;background:#1d2b3d;border:1px solid #2f6fb7;color:#bcd8ff}
+  .chip{padding:7px 10px;font-size:15px;border-radius:16px;background:#1d2b3d;border:1px solid #2f6fb7;color:#bcd8ff}
   .chip.warnchip{background:#3a1512;border-color:#b3202c;color:#ffb3a8}
   .gidx h3{font-family:"Barlow Condensed",sans-serif;font-size:17px;margin:12px 0 4px;color:var(--muted);letter-spacing:.5px}
   .hidden{display:none!important}
@@ -175,13 +185,13 @@
   </div>
   <div class="miv hidden" id="xferp" data-g="transfer">
     <h3>Transfer valve — two-stage pump</h3>
-    <div class="r"><button id="x-vol">Volume</button><button id="x-pres">Pressure</button><span id="x-txt" style="font-size:13px;color:var(--muted);margin-left:6px"></span></div>
+    <div class="r"><button id="x-vol">Volume</button><button id="x-pres">Pressure</button><span id="x-txt" style="font-size:14px;color:var(--muted);margin-left:6px"></span></div>
   </div>
   <div class="miv hidden" id="pondp" data-g="pond">
     <h3>Portable pond · dump site</h3>
     <div class="r"><div class="trk" style="height:14px"><div id="pondbar" style="background:#5aa9ff"></div></div><span id="pondgal" style="font-family:'Barlow Condensed';font-size:16px;min-width:92px;text-align:right">0 gal</span></div>
-    <div id="pondtxt" style="font-size:13px;color:var(--muted);margin-top:6px"></div>
-    <div id="coldtxt" style="font-size:13px;color:#7fc0ff;margin-top:2px"></div>
+    <div id="pondtxt" style="font-size:14px;color:var(--muted);margin-top:6px"></div>
+    <div id="coldtxt" style="font-size:14px;color:#7fc0ff;margin-top:2px"></div>
   </div>
   <div class="miv hidden" id="depthp" data-g="depth">
     <h3>Suction in the flooded street</h3>
@@ -189,23 +199,23 @@
       <div class="wcol" aria-label="Suction position in the water column"><div class="zone"></div><div class="wmark" id="wmark"></div></div>
       <div style="flex:1">
         <div class="r" style="margin-bottom:6px"><button id="d-up">Raise</button><button id="d-dn">Lower</button><button id="d-clear">Clear strainer</button></div>
-        <div style="font-size:12px;color:var(--muted)">Strainer debris</div>
+        <div style="font-size:13px;color:var(--muted)">Strainer debris</div>
         <div class="trk"><div id="clogbar" style="background:#c9a24a"></div></div>
-        <div id="d-txt" style="font-size:13px;color:var(--muted);margin-top:4px"></div>
+        <div id="d-txt" style="font-size:14px;color:var(--muted);margin-top:4px"></div>
       </div>
     </div>
   </div>
   <div class="sub hidden" id="eductp" data-g="eductor">
     <h3>In-line foam eductor · 95 GPM @ 200 PSI</h3>
     <div class="foamrow"><button id="e-in">Put eductor in line</button><button id="e-pick">Pickup tube in pail</button></div>
-    <div class="foamrow" style="margin-top:6px"><span style="font-size:13px;color:var(--muted)">Metering</span><button data-ep="1">1%</button><button data-ep="3">3%</button><button data-ep="6">6%</button><button id="e-rerig">Re-rig foam line</button></div>
-    <div class="foamrow" style="margin-top:6px"><span style="font-size:13px;color:var(--muted)">Concentrate</span><div class="foambar"><div id="concfill" style="width:100%"></div></div><span id="concgal" style="font-size:13px">15 gal</span></div>
-    <div id="e-txt" style="font-size:13px;margin-top:6px;color:var(--muted)"></div>
+    <div class="foamrow" style="margin-top:6px"><span style="font-size:14px;color:var(--muted)">Metering</span><button data-ep="1">1%</button><button data-ep="3">3%</button><button data-ep="6">6%</button><button id="e-rerig">Re-rig foam line</button></div>
+    <div class="foamrow" style="margin-top:6px"><span style="font-size:14px;color:var(--muted)">Concentrate</span><div class="foambar"><div id="concfill" style="width:100%"></div></div><span id="concgal" style="font-size:14px">15 gal</span></div>
+    <div id="e-txt" style="font-size:14px;margin-top:6px;color:var(--muted)"></div>
   </div>
   <div class="sub hidden" id="foam" data-g="foam">
     <h3>Foam system</h3>
     <div class="foamrow"><button id="f-on">Foam off</button><button data-pct="1">1%</button><button data-pct="3">3%</button><button data-pct="6">6%</button><button id="f-flush">Flush</button></div>
-    <div class="foamrow" style="margin-top:6px"><span style="font-size:13px;color:var(--muted)">Class B tank</span><div class="foambar"><div id="foamfill" style="width:100%"></div></div><span id="foamgal" style="font-size:13px">20 gal</span></div>
+    <div class="foamrow" style="margin-top:6px"><span style="font-size:14px;color:var(--muted)">Class B tank</span><div class="foambar"><div id="foamfill" style="width:100%"></div></div><span id="foamgal" style="font-size:14px">20 gal</span></div>
   </div>
   <div id="valves"></div>
 </div>
@@ -226,14 +236,14 @@
   <p><b>Crack +</b> opens a valve a quarter turn at a time; <b>Gate −</b> closes it a quarter turn, to give one line less pressure than another. <b>Snap</b> throws it wide open — water hammer, or a lost prime at draft. The MIV travels on its own; that's what it's for.</p>
   <p>Three tiers per scenario: <b>Guided</b> shows every step and the target pressure. <b>Recall</b> hides the checklist and makes you figure the PDP from the hose layout. <b>Chaos</b> is Recall plus things going wrong.</p>
   <p><b>New: Panel guide.</b> Tap <b>Panel guide</b> (top right) during any mission, then tap any control to learn what it does, when to use it, and what goes wrong. Free in Guided, 2 points per lookup in Recall, locked in Chaos.</p>
-  <p style="font-size:14px">Training aid only. Department SOPs and the preconnect chart on the rig are the real numbers.</p>
-  <p style="font-size:13px;color:var(--muted)">Version 2.1.1 · Found a problem? Use "Report an issue" under any mission.</p>
+  <p style="font-size:15px">Training aid only. Department SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.5.0 · Found a problem? Use "Report an issue" under any mission.</p>
   <button class="warn" id="b-start" style="width:100%;font-size:18px">Continue</button>
 </div></div>
 
 <div class="overlay hidden" id="menu"><div class="box">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:13px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:13px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a></div>
-  <h2>Menu <span style="font-size:14px;color:var(--muted);font-weight:400">v2.4.0</span></h2>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a></div>
+  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.5.0</span></h2>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div style="display:flex;gap:8px;margin-bottom:12px"><button id="b-math" style="flex:1">Pump math drills</button><button id="b-progress" style="flex:1">My progress</button><button id="b-howto">How to play</button></div>
   <button id="b-gindex" class="guidebtn" style="width:100%;margin-bottom:12px;font-size:16px;padding:10px">Panel guide — every control, gauge, and concept</button>
@@ -246,7 +256,7 @@
 
 <div class="overlay hidden" id="mathov"><div class="box math">
   <h2>Pump discharge pressure</h2>
-  <p style="font-size:14px">PDP = nozzle pressure + friction loss + elevation + appliances. FL = C × (GPM/100)² × (length/100). Coefficients: 1¾" 15.5 · 2½" 2 · 3" 0.8 · 5" 0.08. Answer within ±5 PSI counts.</p>
+  <p style="font-size:15px">PDP = nozzle pressure + friction loss + elevation + appliances. FL = C × (GPM/100)² × (length/100). Coefficients: 1¾" 15.5 · 2½" 2 · 3" 0.8 · 5" 0.08. Answer within ±5 PSI counts.</p>
   <div class="prob" id="prob"></div>
   <input id="ans" type="number" inputmode="numeric" placeholder="PDP in PSI">
   <div style="display:flex;gap:8px;margin-top:8px"><button id="m-check" class="warn" style="flex:1">Check</button><button id="m-next" style="flex:1">Next problem</button><button id="m-exit">Exit</button></div>
@@ -258,24 +268,24 @@
   <h2>Progress</h2>
   <input id="uname" placeholder="Your name (for the training record)" style="margin-bottom:10px">
   <div id="proglist"></div>
-  <p style="font-size:13px;color:var(--muted);margin-top:10px">Spacing: clear a scenario at 70+ and it's due again in 1, 3, 7, 14, then 30 days. A miss resets the interval. Saved on this phone only.</p>
+  <p style="font-size:14px;color:var(--muted);margin-top:10px">Spacing: clear a scenario at 70+ and it's due again in 1, 3, 7, 14, then 30 days. A miss resets the interval. Saved on this phone only.</p>
   <div style="display:flex;gap:8px"><button id="b-export" style="flex:1">Download training record (CSV)</button><button id="b-progclose">Close</button></div>
 </div></div>
 
 <div class="overlay hidden" id="repov"><div class="box">
   <h2>Report an issue</h2>
-  <p style="font-size:14px">Your current screen — scenario, gauges, valve positions — is attached automatically. Just say what happened or what you'd change.</p>
+  <p style="font-size:15px">Your current screen — scenario, gauges, valve positions — is attached automatically. Just say what happened or what you'd change.</p>
   <input id="r-name" placeholder="Your name" style="margin-bottom:8px">
   <input id="r-dept" placeholder="Department" style="margin-bottom:8px">
   <textarea id="r-note" rows="4" placeholder="What happened? What did you expect?" style="font-family:inherit;font-size:16px;padding:10px;border-radius:6px;border:1px solid var(--panel-edge);background:#0e0f11;color:var(--text);width:100%"></textarea>
   <div style="display:flex;gap:8px;margin-top:8px"><button id="r-send" class="warn" style="flex:1">Send</button><button id="r-cancel">Cancel</button></div>
-  <p id="r-msg" style="font-size:14px;margin:10px 0 0"></p>
+  <p id="r-msg" style="font-size:15px;margin:10px 0 0"></p>
 </div></div>
 <div class="overlay hidden" id="caseov"><div class="box">
   <span class="tag-real">BASED ON REAL EVENTS</span>
   <h2 id="case-t"></h2>
   <div id="case-body"></div>
-  <p id="case-src" style="font-size:13px;color:var(--muted)"></p>
+  <p id="case-src" style="font-size:14px;color:var(--muted)"></p>
   <div style="display:flex;gap:8px"><button class="warn" id="case-go" style="flex:1;font-size:18px">Begin</button><button id="case-back">Back</button></div>
 </div></div>
 <div class="overlay hidden" id="decov"><div class="box">
@@ -290,7 +300,7 @@
   <p id="brief-intro" style="font-size:15px"></p>
   <div style="font-family:'Barlow Condensed';font-size:16px;letter-spacing:1px;color:var(--yellow)">CONTROLS YOU'LL USE — TAP TO LEARN</div>
   <div class="chips" id="brief-chips"></div>
-  <p id="brief-tier" style="font-size:13px;color:var(--muted)"></p>
+  <p id="brief-tier" style="font-size:14px;color:var(--muted)"></p>
   <button class="warn" id="brief-go" style="width:100%;font-size:18px">Start mission</button>
 </div></div>
 <div class="overlay hidden" id="guideov"><div class="box gcard">
@@ -615,7 +625,7 @@ const CAMP=[
 
 CAMP.push({name:'Breezy Point — Superstorm Sandy, 2012',real:true,
  desc:'Hurricane-driven conflagration. Hydrants dead, engines sitting in three feet of floodwater. You are the Engine 10 chauffeur.',
- story:`<p>October 29, 2012. Superstorm Sandy hits New York at high tide under a full moon — a 13.8-foot surge and gusts to 92 mph.</p><p>At 2304 hours a box comes in for multiple houses burning in Breezy Point, Queens. The road in is a river three feet deep. You drive Engine 10, plowing two miles through water up to the headlights — with the first chief on scene riding in your back seat.</p><p>Hydrants are underwater and nearly dead. Embers the size of golf balls are blowing north and west. Your job: find water, and keep it coming for eight hours.</p><p><b>Your rig:</b> Engine 10's apparatus that night — a 2001 Seagrave high-pressure pumper, 1,000 gpm, 500-gallon tank. It's a two-stage pump, so the transfer valve matters.</p><p style="font-size:14px;color:var(--muted)">The pump specs are Engine 10's real ones. The panel layout is generic — FDNY's exact valve arrangement isn't published. Unit actions follow the published account; radio traffic and pressures are reconstructed for training.</p>`,
+ story:`<p>October 29, 2012. Superstorm Sandy hits New York at high tide under a full moon — a 13.8-foot surge and gusts to 92 mph.</p><p>At 2304 hours a box comes in for multiple houses burning in Breezy Point, Queens. The road in is a river three feet deep. You drive Engine 10, plowing two miles through water up to the headlights — with the first chief on scene riding in your back seat.</p><p>Hydrants are underwater and nearly dead. Embers the size of golf balls are blowing north and west. Your job: find water, and keep it coming for eight hours.</p><p><b>Your rig:</b> Engine 10's apparatus that night — a 2001 Seagrave high-pressure pumper, 1,000 gpm, 500-gallon tank. It's a two-stage pump, so the transfer valve matters.</p><p style="font-size:15px;color:var(--muted)">The pump specs are Engine 10's real ones. The panel layout is generic — FDNY's exact valve arrangement isn't published. Unit actions follow the published account; radio traffic and pressures are reconstructed for training.</p>`,
  source:'Reconstructed from J. Pfeifer, "Conflagration in Breezy Point Queens," Fire Engineering, May 2013.',
  url:'https://www.fireengineering.com/firefighting/conflagration-in-breezy-point-queens/',
  outcome:'Engines drafted straight from the flooded streets, built inline drafting relays, and one crew stretched 2,500 feet of hose to the one working hydrant. Together that kept water on three tower ladders and numerous handlines on the northern and eastern flanks. When the wind swung from southeast to south around dawn, crews drafted and cut off the western flank. The fire was contained at 0700. It destroyed 126 homes — the largest residential fire in FDNY history — with no fatalities or serious injuries. Command judged that without seizing that wind shift, the fire would have run from ocean to bay through more than a thousand homes.',
@@ -669,7 +679,7 @@ CAMP.push({name:'Breezy Point — Superstorm Sandy, 2012',real:true,
 
 CAMP.push({name:'First Interstate Bank — Los Angeles, 1988',real:true,
  desc:'62-story high-rise, no sprinklers, building fire pumps shut off. You are the engineer on Engine 209, feeding the standpipe from 6th Street.',
- story:`<p>May 4, 1988. The First Interstate Bank building is the tallest in Los Angeles — 62 stories, glass curtain walls, and a sprinkler system that is only about 90 percent installed.</p><p>At 2222 hours a sprinkler contractor shuts down the building's two fire pumps and drains the standpipes to the 58th floor for a tie-in. Three minutes later, fire breaks out on the 12th floor.</p><p>At 2238 the box comes in. You are the engineer on <b>Engine 209</b>. Your assignment: 6th Street, the fire department connections. Crews are climbing twelve floors with 2-inch lines into standpipes with no pressure — and every landing has a pressure-reducing valve between them and your pump.</p><p>This is the opposite of Breezy Point. There, the problem was volume from a bad source. Here, it's <b>pressure</b> — pushing water up a skyscraper.</p><p style="font-size:14px;color:var(--muted)">LAFD's exact 1988 Engine 209 specifications aren't published; the rig is modeled as a two-stage big-city pumper. Unit actions and times follow LAFD's after-action report and the USFA technical report; radio traffic and pressures are reconstructed for training.</p>`,
+ story:`<p>May 4, 1988. The First Interstate Bank building is the tallest in Los Angeles — 62 stories, glass curtain walls, and a sprinkler system that is only about 90 percent installed.</p><p>At 2222 hours a sprinkler contractor shuts down the building's two fire pumps and drains the standpipes to the 58th floor for a tie-in. Three minutes later, fire breaks out on the 12th floor.</p><p>At 2238 the box comes in. You are the engineer on <b>Engine 209</b>. Your assignment: 6th Street, the fire department connections. Crews are climbing twelve floors with 2-inch lines into standpipes with no pressure — and every landing has a pressure-reducing valve between them and your pump.</p><p>This is the opposite of Breezy Point. There, the problem was volume from a bad source. Here, it's <b>pressure</b> — pushing water up a skyscraper.</p><p style="font-size:15px;color:var(--muted)">LAFD's exact 1988 Engine 209 specifications aren't published; the rig is modeled as a two-stage big-city pumper. Unit actions and times follow LAFD's after-action report and the USFA technical report; radio traffic and pressures are reconstructed for training.</p>`,
  source:'Reconstructed from the LAFD Executive Summary of the First Interstate Bank Building Fire (LAFD Historical Archive) and USFA Technical Report TR-022.',
  url:'https://lafire.com/famous_fires/1988-0504_1stInterstateFire/ExSummary/LAFD-ExecutiveSummary.htm',
  outcome:'Engine 9, Engine 209, and Engine 210 fed the standpipes from 6th Street through falling glass until Engine 17 and a building engineer restarted the fire pumps around 2320. Crews attacked from four stairwells at once, then made a stand on the 16th floor while companies below hit the 14th and 15th. The fire was knocked down at 0219 — after 383 LAFD members flowed half a million gallons through 10,000 feet of hose. It destroyed four floors and damaged a fifth, in a 62-story building some experts feared could be lost entirely. One building maintenance worker, who took an elevator to investigate the alarms, died. No firefighters were killed. Los Angeles then required sprinklers in all its high-rises.',
@@ -723,7 +733,7 @@ CAMP.push({name:'First Interstate Bank — Los Angeles, 1988',real:true,
 
 CAMP.push({name:'Port Jervis, NY — tanker shuttle at 0°F, 2005',real:true,
  desc:'Wind-driven fire, three exposures, a hydrant system that can\'t keep up, and 0°F with a stiff north wind. You run the pumper at the dump site.',
- story:`<p>January 27, 2005, 0403 hours. Port Jervis, New York. The chief is wrapping up a sprinkler alarm when he looks over his shoulder and sees smoke — two structures already going in the Riverside section.</p><p>The fire building sits mid-block with a house on one side, a warehouse on the other, and more wood-frame exposures behind. It's <b>0°F with a stiff north wind — the wind chill is near 15 below</b>. The city's hydrants are fine for most fires, but not for master streams and three exposures on a night like this.</p><p>Command calls for a <b>tanker shuttle</b> to back up the hydrants. Mutual aid rolls in from three states. You are the engineer on the pumper assigned to the <b>dump site</b>: you draft from the portable pond and push that water to the attack engine. Every gallon on the fire goes through your panel — and at 0°F, anything that stops moving freezes.</p><p>This one should feel familiar: small department, mutual aid, no hydrant on every corner, Great Lakes winter.</p><p style="font-size:14px;color:var(--muted)">Built from the water operations officer's own account. Your pumper is a composite role — the account doesn't name which engine worked the dump site — and times after 0403 are reconstructed. Tanker timing, pond size, and pressures are modeled for training.</p>`,
+ story:`<p>January 27, 2005, 0403 hours. Port Jervis, New York. The chief is wrapping up a sprinkler alarm when he looks over his shoulder and sees smoke — two structures already going in the Riverside section.</p><p>The fire building sits mid-block with a house on one side, a warehouse on the other, and more wood-frame exposures behind. It's <b>0°F with a stiff north wind — the wind chill is near 15 below</b>. The city's hydrants are fine for most fires, but not for master streams and three exposures on a night like this.</p><p>Command calls for a <b>tanker shuttle</b> to back up the hydrants. Mutual aid rolls in from three states. You are the engineer on the pumper assigned to the <b>dump site</b>: you draft from the portable pond and push that water to the attack engine. Every gallon on the fire goes through your panel — and at 0°F, anything that stops moving freezes.</p><p>This one should feel familiar: small department, mutual aid, no hydrant on every corner, Great Lakes winter.</p><p style="font-size:15px;color:var(--muted)">Built from the water operations officer's own account. Your pumper is a composite role — the account doesn't name which engine worked the dump site — and times after 0403 are reconstructed. Tanker timing, pond size, and pressures are modeled for training.</p>`,
  source:'Reconstructed from J. Flynn, "Water Tanker Shuttles: 10 Rules for Success," Fire Engineering, October 2005 — written by the water operations officer at this fire.',
  url:'https://www.fireengineering.com/firefighting/water-tanker-shuttles-10-rules-for-success/',
  outcome:'Port Jervis and mutual-aid companies from New York, Pennsylvania, and New Jersey ran the city hydrants and a tanker shuttle together to supply master streams and protect three exposures. Banked snow and parked cars left room for exactly one portable pond, so tankers stacked up two blocks back, waiting to back in one at a time. In the cold, both fill sites had problems, and crews got a substitute fill site running fast. Water-supply crews were rotated through a warm pumper cab to keep going. The water operations officer\'s verdict: it was a close call, but they stayed just ahead of the demand curve. He turned that night into ten rules still taught today — control traffic first, you may get only one chance to spot the pond, and call for enough tankers early. (The published account focuses on the water operation and does not detail the final property loss.)',
@@ -772,7 +782,7 @@ CAMP.push({name:'Port Jervis, NY — tanker shuttle at 0°F, 2005',real:true,
 
 CAMP.push({name:'Queens, NY — gasoline tanker fire, 1994',real:true,
  desc:'An overturned gasoline tanker burning on an expressway ramp, fuel running into the sewers, manholes blowing. You run Engine 288\'s pump — and the hardest call is when not to use the foam.',
- story:`<p>May 1994. From quarters in Queens, Engine 288 and Haz Mat 1 can see a thick column of black smoke over the interchange of the Brooklyn-Queens and Long Island Expressways.</p><p>An 8,000-gallon aluminum tanker carrying <b>7,200 gallons of gasoline</b> has overturned on a connecting ramp and split open. The vapors ignited. The driver is trapped in the cab, and several civilians who stopped to help him were badly burned when it exploded. Firefighters could not reach the driver, who died in the cab.</p><p>Raw gasoline had already run into the sewers before it lit. Now burning gasoline is flowing downhill to meet it — and manholes are erupting, throwing their covers into the air. Traffic is still moving.</p><p>You are the chauffeur on <b>Engine 288</b>. You have a hydrant to find, a foam line to build with an in-line eductor, and a decision that goes against every instinct you have.</p><p style="font-size:14px;color:var(--muted)">Engine 288's 1994 specifications aren't published; the rig is modeled as a 1,000 GPM single-stage pumper. FDNY's foam equipment and every unit action follow the published account by the Haz Mat 1 captain who was there. Radio traffic, timing, and pressures are reconstructed for training.</p>`,
+ story:`<p>May 1994. From quarters in Queens, Engine 288 and Haz Mat 1 can see a thick column of black smoke over the interchange of the Brooklyn-Queens and Long Island Expressways.</p><p>An 8,000-gallon aluminum tanker carrying <b>7,200 gallons of gasoline</b> has overturned on a connecting ramp and split open. The vapors ignited. The driver is trapped in the cab, and several civilians who stopped to help him were badly burned when it exploded. Firefighters could not reach the driver, who died in the cab.</p><p>Raw gasoline had already run into the sewers before it lit. Now burning gasoline is flowing downhill to meet it — and manholes are erupting, throwing their covers into the air. Traffic is still moving.</p><p>You are the chauffeur on <b>Engine 288</b>. You have a hydrant to find, a foam line to build with an in-line eductor, and a decision that goes against every instinct you have.</p><p style="font-size:15px;color:var(--muted)">Engine 288's 1994 specifications aren't published; the rig is modeled as a 1,000 GPM single-stage pumper. FDNY's foam equipment and every unit action follow the published account by the Haz Mat 1 captain who was there. Radio traffic, timing, and pressures are reconstructed for training.</p>`,
  source:'Reconstructed from P. Stuebe, "Burning Gasoline Tankers: The Best Action May Be No Action," Fire Engineering, November 1997 — written by the captain of Haz Mat Company 1, who was on scene.',
  url:'https://www.fireengineering.com/firefighting-equipment/burning-gasoline-tankers-the-best-action-may-be-no-action/',
  outcome:'Engines took hydrants and set up foam lines but were ordered not to extinguish. Once the raw gasoline in the sewers had ignited and burned off, Command let the tanker keep burning. Its aluminum shell melted down over several hours while hoselines kept the truck\'s diesel saddle tanks cool. Crews tried to protect the overpass above, but the heat overpowered the handlines; it was abandoned, and the overpass was closed for weeks for repairs. The decision came from hard experience: two years earlier in the Bronx, foam on a tanker that was still leaking let raw gasoline keep flowing until it met fire in the sewer, causing two explosions. In Queens, nothing like that happened. The driver could not be saved, and several civilians were badly burned before firefighters arrived. The lesson the captain wrote down: when burning gasoline is entering the sewers, the best course of action is usually to let it burn.',
@@ -822,7 +832,7 @@ CAMP.push({name:'Queens, NY — gasoline tanker fire, 1994',real:true,
 
 CAMP.push({name:'Corvallis, OR — the Mayday nobody heard',real:true,
  desc:'A December house fire. You are the engineer on a quint pumping the attack line — tank water, a hydrant gone wrong, and a Mayday that gets lost in the noise.',
- story:`<p>A chilly December night, 1930 hours. Structure fire in a 1,200-square-foot ranch home on a narrow residential street — parked cars on both sides, room for one rig, and streetlights spaced far apart. It is <b>dark</b>.</p><p>The first-due station is closed for remodeling, so its crew is eight to nine minutes out. The battalion chief arrives first, alone. Black, turbulent smoke is pushing from the front door, with a glow underneath. The owners are out; their pets are inside.</p><p>You are the engineer on <b>Truck 151</b> — a 104-foot tower ladder with a pump. Your lieutenant and firefighter are taking a line through the front door off <i>your</i> pump. You are charging it, making the hydrant with a volunteer, and running the panel next to a pump screaming at 85 to 95 decibels.</p><p>Everyone in this story came home. It is here because of what almost went wrong — and because the battalion chief who ran it wrote it down so others could learn.</p><p style="font-size:14px;color:var(--muted)">Truck 151's pump and tank specifications aren't published; they are modeled. Unit actions and the Mayday follow the battalion chief's own published account. Radio traffic, timing, and pressures are reconstructed for training.</p>`,
+ story:`<p>A chilly December night, 1930 hours. Structure fire in a 1,200-square-foot ranch home on a narrow residential street — parked cars on both sides, room for one rig, and streetlights spaced far apart. It is <b>dark</b>.</p><p>The first-due station is closed for remodeling, so its crew is eight to nine minutes out. The battalion chief arrives first, alone. Black, turbulent smoke is pushing from the front door, with a glow underneath. The owners are out; their pets are inside.</p><p>You are the engineer on <b>Truck 151</b> — a 104-foot tower ladder with a pump. Your lieutenant and firefighter are taking a line through the front door off <i>your</i> pump. You are charging it, making the hydrant with a volunteer, and running the panel next to a pump screaming at 85 to 95 decibels.</p><p>Everyone in this story came home. It is here because of what almost went wrong — and because the battalion chief who ran it wrote it down so others could learn.</p><p style="font-size:15px;color:var(--muted)">Truck 151's pump and tank specifications aren't published; they are modeled. Unit actions and the Mayday follow the battalion chief's own published account. Radio traffic, timing, and pressures are reconstructed for training.</p>`,
  source:'Reconstructed from B. Loomis, "What We Learned: The Night I Missed a Mayday," Fire Engineering, May 2025 — written by the battalion chief who was incident commander.',
  url:'https://www.fireengineering.com/firefighting/what-we-learned-the-night-i-missed-a-mayday/',
  outcome:'Truck 151\'s crew had the line on the ground almost before the chief finished giving the order, and the truck engineer made the hydrant connection — stepping in when a problem came up at the hydrant with the volunteer. Water got on the fire, searches were completed, and the roof was opened. Then the ceiling came in on the attack crew and they called a Mayday. The battalion chief — task-saturated near the front of the house, beside a pump at 150 PSI, with his portable radio in his coat pocket — never heard it. The two-out crew from Medic 120 did, met them on the Charlie side, and the truck crew came out a back window. Dispatch logged it as "Ceiling Fell/Poss Mayday" but never alerted the commander. The chief found out from a fist bump afterward. He owned it in front of his crews, then wrote about it so other commanders would not repeat it: run command from the vehicle, keep the radio at your ear, and train with your dispatchers. Everyone went home.',
@@ -944,14 +954,14 @@ $('dec-real').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]')
 $('dec-go').onclick=()=>{if(!DEC)return;$('decov').classList.add('hidden');const {s,j}=DEC;stepsDone[j]=true;const el=$('st-'+j);if(el)el.classList.add('done');if(s.dec.after)s.dec.after();DEC=null;S.running=true;};
 function showCase(i){const c=CAMP[i];$('case-t').textContent=c.name;$('case-body').innerHTML=c.story;$('case-src').textContent=c.source;$('case-go').onclick=()=>{$('caseov').classList.add('hidden');loadCampaign(i);};$('caseov').classList.remove('hidden');}
 $('case-back').onclick=()=>{$('caseov').classList.add('hidden');showMenu();};
-function finish(){
+function finish(){keepAwake(false);
   const c=CAMP[S.camp],m=c.missions[S.mission],last=S.mission>=c.missions.length-1;
   $('done-title').textContent=m.title+(last?' — scenario complete':' — complete');$('done-score').textContent=S.score;
   const learnKeys=[...new Set(S.incidents.map(incidentKey).filter(Boolean))];
   const incHtml=S.incidents.length?`<p><b>Incidents:</b> ${S.incidents.map(esc).join(' · ')}</p>`+(learnKeys.length?`<div style="font-family:'Barlow Condensed';letter-spacing:1px;color:var(--yellow);font-size:15px">LEARN FROM IT</div><div class="chips">${learnKeys.map(k=>`<button class="chip warnchip" data-k="${k}">${esc(GUIDE[k].name)}</button>`).join('')}</div>`:''):'<p>Clean run — no incidents.</p>';
   $('done-body').innerHTML=incHtml;
   if(c.real&&last){const g=S.decisions.filter(d=>d.r==='good').length;
-    $('done-body').innerHTML=`${incHtml}<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:13px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
+    $('done-body').innerHTML=`${incHtml}<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:14px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
   $('b-next').textContent=last?'Back to menu':'Next mission';
   if(last){const pr=load(),ps=pr.scen&&pr.scen[S.camp];pca('end',`${['guided','recall','chaos'][TIER]}/${pca('att',(ps?ps.runs:0)+1)}/${pca('bkt',S.score)}`);recordClear(S.camp,S.score);}
   $('done').classList.remove('hidden');
@@ -966,9 +976,9 @@ function load(){try{return JSON.parse(localStorage.getItem(KEY))||{name:'',scen:
 function save(p){try{localStorage.setItem(KEY,JSON.stringify(p));}catch(e){}}
 function recordClear(i,score){const p=load();const s=p.scen[i]||{level:0,best:0,runs:0,last:null,tier:0};s.runs++;s.best=Math.max(s.best,score);s.last=new Date().toISOString();s.tier=Math.max(s.tier,TIER);s.level=score>=70?Math.min(INT.length-1,s.level+1):0;p.scen[i]=s;p.log=(p.log||[]).concat([{i,score,tier:TIER,d:new Date().toISOString()}]).slice(-500);save(p);}
 function dueInfo(i){const p=load(),s=p.scen[i];if(!s||!s.last)return {txt:'Not yet cleared',due:true};const days=(Date.now()-new Date(s.last))/86400000,gap=INT[Math.max(0,s.level-1)];return days>=gap?{txt:'Due for review',due:true}:{txt:`Next in ${Math.ceil(gap-days)} d`,due:false};}
-function showMenu(){exitLearn(false);$('briefov').classList.add('hidden');S.running=false;$('b-resume').classList.toggle('hidden',!S.active||!!DEC);$('tierhelp').textContent=TIERTXT[TIER];$('menu').querySelectorAll('[data-tier]').forEach(b=>b.classList.toggle('on',+b.dataset.tier===TIER));
+function showMenu(){keepAwake(false);exitLearn(false);$('briefov').classList.add('hidden');S.running=false;$('b-resume').classList.toggle('hidden',!S.active||!!DEC);$('tierhelp').textContent=TIERTXT[TIER];$('menu').querySelectorAll('[data-tier]').forEach(b=>b.classList.toggle('on',+b.dataset.tier===TIER));
   const card=(c,i)=>{const d=dueInfo(i);return `<button class="scen" data-i="${i}"><b>${c.name}</b><span>${c.desc}</span><span class="due ${d.due?'':'ok'}">${d.txt}</span></button>`;};
-  $('scenlist').innerHTML=CAMP.map((c,i)=>c.real?'':card(c,i)).join('')+(CAMP.some(c=>c.real)?`<h3 style="margin:16px 0 6px;font-size:18px">Real saves <span style="font-size:13px;color:var(--muted);font-weight:400">· based on real events</span></h3>`+CAMP.map((c,i)=>c.real?card(c,i):'').join(''):'');
+  $('scenlist').innerHTML=CAMP.map((c,i)=>c.real?'':card(c,i)).join('')+(CAMP.some(c=>c.real)?`<h3 style="margin:16px 0 6px;font-size:18px">Real saves <span style="font-size:14px;color:var(--muted);font-weight:400">· based on real events</span></h3>`+CAMP.map((c,i)=>c.real?card(c,i):'').join(''):'');
   $('menu').classList.remove('hidden');}
 $('menu').querySelectorAll('[data-tier]').forEach(b=>b.onclick=()=>{TIER=+b.dataset.tier;showMenu();});
 $('scenlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('menu').classList.add('hidden');const i=+b.dataset.i;if(CAMP[i].real)showCase(i);else loadCampaign(i);};
@@ -1005,7 +1015,15 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.4.0';
+const APP_VERSION='2.5.0';
+/* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
+   On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
+const WAKE={s:null,want:false};
+function keepAwake(on){WAKE.want=!!on;const wl=(typeof navigator!=='undefined')&&navigator.wakeLock;if(!wl||!wl.request)return;
+  if(on){if(WAKE.s)return;try{wl.request('screen').then(s=>{WAKE.s=s;if(s.addEventListener)s.addEventListener('release',()=>{if(WAKE.s===s)WAKE.s=null;});}).catch(()=>{});}catch(e){}}
+  else if(WAKE.s){const s=WAKE.s;WAKE.s=null;try{Promise.resolve(s.release&&s.release()).catch(()=>{});}catch(e){}}}
+if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&WAKE.want&&!WAKE.s)keepAwake(true);});
+
 function snapshot(){
   const c=CAMP[S.camp],m=c.missions[S.mission];const done=stepsDone.filter(Boolean).length;
   const open=Object.keys(S.valves).filter(k=>S.valves[k].open>0).map(k=>`${S.valves[k].n} ${S.valves[k].open}%${S.valves[k].burst?' (burst)':''}`).join(', ')||'none';
@@ -1115,7 +1133,7 @@ function showBrief(){const c=CAMP[S.camp],m=c.missions[S.mission];S.briefing=tru
   $('brief-tier').textContent=TIER===0?'Guided: every step is listed, and the Panel guide is free any time.':'Recall: the checklist is hidden. Guide lookups during the mission cost 2 points each — study here first, it\'s free.';
   $('briefov').classList.remove('hidden');}
 $('brief-chips').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]');if(b)openCard(b.dataset.k,true);};
-$('brief-go').onclick=()=>{$('briefov').classList.add('hidden');S.briefing=false;if(S.active)S.running=true;};
+$('brief-go').onclick=()=>{keepAwake(true);$('briefov').classList.add('hidden');S.briefing=false;if(S.active)S.running=true;};
 
 /* ===== boot ===== */
 freshState();S.camp=0;buildValves(CAMP[0].valves);refreshSwitches();modeUI();render();

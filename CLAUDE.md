@@ -36,7 +36,11 @@ All live under the GitHub account **`charge-the-line`** at **https://charge-the-
 - **Progressive web app:** `manifest.json`, icons, and `sw.js` for offline use and Add to Home Screen.
 - **Saved data lives in the browser (`localStorage`),** one key per app: `e102-pump-trainer` (Charge the Line), `patient-contact`, `bleed-control`, `bls-ready`, plus `preconnect` (hub profile) and `preconnect-stats` (statistics opt-out). All apps share one web address, so the hub can read every module's data. **There is no backend and no accounts.**
 - **Deployment:** GitHub Pages from the `main` branch root of each repo. Committing to `main` deploys within a minute or two.
-- **Versioning, required on every release:** bump `APP_VERSION` in `index.html` **and** `CACHE` in `sw.js` together (Charge the Line also shows the version in its menu; Patient Contact on its intro screen). Every test suite checks they match. Forgetting means phones keep running the old version.
+- **Versioning, required on every release:** bump `APP_VERSION` in `index.html` **and** `CACHE` in `sw.js` together. Charge the Line also shows the version as text on its intro and menu, Patient Contact on its intro; **those literals must be bumped too**, and since Milestone 1 the `syntax` checks fail if they don't match `APP_VERSION`. Forgetting means phones keep running the old version.
+- **Fonts are self-hosted** in each repo's `fonts/` folder (Atkinson Hyperlegible + Saira Condensed; Charge the Line keeps Barlow until Look v2). SIL Open Font License; files from Fontsource 5.3.0, `@font-face` with `font-display:swap` in a `<style>` block where the Google link used to be. **Never link Google Fonts again:** offline the type fell back to a system font, and every page made a request to Google that the Privacy page didn't mention. Every suite checks that no page references Google and that each font file exists and is in the service worker's `CORE` list.
+- **Screen wake lock.** Every module has `keepAwake(on)` next to `APP_VERSION`: `true` when an activity starts (Charge the Line and Patient Contact: `brief-go`; Bleed Control: `stationOpen`, `scStart`, `lessonStart`; BLS Ready: `runStart`, `lessonStart`, `quizStart`), `false` at the menu, home, or result screen (`showMenu`, `finish`, `showHome`, `showDone`). It re-acquires when the tab becomes visible again. Tests stub `navigator.wakeLock` with a synchronous thenable and check one request and one release.
+- **Finger-sized controls.** Every `button` is at least 48 px tall (one rule in the font `<style>` block). The browser checks now fail on any visible button under 44 px (`SMALL` in `browser_check.py`). Charge the Line and Patient Contact also have a text floor: 15 px for anything read as a sentence, 13 px for captions (gauge numerals inside SVG are exempt).
+- **Install coaching** (hub only): `installHint()` shows a one-time card to people using Preconnect in a browser tab. iPhone gets the Share → Add to Home Screen steps; Chrome gets a real Install button when the browser fires `beforeinstallprompt`. Never shown when already installed; dismissed = `localStorage 'preconnect-install' = 'no'`.
 
 ### Shared-domain rules (every app shares one address)
 1. Each app lives in its own folder and registers its own `sw.js`.
@@ -82,13 +86,13 @@ Each of these cost a real bug. Don't relearn them.
 2. Make the change. Keep the single-file architecture.
 3. Add or update tests for what you changed, especially anything a real person would feel.
 4. Run the suite several times; run `python3 tests/browser_check.py` too if Playwright is available.
-5. Bump `APP_VERSION` and `sw.js` `CACHE` together.
+5. Bump `APP_VERSION` and `sw.js` `CACHE` together (plus the intro/menu version text in Charge the Line and Patient Contact).
 6. Commit with a plain-English message. Then tell Max in plain language **what changed, and exactly how to check it on his phone.** After a deploy, he may need to refresh once.
 7. If you change a module's saved-data format, activity IDs, or add an activity, the **hub** needs updating too: its name table (`L` in the hub's `index.html`) and its test fixture.
 
 ## Status and open items (as of October 2026)
 
-**Rollout to the Preconnect structure:** Steps 1–2 done (Charge the Line moved to its own repo; modules updated). **Step 3**, the hub into the root repo, may or may not be done; check the live root. **Steps 4–6 pending:**
+**Rollout to the Preconnect structure:** Steps 1–3 done (Charge the Line in its own repo; modules updated; the hub is live at the site root, confirmed October 3, 2026). **Steps 4–6 pending:**
 - **Step 4:** Max backs up his progress (hub → "Back up to a file").
 - **Step 5:** custom domain. Max has the name; he'll add GitHub Pages DNS records (A: 185.199.108.153, .109, .110, .111; `www` CNAME → `charge-the-line.github.io`), set the custom domain on the root repo, then Enforce HTTPS. Project repos follow automatically. **Afterward, update the two `og:` URLs at the top of the hub's `index.html` to the new domain.**
 - **Step 6:** restore progress on the new domain; reinstall the home-screen icon.
@@ -106,11 +110,32 @@ Each of these cost a real bug. Don't relearn them.
 
 **Grants context:** Bay Area Community Foundation (development) and FEMA AFG (deployment). A **90-day pilot with before-and-after data** is the core of every application. The statistics are designed for it: score bands at attempt 1 vs. attempt 5 show learning.
 
+## Roadmap and guardrails (decided by Max on October 3, 2026, after the Phase 0 audit)
+
+The Phase 0 audit walked every module on a 390 px screen. Findings that drove the plan: two generations of UI (Charge the Line and Patient Contact open on a text wall and a menu overlay; Bleed Control and BLS Ready on a clean home list), Charge the Line's 30 px valve buttons and 7 px gauge labels, fonts loading from Google, no wake lock, thin debriefs in Charge the Line and Patient Contact, "not yet" progress lists, almost no motion or sound, no accessibility work.
+
+**Milestones, in order.** Each ends with something Max tests on his phone, then he gives the go-ahead for the next. Say roughly how big the next one is before starting it.
+1. **Foundation fixes — done October 3, 2026** (this release): self-hosted fonts, wake lock, 48 px buttons and a text floor, install coaching, Privacy page updated.
+2. **Look v2 on the hub and BLS Ready:** design tokens, module accent colors, meaningful motion, one settings sheet (sound, haptics, text size, contrast, statistics), a hub "Today" view.
+3. **Shared core step 1 + Debrief 2.0:** records, progress, due-again spacing and the debrief shared across modules (one `preconnect-core.js` kept byte-identical in every repo, a test fails if copies drift; no build step).
+4. Look v2 rolled to the other three modules, plus first-run onboarding replacing the text walls.
+5. Shared engine step 2 (lessons, decisions, drills, quiz) and Charge the Line catching up (lesson, drills, randomized variants, instructor injects).
+6. Sound and haptics pack. 7. Drill Night mode for every module. 8. Depth packs (new calls, scenarios, Real Saves). 9. Progression and a 60-second daily drill from the hub. 10. Accessibility, daylight high-contrast mode, landscape.
+Max's likely picks after 1: 2, then 3, then either Charge the Line catch-up or Drill Night. Anything needing a server, accounts, or paid services is proposed separately and never built without his say-so.
+
+**Guardrails from Max for later milestones:**
+- Real Saves about mass-casualty events (for example the marathon bombing) or any school scenario: survivor- and rescuer-centered, no graphic detail, no focus on attackers, published sources only. **Run the content past Max before building.**
+- New Patient Contact calls stay subject to the pending MCA review: generic names, and flag every protocol assumption.
+- **Hold all new BLS content until after Max's AHA instructor course on November 7, 2026**, so it matches the official 2025 course.
+- Share cards never include names or personal history by default.
+- Max will supply photos of Engine 10-2's pump panel for the photo map; tell him exactly which shots are needed when that milestone starts.
+- Keep the non-negotiables: guideline accuracy, privacy (no names in statistics, the opt-out), trademarks and own-words content, offline-first, no accounts, mobile-first. Test like a finger. Keep every suite green and add tests for anything a person would feel.
+
 ---
 
 # This repo: Charge the Line (`charge-the-line` → `/charge-the-line/`)
 
-**Current version: 2.4.0.** Pump panel simulator for **Engine 10-2**: HME 1871-Spectr, Cummins ISL9 400 hp, Allison 3000EVS, Hale Q-Flo 1250 GPM single-stage pump, 800-gallon tank (2024, Kodiak Emergency Vehicles, HME build #23104).
+**Current version: 2.5.0.** Pump panel simulator for **Engine 10-2**: HME 1871-Spectr, Cummins ISL9 400 hp, Allison 3000EVS, Hale Q-Flo 1250 GPM single-stage pump, 800-gallon tank (2024, Kodiak Emergency Vehicles, HME build #23104).
 
 ## Repo housekeeping (done October 3, 2026)
 1. **This repo's name matches the account name, which makes it GitHub's special *profile* repository.** A `README.md` at the root appears on Max's **public GitHub profile.** **Never add a root `README.md`.** (`README.txt` is fine.)

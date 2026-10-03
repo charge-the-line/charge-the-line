@@ -62,3 +62,11 @@ The suite has been verified to **catch planted bugs**: removing the answer shuff
 3. Map new decisions and penalties to guide cards.
 4. Run `balance` and rewrite answers until it passes.
 5. Run the full suite several times plus the browser check; bump all three version numbers.
+
+## Milestone 1 checks (added October 2026)
+
+Foundation fixes: fonts served from this site, screen wake lock, finger-sized buttons. The `syntax` section (the hub: the plain list) now also proves:
+- Fonts self-hosted in `fonts/`, no Google reference, every file in the cache list.
+- Screen wake lock: requested when a mission starts (`brief-go`), released at the menu.
+- Intro and menu version text equal `APP_VERSION`.
+- Browser check: any visible button under 44 px tall fails the screen.

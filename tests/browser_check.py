@@ -6,6 +6,7 @@ import pathlib, sys
 from playwright.sync_api import sync_playwright
 URL = (pathlib.Path(__file__).resolve().parent.parent / 'index.html').as_uri()
 OVER = "(()=>{let m=0;document.querySelectorAll('body *').forEach(e=>{if(e.offsetParent===null)return;const r=e.getBoundingClientRect();m=Math.max(m,r.right-window.innerWidth);});return Math.round(m);})()"
+SMALL = "(()=>{let n=0;document.querySelectorAll('button').forEach(e=>{if(e.offsetParent===null)return;const r=e.getBoundingClientRect();if(r.width<2||r.height<2||r.bottom<0||r.top>innerHeight)return;if(r.height<44)n++;});return n;})()"
 errs, rows = [], []
 with sync_playwright() as p:
     b = p.chromium.launch()
@@ -21,9 +22,9 @@ with sync_playwright() as p:
             if pg.is_visible('#case-go'): pg.click('#case-go'); pg.wait_for_timeout(150)
             if pg.is_visible('#brief-go'): pg.click('#brief-go')
             pg.wait_for_timeout(700)
-            rows.append((w, pg.evaluate("CAMP[S.camp].name").split(' — ')[0][:28], pg.evaluate(OVER)))
+            rows.append((w, pg.evaluate("CAMP[S.camp].name").split(' — ')[0][:28], (pg.evaluate(OVER)+1000*pg.evaluate(SMALL))))
         pg.close()
     b.close()
-for r in rows: print(f"{'PASS' if r[2] <= 1 else 'FAIL'}  {r[0]}px  {r[1]:<30} overflow {r[2]}px")
+for r in rows: print(f"{'PASS' if r[2] <= 1 else 'FAIL'}  {r[0]}px  {r[1]:<30} overflow {r[2]%1000}px · buttons under 44px: {r[2]//1000}")
 print('JavaScript errors:', errs or 'none')
 sys.exit(1 if [r for r in rows if r[2] > 1] or errs else 0)
