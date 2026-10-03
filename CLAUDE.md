@@ -112,9 +112,11 @@ Each of these cost a real bug. Don't relearn them.
 
 **Current version: 2.4.0.** Pump panel simulator for **Engine 10-2**: HME 1871-Spectr, Cummins ISL9 400 hp, Allison 3000EVS, Hale Q-Flo 1250 GPM single-stage pump, 800-gallon tank (2024, Kodiak Emergency Vehicles, HME build #23104).
 
-## ⚠️ Repo housekeeping, do this first
+## Repo housekeeping (done October 3, 2026)
 1. **This repo's name matches the account name, which makes it GitHub's special *profile* repository.** A `README.md` at the root appears on Max's **public GitHub profile.** **Never add a root `README.md`.** (`README.txt` is fine.)
 2. When this repo was created, the `tests/` folder's files were uploaded **flat, at the root** (`qa.js`, `qa2.js`, `qa_guide.js`, `qa_mock.js`, `run_all.js`, `stress.js`, `browser_check.py`). The tests expect to live in `tests/` (they load `../index.html`). **Move them into `tests/`** (`git mv`), run `node tests/run_all.js` to confirm, and commit. The latest upload from the chat may already include a proper `tests/` folder; check before moving, and remove duplicates.
+
+**Done (October 3, 2026, approved by Max):** `qa.js`, `qa2.js`, `qa_guide.js`, `qa_mock.js`, `run_all.js`, `stress.js`, `browser_check.py`, and the tests `README.md` were moved into `tests/` with `git mv`. There is no root `README.md` any more, so nothing from this repo shows on the public profile. `node tests/run_all.js` works in place. Nothing left to clean up here; keep it that way (rule 1 above still applies).
 
 ## Scenarios (`CAMP`, 10 total)
 Regular: 1 Residential structure fire · 2 Commercial building — FDC · 3 Vehicle fire — Class B foam · 4 Rural barn fire — draft · 5 Relay — supply Engine 10-1.
