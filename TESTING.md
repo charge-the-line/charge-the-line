@@ -104,3 +104,7 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 ## Milestone 6 checks (added October 2026)
 
 - `inject` section: with sound on, a penalty plays the bad tone and buzzes and finishing chimes; with sound off the buzz still works and nothing plays.
+
+## Milestone 9 checks (added October 2026)
+
+- `?drill=hydrant` on load opens Hydrant math with the intro hidden; an unknown id is ignored. The mocks pass `global.__loc` through to `location` for this. Browser check adds a daily-link row.

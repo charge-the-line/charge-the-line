@@ -12,7 +12,7 @@ for(const m of html.matchAll(/<[a-z0-9]+([^>]*?)id="([^"]+)"([^>]*)>/g)){const e
 const missing=new Set();const store=Object.assign({},storeInit||{});
 global.localStorage={getItem:k=>k in store?store[k]:null,setItem:(k,v)=>{store[k]=String(v);}};
 global.document={body:mk('body'),addEventListener(){},getElementById:i=>{if(!els[i]){missing.add(i);els[i]=mk(i);}return els[i];},querySelectorAll:()=>[],createElement:()=>mk('x')};
-global.window=Object.assign(global.window||{},{addEventListener(){}});global.location={protocol:'file:'};
+global.window=Object.assign(global.window||{},{addEventListener(){}});global.location=Object.assign({protocol:'file:'},global.__loc||{});
 Object.defineProperty(globalThis,'navigator',{value:{userAgent:'qa-bot',clipboard:{writeText:async t=>{global.__clip=t;}}},configurable:true,writable:true});
 global.performance={now:()=>0};global.setInterval=()=>{};
 global.Blob=function(parts){this.text=parts.join('');global.__blob=this.text;};global.URL={createObjectURL:()=>'blob:x'};
