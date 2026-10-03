@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+/* Charge the Line — full test suite.
+   Usage:  node tests/run_all.js          (everything, about a minute)
+           node tests/run_all.js quick    (syntax, balance, guide, short fuzz)
+           node tests/run_all.js play human    (pick sections)
+   Sections: syntax balance play paths human checks guide stress fuzz
+   Exit code 0 = all passed. */
+global.window=global.window||{};
+const path=require('path'),fs=require('fs'),vm=require('vm'),{execFileSync}=require('child_process');
+const ALL=['syntax','balance','play','paths','human','checks','guide','stress','fuzz'];
+let want=process.argv.slice(2);if(!want.length)want=ALL;if(want.includes('quick'))want=['syntax','balance','guide','fuzz'];
+const results=[];let failed=0;const T0=Date.now();
+function report(section,name,ok,detail=''){results.push({ok});if(!ok)failed++;console.log(`${ok?'PASS':'FAIL'}  ${section.padEnd(8)} ${name}${detail?'  — '+detail:''}`);}
+const quiet=fn=>{const l=console.log;console.log=()=>{};try{return fn();}finally{console.log=l;}};
+const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const short=n=>n.length>38?n.slice(0,37)+'…':n;
+
+if(want.includes('syntax')){try{new vm.Script(html.split('<script>')[1].split('</script>')[0]);report('syntax','index.html script compiles',true);}catch(e){report('syntax','index.html script compiles',false,e.message);}
+  const ver=(html.match(/APP_VERSION='([^']+)'/)||[])[1],sw=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8'),cache=(sw.match(/CACHE = '([^']+)'/)||[])[1];
+  report('syntax','service-worker cache matches app version',cache===`charge-the-line-v${ver}`,`app ${ver}, cache ${cache}`);
+  report('syntax','offline helper only clears its own old caches (other apps on the domain keep theirs)',/k\.startsWith\('charge-the-line-v'\)/.test(sw));}
+
+const env=(want.some(x=>['balance','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
+if(want.includes('balance')){const {CAMP}=env.env.api;let lo=0,sh=0,t=0,first=0;for(const c of CAMP)for(const m of c.missions)for(const s of m.steps)if(s.dec&&s.dec.opts){const L=s.dec.opts.map(x=>x.t.length),g=s.dec.opts.findIndex(x=>x.r==='good');t++;if(L[g]===Math.max(...L))lo++;else if(L[g]===Math.min(...L))sh++;}
+  report('balance','right answer is not usually the longest',lo/t<=.45,`${lo} of ${t} (${Math.round(lo/t*100)}%)`);report('balance','right answer is not usually the shortest',sh/t<=.45,`${sh} of ${t} (${Math.round(sh/t*100)}%)`);
+  report('balance','answer order is shuffled on screen',/d\.opts\.map\(\(o,i\)=>\[o,i\]\)\.sort\(\(\)=>Math\.random\(\)-\.5\)/.test(html));}
+
+if(want.includes('play')){const {CAMP}=env.env.api;for(let ci=0;ci<CAMP.length;ci++){let ok=0,perfect=0;for(const tier of [0,1,2]){const r=quiet(()=>env.play(ci,tier));if(r.ok)ok++;if(r.score===100)perfect++;}
+  report('play',`${short(CAMP[ci].name)}: all tiers complete`,ok===3,`${ok}/3, ${perfect}/3 perfect`);}}
+
+if(want.includes('paths')){const {CAMP}=env.env.api;for(let ci=0;ci<CAMP.length;ci++){if(!CAMP[ci].real)continue;let ok=0;const sc=[];for(const ch of ['partial','bad']){const r=quiet(()=>env.play(ci,0,ch));if(r.ok)ok++;sc.push(r.score);}
+  report('paths',`${short(CAMP[ci].name)}: completable after wrong answers`,ok===2,`scores ${sc.join(' / ')}`);}}
+
+if(want.includes('human')){const {CAMP}=env.env.api;for(let ci=0;ci<CAMP.length;ci++){let ok=0;const sc=[];for(const tier of [0,1,2]){const r=quiet(()=>env.play(ci,tier,'good',{human:true}));if(r.ok)ok++;sc.push(r.score);}
+  report('human',`${short(CAMP[ci].name)}: completes at human pace`,ok===3,`scores ${sc.join(' / ')}`);}}
+
+for(const [sec,file,marker] of [['checks','qa2.js','ALL CHECKS PASSED'],['guide','qa_guide.js','ALL GUIDE CHECKS PASSED']])if(want.includes(sec)){
+  let out='';try{out=execFileSync(process.execPath,[path.join(__dirname,file)],{cwd:path.join(__dirname,'..'),encoding:'utf8',timeout:240000});}catch(e){out=(e.stdout||'')+(e.stderr||'');}
+  const fails=out.split('\n').filter(l=>/✗/.test(l));report(sec,`${file}: ${sec==='checks'?'chaos faults, wrong-answer paths, pacing, cost':'guide cards, links, penalties'}`,out.includes(marker),fails.slice(0,3).map(x=>x.trim()).join(' | '));}
+
+if(want.includes('stress')){const {CAMP}=env.env.api;let total=0,bad=0;for(let ci=0;ci<CAMP.length;ci++)for(let k=0;k<20;k++)for(const tier of [0,1,2]){total++;if(!quiet(()=>env.play(ci,tier)).ok)bad++;}
+  report('stress',`${total} randomized playthroughs`,bad===0,bad?bad+' failed':'');}
+
+if(want.includes('fuzz')){const {boot}=require('./qa_mock.js');const ids=[...html.matchAll(/<button[^>]*id="([^"$]+)"/g)].map(m=>m[1]);let crashes=0;const errs=[];const runs=want.length<=4?20:60;
+  for(let run=0;run<runs;run++){const {api}=boot();const {$,CAMP,S}=api;api.setTier(run%3);api.loadCampaign(run%CAMP.length);
+    try{for(let i=0;i<1500;i++){if(api.DEC()){$('dec-opts').onclick({target:{closest:()=>({dataset:{i:String(i%3)}})}});$('dec-go').onclick();}
+      if(Math.random()<.4){const b=$(ids[Math.floor(Math.random()*ids.length)]);b.onclick&&b.onclick();}S.running=S.running||Math.random()<.5;api.tick(.25);
+      for(const k of ['psi','rpm','tank','score'])if(!Number.isFinite(S[k]))throw new Error('non-finite '+k);}}catch(e){crashes++;errs.push(e.message);}}
+  report('fuzz',`${runs} runs × 1500 random taps, no crashes or NaN`,crashes===0,crashes?[...new Set(errs)].slice(0,3).join(' | '):'');}
+
+console.log(`\n${results.length-failed}/${results.length} checks passed · ${Math.round((Date.now()-T0)/1000)} s`);process.exit(failed?1:0);
