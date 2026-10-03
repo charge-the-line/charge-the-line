@@ -146,6 +146,7 @@ button{min-height:48px}
 </style>
 </head>
 <body>
+<div id="pc-drill" class="pc-drillbar hidden" data-hub="../"></div>
 
 <div class="brand">CHARGE THE LINE</div>
 <div class="strip">
@@ -240,7 +241,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.9.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.10.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -255,7 +256,7 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.9.0</span></h2>
+  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.10.0</span></h2>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"><button id="b-drills">Quick drills</button><button id="b-math">Pump math</button><button id="b-progress">My progress</button><button id="b-howto">How to play</button></div>
@@ -324,6 +325,7 @@ button{min-height:48px}
   <div id="g-body"></div>
   <div style="display:flex;gap:8px;margin-top:6px"><button id="g-index" style="flex:1">All topics</button><button class="warn" id="g-close" style="flex:1">Close</button></div>
 </div></div>
+<div class="overlay hidden" id="pc-drillov" style="z-index:25"><div class="box" id="pc-drillbox"></div></div>
 <button id="inst-fab" class="fab hidden">Instructor</button>
 <div class="overlay hidden" id="instov" style="z-index:22"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center"><span class="tag-real" style="background:#7a5cff;color:#fff;margin:0">INSTRUCTOR</span><button id="inst-close" class="warn">Close — resume</button></div>
@@ -674,7 +676,7 @@ const VARIANTS={
  3:[{id:'A',pre200:{len:200,noz:'lpfog'}},{id:'B',pre200:{len:300,noz:'lpfog'}},{id:'C',pre200:{len:250,noz:'sb1516'}}],
  4:[{id:'A',hyd:60,lay:800},{id:'B',hyd:50,lay:1000},{id:'C',hyd:70,lay:600}]};
 const HYDTXT={50:'weak hydrant on the map, expect the residual to sag',60:'average hydrant',70:'strong hydrant'};
-function pickVariant(i){const vs=VARIANTS[i];if(!vs)return null;const f=(typeof window!=='undefined'&&window.FORCE_V&&window.FORCE_V[i]);if(f)return vs.find(v=>v.id===f)||vs[0];if(load().std)return vs[0];return vs[Math.floor(Math.random()*vs.length)];}
+function pickVariant(i){const vs=VARIANTS[i];if(!vs)return null;const f=(typeof window!=='undefined'&&window.FORCE_V&&window.FORCE_V[i]);if(f)return vs.find(v=>v.id===f)||vs[0];if(load().std||pcDrill())return vs[0];return vs[Math.floor(Math.random()*vs.length)];}
 function applyVariant(i){resetLayout();const v=pickVariant(i);S.variant=v?v.id:'';S.vtext='';if(!v)return;
   for(const k in LINE_DEF)if(v[k])Object.assign(LINE[k],v[k]);if(v.lay)RELAY.lay=v.lay;if(v.hyd)S.hydCap=v.hyd;
   const parts=[];if(v.pre200)parts.push(describe(LINE.pre200));if(v.lay)parts.push(`${v.lay} ft of 5" to 10-1`);if(v.hyd)parts.push(HYDTXT[v.hyd]||'');S.vtext=parts.filter(Boolean).join(' · ');
@@ -1032,7 +1034,7 @@ $('b-reset').onclick=()=>loadCampaign(S.camp);$('b-menu').onclick=showMenu;
 const KEY='e102-pump-trainer';const INT=[1,3,7,14,30];
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{name:'',scen:{},math:{right:0,total:0}};}catch(e){return {name:'',scen:{},math:{right:0,total:0}};}}
 function save(p){try{localStorage.setItem(KEY,JSON.stringify(p));}catch(e){}}
-function recordClear(i,score){const p=load();const s=p.scen[i]||{level:0,best:0,runs:0,last:null,tier:0};s.runs++;s.best=Math.max(s.best,score);s.last=new Date().toISOString();s.tier=Math.max(s.tier,TIER);s.level=score>=70?Math.min(INT.length-1,s.level+1):0;p.scen[i]=s;p.log=(p.log||[]).concat([{i,score,tier:TIER,d:new Date().toISOString(),v:S.variant||undefined,inst:(S.injects&&S.injects.length)?1:undefined}]).slice(-500);save(p);}
+function recordClear(i,score){const p=load();const s=p.scen[i]||{level:0,best:0,runs:0,last:null,tier:0};s.runs++;s.best=Math.max(s.best,score);s.last=new Date().toISOString();s.tier=Math.max(s.tier,TIER);s.level=score>=70?Math.min(INT.length-1,s.level+1):0;p.scen[i]=s;p.log=(p.log||[]).concat([pcDrillStamp({i,score,tier:TIER,d:new Date().toISOString(),v:S.variant||undefined,inst:(S.injects&&S.injects.length)?1:undefined})]).slice(-500);save(p);}
 function dueInfo(i){const p=load(),s=p.scen[i];if(!s||!s.last)return {txt:'Not yet cleared',due:true};const days=(Date.now()-new Date(s.last))/86400000,gap=INT[Math.max(0,s.level-1)];return days>=gap?{txt:'Due for review',due:true}:{txt:`Next in ${Math.ceil(gap-days)} d`,due:false};}
 function showMenu(){keepAwake(false);exitLearn(false);$('briefov').classList.add('hidden');S.running=false;$('b-resume').classList.toggle('hidden',!S.active||!!DEC);$('tierhelp').textContent=TIERTXT[TIER];$('menu').querySelectorAll('[data-tier]').forEach(b=>b.classList.toggle('on',+b.dataset.tier===TIER));
   const card=(c,i)=>{const d=dueInfo(i);return `<button class="scen" data-i="${i}"><b>${c.name}</b><span>${c.desc}</span><span class="due ${d.due?'':'ok'}">${d.txt}</span></button>`;};
@@ -1077,7 +1079,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.9.0';
+const APP_VERSION='2.10.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1146,7 +1148,7 @@ function lessonDone(score,right,n){keepAwake(false);pca('end',pca('bkt',score));
 $('lesson-box').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-l]');if(b)lessonAct(b.dataset);};
 $('b-lesson').onclick=lessonStart;$('ld-again').onclick=()=>{$('ldone').classList.add('hidden');lessonStart();};$('ld-menu').onclick=()=>{$('ldone').classList.add('hidden');showMenu();};
 /* lessons and drills are recorded apart from scenario runs: p.extra = [{kind, id, score, d}] (the hub reads it) */
-function recordX(kind,id,score){const p=load();p.extra=(p.extra||[]).concat([{kind,id,score,d:new Date().toISOString()}]).slice(-300);save(p);}
+function recordX(kind,id,score){const p=load();p.extra=(p.extra||[]).concat([pcDrillStamp({kind,id,score,d:new Date().toISOString()})]).slice(-300);save(p);}
 /* =================== Quick drills (shared quiz engine). Every answer key is computed, and the tests recompute it independently. =================== */
 const HOSE_LABEL={1.75:'1¾"',2.5:'2½"',3:'3"',5:'5"'};
 function flOf(size,gpm,len){return FLC[size]*Math.pow(gpm/100,2)*(len/100);}
@@ -1263,7 +1265,8 @@ const INJECTS=[
  {id:'strainer',label:'Strainer fouls in the mud',ok:()=>{const c=CAMP[S.camp];return !S.fault&&!!c.draft&&!c.depth&&!c.pond&&S.primed;}},
  {id:'lowtank',label:'Tank gauge drops to 100 gallons',ok:()=>{const sup=supplied();return sup.tank&&!sup.hyd&&!sup.draft&&S.tank>150;},run:()=>{S.tank=100;radio('FF Cruz','Tank gauge just dropped — about a hundred gallons left','bad');}}];
 function inject(id){const x=INJECTS.find(y=>y.id===id);if(!x||!S.active||!x.ok())return false;if(x.run)x.run();else applyFault(id);S.injects=(S.injects||[]).concat(x.label);return true;}
-function instSync(){$('b-inst').textContent='Instructor mode: '+(INST?'on':'off');$('b-inst').classList.toggle('on',INST);$('inst-fab').classList.toggle('hidden',!(INST&&S.active));$('inst-fab').textContent=INSTHOLD?'Frozen — tap to resume':'Instructor';}
+const instOn=()=>INST||!!pcDrill();
+function instSync(){$('b-inst').textContent='Instructor mode: '+(INST?'on':pcDrill()?'on (Drill Night)':'off');$('b-inst').classList.toggle('on',instOn());$('inst-fab').classList.toggle('hidden',!(instOn()&&S.active));$('inst-fab').textContent=INSTHOLD?'Frozen — tap to resume':'Instructor';}
 function instOpen(){if(!S.active)return;S.instWasRunning=S.running;S.running=false;const c=CAMP[S.camp],m=c.missions[S.mission];
   $('inst-body').innerHTML=`<p style="font-size:15px;color:var(--muted)">${esc(c.name)} · mission ${S.mission+1}: ${esc(m.title)} · score ${S.score}${S.variant?' · layout '+S.variant:''}${S.fault?' · active fault: '+esc(S.fault):''}</p><div class="sec">Inject now</div>`+INJECTS.map(x=>{const ok=x.ok();return `<button class="scen" data-inj="${x.id}"${ok?'':' disabled'}><b>${esc(x.label)}</b><span>${ok?'Tap to inject. The crew will call it on the radio.':'Not available at this point'}</span></button>`;}).join('')+`<div class="sec">Clock</div><button data-inj="${INSTHOLD?'resume':'freeze'}" style="width:100%">${INSTHOLD?'Resume the clock':'Freeze and discuss'}</button>`;
   $('instov').classList.remove('hidden');}
@@ -1272,11 +1275,11 @@ function instAct(a){if(a==='freeze'){INSTHOLD=true;S.running=false;}else if(a===
 $('inst-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-inj]');if(!b||b.disabled)return;instAct(b.dataset.inj);};
 $('inst-fab').onclick=instOpen;$('inst-close').onclick=instClose;
 $('b-inst').onclick=()=>{INST=!INST;const p=load();p.inst=INST;save(p);instSync();};
-function stdSync(){const std=!!load().std;$('b-std').textContent='Layouts: '+(std?'standard':'varied');$('b-std').classList.toggle('on',std);}
+function stdSync(){const std=!!load().std;$('b-std').textContent='Layouts: '+(std?'standard':pcDrill()?'standard (Drill Night)':'varied');$('b-std').classList.toggle('on',std||!!pcDrill());}
 $('b-std').onclick=()=>{const p=load();p.std=!p.std;save(p);stdSync();};
 
 /* ===== boot ===== */
-freshState();INST=!!load().inst;instSync();stdSync();S.camp=0;buildValves(CAMP[0].valves);refreshSwitches();modeUI();render();
+freshState();INST=!!load().inst;pcDrillBind();instSync();stdSync();S.camp=0;buildValves(CAMP[0].valves);refreshSwitches();modeUI();render();
 if(load().seenIntro){$('intro').classList.add('hidden');showMenu();}
 let last=performance.now();
 setInterval(()=>{const now=performance.now();const dt=Math.min(0.5,(now-last)/1000);last=now;if(S.running)tick(dt);else render();},250);

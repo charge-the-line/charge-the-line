@@ -95,3 +95,8 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 - `inject`: each inject (burst, governor, hydrant sharing, strainer, tank drop) lands on Guided when its guard allows and the bot still finishes the mission. The panel is hidden until instructor mode is on and a scenario is active, pauses while open, freezes until resumed, disables injects that don't apply right now; an injected run is marked in the record and named in the debrief. The progress tables show lesson and drill bests and layouts seen; the CSV carries lesson and drill rows (`qa2` counts `CAMP.length+7`).
 - Harness notes: `play(ci, tier, choice, {variant:'B', inject:{mission, at, f}})` pins a layout and keeps trying an inject from `at` seconds into that mission until it lands. The bot reads both bands on the two-line step and, when they don't overlap, pumps for the higher line and gates the other a quarter turn at a time (layout C). **Boot-based checks run before the play harness is created:** a later `boot()` swaps the harness's document and storage, so `run_all.js` keeps those checks above the `env=` line.
 - Browser check opens the progress screen and, with instructor mode on, the Instructor panel inside a scenario.
+
+## Milestone 7 checks (added October 2026)
+
+- `inject` section: with a session on, twelve loads all use layout A, the Instructor button shows without the switch, the bar reads "Up: Jo", a finished scenario and a finished lesson are stamped with who, instructor and night, and a run without a session carries none of it.
+- Browser check: with a session in storage the picker opens on load and the bar shows after a pick.

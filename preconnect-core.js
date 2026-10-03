@@ -1,9 +1,9 @@
-/* preconnect-core 1.2.0 sha256:5291e4448653cd0c2aca726816106004de7c0ad2b098079cdffaf46d4ea6179e */
+/* preconnect-core 1.3.0 sha256:78e6e991d71abcd2e874f3325d38d4491ce270270433f4db790097d947359131 */
 /* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all four modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
    Never define $ or esc here: every app has its own. */
-const PCORE_VERSION='1.2.0';
+const PCORE_VERSION='1.3.0';
 function pcEsc(t){return String(t===undefined||t===null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* ---------- Settings: one sheet, one key ('preconnect-settings'), honored by every module. Statistics use the Privacy page's key. ---------- */
@@ -74,6 +74,33 @@ function pcQuizAct(S,ds){if(!S||!S.cfg)return false;const c=S.cfg,a=ds.q,g=id=>d
   if(a==='next'){S.i++;if(S.i<S.qs.length)pcQuizQ(S);else{const sc=Math.round(S.right/S.qs.length*100);S.score=sc;const b=g(c.bodyEl||'qz-body');if(b)b.innerHTML=`<div class="big">${sc}</div><p>${S.right} of ${S.qs.length} right.${c.note?' '+pcEsc(c.note(sc)):''}</p>`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<div class="row"><button data-q="${c.menuAction||'quit'}">${pcEsc(c.menuLabel||'Done')}</button><button data-q="again" class="go">Again</button></div>`;if(c.onDone)c.onDone(sc,S.right,S.qs.length);}return true;}
   return false;}
 /* The Station look shared by every app (Milestone 4) plus the debrief styles, injected once in <head>; each app's own tokens apply, with safe fallbacks. */
+/* ===== Drill Night (Milestone 7): one instructor, a roster, and every module credits whoever is up. The session lives in localStorage 'preconnect-drill' = {on, inst, org, roster[], who, start}; names stay on the phone and never reach statistics. Each page carries <div id="pc-drill" class="pc-drillbar hidden"> and <div class="overlay hidden" id="pc-drillov"><div class="box" id="pc-drillbox"></div></div>, calls pcDrillBind() at boot, and wraps each saved run in pcDrillStamp(). ===== */
+const PC_DRILLKEY='preconnect-drill';
+function pcDrillRaw(){try{return JSON.parse(localStorage.getItem(PC_DRILLKEY))||{};}catch(e){return {};}}
+function pcDrillSave(d){try{localStorage.setItem(PC_DRILLKEY,JSON.stringify(d));}catch(e){}}
+function pcDrill(){const d=pcDrillRaw();return d&&d.on?d:null;}
+function pcDrillStart(inst,roster,org){const d=pcDrillRaw();const names=(roster||[]).map(x=>String(x||'').trim()).filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i);
+  Object.assign(d,{on:true,inst:String(inst||'').trim(),org:String(org||'').trim(),roster:names,who:'',start:new Date().toISOString()});delete d.ended;pcDrillSave(d);return d;}
+function pcDrillEnd(){const d=pcDrillRaw();d.on=false;d.who='';d.ended=new Date().toISOString();pcDrillSave(d);return d;}
+function pcDrillWho(name){const d=pcDrillRaw();if(name!==undefined){name=String(name||'').trim();d.who=name;if(name&&!(d.roster||[]).includes(name))d.roster=(d.roster||[]).concat([name]);pcDrillSave(d);}return d.on?(d.who||''):'';}
+function pcDrillStamp(run){const d=pcDrill();if(!d||!run)return run;if(d.who)run.who=[d.who];if(d.inst)run.inst=d.inst;run.night=d.start;return run;}
+function pcDrillBar(){const g=id=>document.getElementById(id);const bar=g('pc-drill');if(!bar)return;const d=pcDrill();bar.classList.toggle('hidden',!d);if(!d)return;
+  const hub=(bar.dataset&&bar.dataset.hub)||'../';const who=d.who||'';
+  const h=`<span class="pc-drill-tag">DRILL NIGHT</span><button class="pc-drill-who" data-drill="pick">${who?'Up: '+pcEsc(who):'Who\'s up? Tap to pick'}</button><a class="pc-drill-link" href="${pcEsc(hub)}"${hub==='#'?' data-drill="hub"':''}>Board</a>`;
+  if(bar.innerHTML!==h)bar.innerHTML=h;}
+function pcDrillPick(){const g=id=>document.getElementById(id);const ov=g('pc-drillov'),box=g('pc-drillbox');if(!ov||!box)return;const d=pcDrill();if(!d)return;
+  box.innerHTML=`<div class="sec" style="margin-top:0">Who's up?</div><p class="small" style="margin:0 0 8px">Runs are credited to this person until you switch.</p>`+(d.roster||[]).map(n=>`<button class="pc-drill-name${d.who===n?' on':''}" data-drill="who" data-n="${pcEsc(n)}">${pcEsc(n)}</button>`).join('')
+    +`<div class="flex" style="margin-top:10px"><input id="pc-drill-new" placeholder="Add a name" style="flex:1;min-width:0"><button data-drill="add">Add</button></div><div class="flex" style="margin-top:10px"><button data-drill="none" style="flex:1">Nobody, just practicing</button><button class="go" data-drill="close" style="flex:1">Done</button></div>`;
+  ov.classList.remove('hidden');}
+function pcDrillAct(a,b){const g=id=>document.getElementById(id);const ov=g('pc-drillov');
+  if(a==='pick')pcDrillPick();else if(a==='who'){pcDrillWho(b&&b.dataset?b.dataset.n:'');pcDrillBar();if(ov)ov.classList.add('hidden');}
+  else if(a==='add'){const inp=g('pc-drill-new');const n=(inp&&inp.value||'').trim();if(!n)return;pcDrillWho(n);pcDrillBar();if(ov)ov.classList.add('hidden');}
+  else if(a==='none'){pcDrillWho('');pcDrillBar();if(ov)ov.classList.add('hidden');}else if(a==='close'){if(ov)ov.classList.add('hidden');}
+  else if(a==='hub'){if(typeof window!=='undefined'&&typeof window.onPcDrillHub==='function')window.onPcDrillHub();}}
+function pcDrillBind(){const g=id=>document.getElementById(id);const bar=g('pc-drill'),ov=g('pc-drillov');if(!bar||!ov)return;
+  const h=e=>{const b=e&&e.target&&e.target.closest&&e.target.closest('[data-drill]');if(!b)return;pcDrillAct(b.dataset.drill,b);};bar.onclick=h;ov.onclick=h;
+  pcDrillBar();const d=pcDrill();if(d&&!d.who&&!(bar.dataset&&bar.dataset.auto==='no'))pcDrillPick();}
+
 const PC_LOOK_CSS=`html[data-contrast="high"]{--bg:#000;--deck:#0e1013;--deck2:#181b20;--line:#4b535e;--ink:#fff;--soft:#d6dce3}html[data-text="large"] body{zoom:1.12}
 .sec{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft,#aab2bd);margin:22px 0 8px;display:flex;align-items:center;gap:10px}.sec:after{content:"";flex:1;height:1px;background:var(--line,#2a2f37)}
 .chip{display:inline-block;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:.5px;padding:2px 8px;border-radius:4px;background:var(--acc,#ff7a1a);color:var(--acc-ink,#0a0c0f);white-space:nowrap;line-height:1.5}.chip.dim{background:var(--deck2,#1c2026);color:var(--soft,#aab2bd)}.chip.due{background:#ffc23d;color:#0a0c0f}
@@ -83,6 +110,9 @@ const PC_LOOK_CSS=`html[data-contrast="high"]{--bg:#000;--deck:#0e1013;--deck2:#
 .set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line,#2a2f37)}.set:first-of-type{border-top:0}.set .k{font-size:16px}.set .k small{display:block;font-size:13px;color:var(--soft,#aab2bd);line-height:1.35}
 .seg2{display:inline-flex;border:2px solid var(--line,#2a2f37);border-radius:6px;overflow:hidden;flex:none}.seg2 button{border:0;border-radius:0;min-height:46px;padding:8px 12px;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:15px;text-transform:uppercase;letter-spacing:.5px;background:transparent;color:var(--ink,#f6f7f9)}.seg2 button.on{background:var(--ink,#f6f7f9)!important;border-color:var(--ink,#f6f7f9)!important;color:#0a0c0f!important}
 .gear{min-height:46px;padding:8px 10px;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:15px;letter-spacing:.5px;text-transform:uppercase;background:transparent;border:2px solid var(--line,#2a2f37);color:var(--ink,#f6f7f9);border-radius:6px}
+.pc-drillbar{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:6px 8px;border:1px solid #7a5cff;border-radius:8px;background:#1b1535}.pc-drillbar.hidden{display:none}.pc-drill-tag{font-family:"Saira Condensed",sans-serif;font-weight:700;font-size:13px;letter-spacing:2px;color:#c9b8ff;white-space:nowrap}
+.pc-drill-who{flex:1;min-width:0;min-height:44px;text-align:left;background:#3b2a6b;border:2px solid #7a5cff;color:#fff;border-radius:6px;padding:6px 10px;font-family:inherit;font-size:15px;font-weight:700;text-transform:none;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-drill-link{color:#c9b8ff;font-size:14px;font-weight:700;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;padding:0 6px}.pc-drill-name{display:block;width:100%;text-align:left;margin:6px 0;min-height:48px;font-size:17px;text-transform:none;letter-spacing:0}.pc-drill-name.on{border-color:#7a5cff;background:#3b2a6b;color:#fff}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}html[data-motion="off"] *{animation:none!important;transition:none!important}`;
 function pcInstallCSS(){if(typeof document==='undefined'||!document.head||!document.createElement||document.getElementById('pc-core-css'))return;const st=document.createElement('style');st.id='pc-core-css';
   st.textContent=PC_LOOK_CSS+'.pc-sec{font-family:"Saira Condensed","Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft,#aab2bd);margin:14px 0 6px;display:flex;align-items:center;gap:10px}.pc-sec:after{content:"";flex:1;height:1px;background:var(--line,#2a2f37)}'
