@@ -145,7 +145,7 @@ Max's likely picks after 1: 2, then 3, then either Charge the Line catch-up or D
 
 # This repo: Charge the Line (`charge-the-line` → `/charge-the-line/`)
 
-**Current version: 2.14.0.** Pump panel simulator for **Engine 10-2**: HME 1871-Spectr, Cummins ISL9 400 hp, Allison 3000EVS, Hale Q-Flo 1250 GPM single-stage pump, 800-gallon tank (2024, Kodiak Emergency Vehicles, HME build #23104).
+**Current version: 2.14.1.** Pump panel simulator for **Engine 10-2**: HME 1871-Spectr, Cummins ISL9 400 hp, Allison 3000EVS, Hale Q-Flo 1250 GPM single-stage pump, 800-gallon tank (2024, Kodiak Emergency Vehicles, HME build #23104). The menu opens with the module title, the tagline "Water on the fire, pressure in the line." (the version literal sits in that line) and a "What this is" card (2.14.1), the same header every module carries.
 
 ## Repo housekeeping (done October 3, 2026)
 1. **This repo's name matches the account name, which makes it GitHub's special *profile* repository.** A `README.md` at the root appears on Max's **public GitHub profile.** **Never add a root `README.md`.** (`README.txt` is fine.)
