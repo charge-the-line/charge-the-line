@@ -100,3 +100,7 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 
 - `inject` section: with a session on, twelve loads all use layout A, the Instructor button shows without the switch, the bar reads "Up: Jo", a finished scenario and a finished lesson are stamped with who, instructor and night, and a run without a session carries none of it.
 - Browser check: with a session in storage the picker opens on load and the bar shows after a pick.
+
+## Milestone 6 checks (added October 2026)
+
+- `inject` section: with sound on, a penalty plays the bad tone and buzzes and finishing chimes; with sound off the buzz still works and nothing plays.

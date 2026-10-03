@@ -241,7 +241,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.10.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.11.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -256,7 +256,7 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.10.0</span></h2>
+  <h2>Menu <span style="font-size:15px;color:var(--muted);font-weight:400">v2.11.0</span></h2>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"><button id="b-drills">Quick drills</button><button id="b-math">Pump math</button><button id="b-progress">My progress</button><button id="b-howto">How to play</button></div>
@@ -346,7 +346,7 @@ button{min-height:48px}
  <div class="set"><div class="k">High contrast<small>Black background, brighter text: for daylight.</small></div><div class="seg2" data-set="contrast"><button data-val="normal">Off</button><button data-val="high">On</button></div></div>
  <div class="set"><div class="k">Motion<small>Auto follows your phone's Reduce Motion setting.</small></div><div class="seg2" data-set="motion"><button data-val="auto">Auto</button><button data-val="off">Off</button></div></div>
  <div class="sec">Feedback</div>
- <div class="set"><div class="k">Sound<small>Monitor beeps, metronome, voice prompts, in modules that have them.</small></div><div class="seg2" data-set="sound"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
+ <div class="set"><div class="k">Sound<small>A metronome for compressions, a tone for right and wrong, a chime when you finish, and Patient Contact's monitor.</small></div><div class="seg2" data-set="sound"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
  <div class="set"><div class="k">Haptics<small>A tap you can feel on compressions and mistakes.</small></div><div class="seg2" data-set="haptics"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
  <div class="sec">Privacy</div>
  <div class="set"><div class="k">Anonymous statistics<small>Counts like "someone finished the infant station." Never names. <a href="../privacy.html" style="color:var(--acc)">Details</a></small></div><div class="seg2" data-set="stats"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
@@ -390,7 +390,7 @@ const VALVES={
   booster:{n:'Booster reel',tag:'1" reel',cls:'',gpm:40}
 };
 const S={};const $=id=>document.getElementById(id);
-function radio(who,msg,cls=''){const cc=(typeof CAMP!=='undefined')&&CAMP[S.camp];if(cc&&cc.noise&&!S.earpiece&&S.rpm>1300&&!['Engineer','Guide','Officer'].includes(who)){msg='▒▒ unreadable over the pump ▒▒';cls='bad';if(TIER===0&&!S.noiseHint){S.noiseHint=true;setTimeout(()=>radio('Guide','You can\'t make out crew traffic over the pump. That is the real problem at the heart of this fire — keep playing.'),0);}}const r=$('radio');const d=document.createElement('div');d.innerHTML=`<span class="who">${who}:</span> <span class="${cls}">${msg}</span>`;r.prepend(d);while(r.children.length>16)r.lastChild.remove();}
+function radio(who,msg,cls=''){const cc=(typeof CAMP!=='undefined')&&CAMP[S.camp];if(cc&&cc.noise&&!S.earpiece&&S.rpm>1300&&!['Engineer','Guide','Officer'].includes(who)){msg='▒▒ unreadable over the pump ▒▒';cls='bad';if(TIER===0&&!S.noiseHint){S.noiseHint=true;setTimeout(()=>radio('Guide','You can\'t make out crew traffic over the pump. That is the real problem at the heart of this fire — keep playing.'),0);}}if(cls==='bad')pcFx('bad');else if(cls==='good')pcCue('good');const r=$('radio');const d=document.createElement('div');d.innerHTML=`<span class="who">${who}:</span> <span class="${cls}">${msg}</span>`;r.prepend(d);while(r.children.length>16)r.lastChild.remove();}
 function ding(pts,why){S.score=Math.max(0,S.score-pts);S.incidents.push(why);radio('Engineer',`${why} (−${pts})`,'bad');if(TIER===0&&typeof incidentKey==='function'){const k=incidentKey(why);if(k)radio('Guide',`Why it matters: Panel guide → ${GUIDE[k].name}`);}}
 function freshState(){
   Object.assign(S,{pump:false,ttp:true,supply:false,hydrant:false,hydCap:60,bled:false,fill:false,fdcLine:false,relayLine:false,
@@ -1013,7 +1013,7 @@ $('dec-real').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]')
 $('dec-go').onclick=()=>{if(!DEC)return;$('decov').classList.add('hidden');const {s,j}=DEC;stepsDone[j]=true;const el=$('st-'+j);if(el)el.classList.add('done');if(s.dec.after)s.dec.after();DEC=null;S.running=true;};
 function showCase(i){const c=CAMP[i];$('case-t').textContent=c.name;$('case-body').innerHTML=c.story;$('case-src').textContent=c.source;$('case-go').onclick=()=>{$('caseov').classList.add('hidden');loadCampaign(i);};$('caseov').classList.remove('hidden');}
 $('case-back').onclick=()=>{$('caseov').classList.add('hidden');showMenu();};
-function finish(){keepAwake(false);
+function finish(){keepAwake(false);pcFx('done');
   const c=CAMP[S.camp],m=c.missions[S.mission],last=S.mission>=c.missions.length-1;
   $('done-title').textContent=m.title+(last?' — scenario complete':' — complete');countUp($('done-score'),S.score,600);
   const learnKeys=[...new Set(S.incidents.map(incidentKey).filter(Boolean))];
@@ -1079,7 +1079,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.10.0';
+const APP_VERSION='2.11.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1143,7 +1143,7 @@ const LESSON=[
 let LS=null;
 function lessonStart(){keepAwake(true);$('menu').classList.add('hidden');pca('begin','ctl','lesson',()=>LS?`slide-${LS.i+1}`:'');LS=pcLessonStart({slides:LESSON,label:'Pump lesson',onDone:lessonDone,onQuit:()=>{pca('abandon');LS=null;keepAwake(false);showMenu();}});}
 function lessonAct(ds){pcLessonAct(LS,ds);}
-function lessonDone(score,right,n){keepAwake(false);pca('end',pca('bkt',score));const prev=(load().extra||[]).filter(x=>x.kind==='lesson');recordX('lesson','lesson',score);LS=null;
+function lessonDone(score,right,n){keepAwake(false);pcFx('done');pca('end',pca('bkt',score));const prev=(load().extra||[]).filter(x=>x.kind==='lesson');recordX('lesson','lesson',score);LS=null;
   $('ld-score').textContent='';countUp($('ld-score'),score,600);$('ld-body').innerHTML=pcDebriefBody({score,compare:pcBestPrev(prev),kicker:'Next: run a scenario and watch the gauges do what the lesson said.',metrics:[['Right on the first try',`${right} of ${n}`]],clean:false});$('ldone').classList.remove('hidden');}
 $('lesson-box').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-l]');if(b)lessonAct(b.dataset);};
 $('b-lesson').onclick=lessonStart;$('ld-again').onclick=()=>{$('ldone').classList.add('hidden');lessonStart();};$('ld-menu').onclick=()=>{$('ldone').classList.add('hidden');showMenu();};

@@ -1,17 +1,18 @@
-/* preconnect-core 1.3.0 sha256:78e6e991d71abcd2e874f3325d38d4491ce270270433f4db790097d947359131 */
+/* preconnect-core 1.4.0 sha256:b3973248a11a66602eaeebce9d8160e48543a4a05b0c8f167ea391b5e61cd206 */
 /* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all four modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
    Never define $ or esc here: every app has its own. */
-const PCORE_VERSION='1.3.0';
+const PCORE_VERSION='1.4.0';
 function pcEsc(t){return String(t===undefined||t===null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* ---------- Settings: one sheet, one key ('preconnect-settings'), honored by every module. Statistics use the Privacy page's key. ---------- */
 const SETKEY='preconnect-settings',SETDEF={sound:'off',haptics:'on',text:'normal',contrast:'normal',motion:'auto'};
 function settings(){let s={};try{s=JSON.parse(localStorage.getItem(SETKEY))||{};}catch(e){}const out=Object.assign({},SETDEF,s);let st='on';try{st=localStorage.getItem('preconnect-stats')==='off'?'off':'on';}catch(e){}out.stats=st;return out;}
-function setSetting(k,v){if(k==='stats'){try{if(v==='off')localStorage.setItem('preconnect-stats','off');else localStorage.removeItem('preconnect-stats');}catch(e){}try{if(window.PCA)window.PCA.off=(v==='off');}catch(e){}}
+function pcSetSetting(k,v){if(k==='stats'){try{if(v==='off')localStorage.setItem('preconnect-stats','off');else localStorage.removeItem('preconnect-stats');}catch(e){}try{if(window.PCA)window.PCA.off=(v==='off');}catch(e){}}
   else{let s={};try{s=JSON.parse(localStorage.getItem(SETKEY))||{};}catch(e){}s[k]=v;try{localStorage.setItem(SETKEY,JSON.stringify(s));}catch(e){}}
   applySettings();settingsRender();try{if(typeof window!=='undefined'&&typeof window.onPreconnectSettings==='function')window.onPreconnectSettings(settings());}catch(e){}}
+function setSetting(k,v){pcSetSetting(k,v);if(k==='sound'&&v==='on')pcCue('good');if(k==='haptics'&&v==='on')pcBuzz('good');}  /* the preview plays after the switch is saved, so it is audible */
 function applySettings(){const s=settings();const de=(typeof document!=='undefined')&&document.documentElement;if(!de||!de.dataset)return;de.dataset.text=s.text;de.dataset.contrast=s.contrast;de.dataset.motion=s.motion;}
 function settingsRender(){const s=settings();if(typeof document==='undefined'||!document.querySelectorAll)return;document.querySelectorAll('[data-set]').forEach(g=>{const k=g.dataset.set;g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.val===s[k]));});}
 function settingsBind(){const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const gear=g('h-set');if(gear)gear.onclick=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};}
@@ -58,7 +59,7 @@ function pcLessonRender(S){const c=S.cfg,L=c.slides,s=L[S.i];S.answered=false;S.
    <div class="row"><button data-l="prev" ${S.i?'':'disabled'}>Back</button><button class="go" data-l="next" id="l-next" disabled>${S.i+1<L.length?'Next':'Finish'}</button></div>
    <button data-l="quit" style="width:100%;margin-top:8px">Leave the lesson</button>`;const ov=document.getElementById(c.ov||'lessonov');if(ov)ov.scrollTop=0;}
 function pcLessonAct(S,ds){if(!S)return;const c=S.cfg,L=c.slides,a=ds.l,g=id=>document.getElementById(id);
-  if(a==='ans'){if(S.answered)return;const s=L[S.i],o=s.o[+ds.k];if(!o)return;const ok=o[1]==='good';if(S.first[S.i]===undefined)S.first[S.i]=ok;if(ok){S.answered=true;const n=g('l-next');if(n)n.disabled=false;}const fb=g('l-fb');if(fb)fb.innerHTML=`<b style="color:${ok?'#7fe3a4':o[1]==='partial'?'#ffc23d':'#ff9a96'}">${ok?'Right.':o[1]==='partial'?'Not quite.':'No.'}</b> ${pcEsc(ok?s.why:'Try again.')}`;}
+  if(a==='ans'){if(S.answered)return;const s=L[S.i],o=s.o[+ds.k];if(!o)return;const ok=o[1]==='good';if(S.first[S.i]===undefined)S.first[S.i]=ok;if(ok)pcCue('good');else pcFx('bad');if(ok){S.answered=true;const n=g('l-next');if(n)n.disabled=false;}const fb=g('l-fb');if(fb)fb.innerHTML=`<b style="color:${ok?'#7fe3a4':o[1]==='partial'?'#ffc23d':'#ff9a96'}">${ok?'Right.':o[1]==='partial'?'Not quite.':'No.'}</b> ${pcEsc(ok?s.why:'Try again.')}`;}
   else if(a==='next'){if(!S.answered)return;if(S.i+1<L.length){S.i++;pcLessonRender(S);}else{const right=Object.values(S.first).filter(Boolean).length;const ov=g(c.ov||'lessonov');if(ov)ov.classList.add('hidden');if(c.onDone)c.onDone(Math.round(right/L.length*100),right,L.length);}}
   else if(a==='prev'){if(S.i){S.i--;pcLessonRender(S);}}
   else if(a==='tv'){if(document.body&&document.body.classList)document.body.classList.toggle('tv');pcLessonRender(S);}
@@ -70,10 +71,25 @@ function pcQuizQ(S){const c=S.cfg,q=S.qs[S.i],g=id=>document.getElementById(id);
   const b=g(c.bodyEl||'qz-body');if(b)b.innerHTML=`<p style="font-size:18px;margin:0 0 10px">${pcEsc(q.q)}</p>${q.ord.map((o,i)=>`<button class="opt" data-q="ans" data-i="${i}">${pcEsc(o)}</button>`).join('')}<p id="qz-fb" style="font-size:15px"></p>`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<button data-q="quit" style="width:100%">${pcEsc(c.quitLabel||'Quit')}</button>`;}
 function pcQuizAct(S,ds){if(!S||!S.cfg)return false;const c=S.cfg,a=ds.q,g=id=>document.getElementById(id);
   if(a==='quit'){if(c.onQuit)c.onQuit();else{const ov=g(c.ov||'quizov');if(ov)ov.classList.add('hidden');}return true;}
-  if(a==='ans'){const q=S.qs[S.i];if(!q||q.done)return true;q.done=true;const ok=q.ord[+ds.i]===q.a;if(ok)S.right++;const fb=g('qz-fb');if(fb)fb.innerHTML=`<b style="color:${ok?'#7fe3a4':'#ff9a96'}">${ok?'Right.':'Answer: '+pcEsc(q.a)+'.'}</b> ${pcEsc(q.why||c.why||'')}`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<button data-q="next" class="go" style="width:100%">${S.i+1<S.qs.length?'Next':'Results'}</button>`;return true;}
+  if(a==='ans'){const q=S.qs[S.i];if(!q||q.done)return true;q.done=true;const ok=q.ord[+ds.i]===q.a;if(ok)S.right++;if(ok)pcCue('good');else pcFx('bad');const fb=g('qz-fb');if(fb)fb.innerHTML=`<b style="color:${ok?'#7fe3a4':'#ff9a96'}">${ok?'Right.':'Answer: '+pcEsc(q.a)+'.'}</b> ${pcEsc(q.why||c.why||'')}`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<button data-q="next" class="go" style="width:100%">${S.i+1<S.qs.length?'Next':'Results'}</button>`;return true;}
   if(a==='next'){S.i++;if(S.i<S.qs.length)pcQuizQ(S);else{const sc=Math.round(S.right/S.qs.length*100);S.score=sc;const b=g(c.bodyEl||'qz-body');if(b)b.innerHTML=`<div class="big">${sc}</div><p>${S.right} of ${S.qs.length} right.${c.note?' '+pcEsc(c.note(sc)):''}</p>`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<div class="row"><button data-q="${c.menuAction||'quit'}">${pcEsc(c.menuLabel||'Done')}</button><button data-q="again" class="go">Again</button></div>`;if(c.onDone)c.onDone(sc,S.right,S.qs.length);}return true;}
   return false;}
 /* The Station look shared by every app (Milestone 4) plus the debrief styles, injected once in <head>; each app's own tokens apply, with safe fallbacks. */
+/* ===== Sound and haptics (Milestone 6): short synthesized cues, no audio files, gated by the shared switches (sound off by default, haptics on). pcCue(name) plays tick, good, bad, done, breathe or warn; pcBuzz(name) vibrates a pattern; pcFx(name) does both. pcMetro(bpm) runs a drift-free metronome on the audio clock; pcMetro(0) stops it. iOS only starts audio inside a tap, so the first pointerdown on any page resumes the context. ===== */
+let PC_AC=null,PC_METRO=null;
+function pcAudio(){if(typeof window==='undefined')return null;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;if(!PC_AC){try{PC_AC=new AC();}catch(e){return null;}}try{if(PC_AC.state==='suspended'&&PC_AC.resume)PC_AC.resume();}catch(e){}return PC_AC;}
+const PC_CUES={tick:[[880,.03,.08,'square']],good:[[660,.06,.12],[990,.07,.14]],bad:[[220,.12,.18,'sawtooth']],done:[[523,.08,.15],[659,.08,.15],[784,.14,.2]],breathe:[[440,.18,.14]],warn:[[330,.07,.12,'triangle'],[330,.07,.12,'triangle']]};
+function pcTone(ac,f,at,dur,gain,type){try{const o=ac.createOscillator(),g=ac.createGain();o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(0.0001,at);g.gain.exponentialRampToValueAtTime(gain,at+.008);g.gain.exponentialRampToValueAtTime(0.0001,at+dur);o.connect(g);g.connect(ac.destination);o.start(at);o.stop(at+dur+.02);}catch(e){}}
+function pcCue(name){if(settings().sound!=='on')return false;const seq=PC_CUES[name];if(!seq)return false;const ac=pcAudio();if(!ac)return false;let t=ac.currentTime+.01;for(const [f,dur,gain,type] of seq){pcTone(ac,f,t,dur,gain,type);t+=dur+.04;}return true;}
+const PC_BUZZ={tick:[8],good:[12],bad:[30,40,30],done:[20,60,20,60,40],warn:[20,30,20],breathe:[15]};
+function pcBuzz(name){const p=PC_BUZZ[name];if(!p||settings().haptics!=='on')return false;try{if(typeof navigator!=='undefined'&&navigator.vibrate){navigator.vibrate(p);return true;}}catch(e){}return false;}
+function pcFx(name){const s=pcCue(name),h=pcBuzz(name);return s||h;}
+function pcMetro(bpm){if(PC_METRO){try{clearInterval(PC_METRO.iv);}catch(e){}PC_METRO=null;}if(!bpm||settings().sound!=='on')return false;const ac=pcAudio();if(!ac)return false;const period=60/bpm;let next=ac.currentTime+.05;
+  const sched=()=>{let n=0;while(next<ac.currentTime+.3&&n++<8){pcTone(ac,880,next,.03,.08,'square');next+=period;}};
+  PC_METRO={bpm,iv:setInterval(sched,100)};sched();return true;}
+function pcMetroState(){return PC_METRO;}
+if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('pointerdown',()=>{if(settings().sound==='on')pcAudio();},{passive:true});
+
 /* ===== Drill Night (Milestone 7): one instructor, a roster, and every module credits whoever is up. The session lives in localStorage 'preconnect-drill' = {on, inst, org, roster[], who, start}; names stay on the phone and never reach statistics. Each page carries <div id="pc-drill" class="pc-drillbar hidden"> and <div class="overlay hidden" id="pc-drillov"><div class="box" id="pc-drillbox"></div></div>, calls pcDrillBind() at boot, and wraps each saved run in pcDrillStamp(). ===== */
 const PC_DRILLKEY='preconnect-drill';
 function pcDrillRaw(){try{return JSON.parse(localStorage.getItem(PC_DRILLKEY))||{};}catch(e){return {};}}
