@@ -134,7 +134,7 @@ Max's likely picks after 1: 2, then 3, then either Charge the Line catch-up or D
 **Guardrails from Max for later milestones:**
 - Real Saves about mass-casualty events (for example the marathon bombing) or any school scenario: survivor- and rescuer-centered, no graphic detail, no focus on attackers, published sources only. **Run the content past Max before building.**
 - New Patient Contact calls stay subject to the pending MCA review: generic names, and flag every protocol assumption.
-- **Hold all new BLS content until after Max's AHA instructor course on November 7, 2026**, so it matches the official 2025 course.
+- **BLS content is not frozen** (Max, October 3, 2026: "BLS doesn't need to stay frozen"). New BLS Ready content may be built any time, in our own words against the published 2025 guidelines; Max will still compare it with the official course after his instructor class on November 7, 2026, and anything AHA teaches differently gets adjusted then.
 - Share cards never include names or personal history by default.
 - Max will supply photos of Engine 10-2's pump panel for the photo map; tell him exactly which shots are needed when that milestone starts.
 - Keep the non-negotiables: guideline accuracy, privacy (no names in statistics, the opt-out), trademarks and own-words content, offline-first, no accounts, mobile-first. Test like a finger. Keep every suite green and add tests for anything a person would feel.
