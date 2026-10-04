@@ -89,6 +89,7 @@ Each of these cost a real bug. Don't relearn them.
 - **Practice, not certification.** Never imply the platform certifies anyone.
 - **Medical content follows current guidelines with protocol caveats.** Bay County MCA (medical control) review is **still pending** for Patient Contact; keep agency and hospital names generic until approved ("Medic 1," "East Side Hospital," "Regional Medical Center").
 - **Real Saves** (Charge the Line) follow published accounts with sources cited. Unpublished specifics are modeled and labeled as such.
+- **Bay County cardiac arrest protocol (Max, October 4, 2026; pending MCA review):** an arrest is worked on scene for about 25 minutes from the start of resuscitation (one setting, `COUNTY.torMin` in Patient Contact); a patient in arrest is never transported, only after ROSC; without ROSC the medic consults medical control while CPR continues, and after the order the devices stay for the coroner, the scene is not cleaned and the family is supported in plain words; the medic may keep working longer for special cases. Unwitnessed: look for definite signs of death (rigor, lividity, decomposition, cold in a warm environment; context alone never counts; cold from a cold environment is not death). Always ask for a DNR; it counts only if produced right away and valid. Score the care, never the outcome. Full note in Patient Contact's CLAUDE.md.
 
 ## How to work in this repo
 
