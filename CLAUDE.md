@@ -24,7 +24,7 @@ The name "Preconnect" was chosen after conflict checks. "Tailboard" was rejected
 |---|---|---|---|
 | Home page (hub) | `charge-the-line.github.io` | `/` | Tiles for every module, combined training record (CSV), backup/restore, privacy, feedback |
 | Charge the Line | `charge-the-line` | `/charge-the-line/` | Pump panel simulator for Engine 10-2, 10 scenarios including 5 "Real Saves" |
-| Patient Contact | `patient-contact` | `/patient-contact/` | Medical first responder calls: 10 calls (pediatric breathing and chest pain added October 7, 2026; the fire victim next), cardiac monitor, randomized patients, drills, instructor mode |
+| Patient Contact | `patient-contact` | `/patient-contact/` | Medical first responder calls: 11 calls (pediatric breathing, chest pain and the fire victim added October 7, 2026), cardiac monitor, randomized patients, drills, instructor mode |
 | Bleed Control | `bleed-control` | `/bleed-control/` | Bleeding control modeled on the ACS Stop the Bleed® course: lesson, skill stations, scenarios |
 | BLS Ready | `bls-ready` | `/bls-ready/` | BLS modeled on the AHA BLS Provider course, 2025 guidelines: lesson, timed skill stations, team scenarios, exam practice |
 | Upwind | `upwind` | `/upwind/` | Hazmat Awareness and Operations modeled on NFPA 470 and the ERG2024 workflow: lesson, drills, incidents with wind, zones and a 4-gas meter (U0 shell live; building) |
@@ -81,6 +81,7 @@ Each of these cost a real bug. Don't relearn them.
 11. **Randomness makes bugs intermittent.** Run each suite several times before release (`for i in 1 2 3 4 5; do node tests/run_all.js | tail -1; done`). An intermittent failure is usually a real bug in one random variant; it found one.
 12. **Prove a test can fail.** For important checks, plant the bug in a scratch copy and confirm the suite catches it.
 13. **Every overlay has a way back.** A briefing, card, sheet, drill, or station always offers Back, Close, Quit, or Stop and go back, so nobody is trapped into starting something. Max found Charge the Line's briefing with only "Start mission" (fixed in 2.5.1). The one deliberate exception: a decision point, which must be answered.
+14. **Let them make the mistake, then teach it** (Max, October 7, 2026). A button never refuses a wrong action a person could really take (oxygen with a normal SpO₂, the sibling's inhaler, the bystander on the life threat): the action happens, costs points, and the feedback says why and what is right. A refusal stays only where the action can't physically happen (nothing in the kit, a step not reached yet, a device that belongs to the medic, a decision point that must be answered). Patient Contact's `teach` test fails on any new refusal not on its allowed list.
 
 ## Content and legal rules
 
