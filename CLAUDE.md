@@ -24,7 +24,7 @@ The name "Preconnect" was chosen after conflict checks. "Tailboard" was rejected
 |---|---|---|---|
 | Home page (hub) | `charge-the-line.github.io` | `/` | Tiles for every module, combined training record (CSV), backup/restore, privacy, feedback |
 | Charge the Line | `charge-the-line` | `/charge-the-line/` | Pump panel simulator for Engine 10-2, 10 scenarios including 5 "Real Saves" |
-| Patient Contact | `patient-contact` | `/patient-contact/` | Medical first responder calls: 9 calls (pediatric breathing added October 7, 2026; chest pain and the fire victim next), cardiac monitor, randomized patients, drills, instructor mode |
+| Patient Contact | `patient-contact` | `/patient-contact/` | Medical first responder calls: 10 calls (pediatric breathing and chest pain added October 7, 2026; the fire victim next), cardiac monitor, randomized patients, drills, instructor mode |
 | Bleed Control | `bleed-control` | `/bleed-control/` | Bleeding control modeled on the ACS Stop the Bleed® course: lesson, skill stations, scenarios |
 | BLS Ready | `bls-ready` | `/bls-ready/` | BLS modeled on the AHA BLS Provider course, 2025 guidelines: lesson, timed skill stations, team scenarios, exam practice |
 | Upwind | `upwind` | `/upwind/` | Hazmat Awareness and Operations modeled on NFPA 470 and the ERG2024 workflow: lesson, drills, incidents with wind, zones and a 4-gas meter (U0 shell live; building) |
