@@ -66,14 +66,24 @@ if(want.includes('learn')){const {boot}=require('./qa_mock.js');
      if(k==='friction'){const m=q.q.match(/^(\d+) ft of (\S+) hose flowing (\d+) gpm/);want=r5(FL[m[2]]*Math.pow(m[3]/100,2)*(m[1]/100))+' psi';}
      if(k==='pdp'){const m=q.q.match(/^(\d+) ft of (\S+) at (\d+) gpm, (75-psi fog|100-psi fog|smooth bore) nozzle, (ground floor|one floor up|(\d+) floors up)/);const np={'75-psi fog':75,'100-psi fog':100,'smooth bore':50}[m[4]];const fl=m[5]==='ground floor'?0:m[5]==='one floor up'?1:+m[6];want=r5(np+FL[m[2]]*Math.pow(m[3]/100,2)*(m[1]/100)+fl*5)+' psi';}
      if(k==='hydrant'){const m=q.q.match(/Static (\d+) psi. After the first line, residual (\d+) psi/);const d=(m[1]-m[2])/m[1]*100;want=d<=10?'Three more':d<=15?'Two more':d<=25?'One more':'None';}
+     if(k==='tank'){const H=x=>{const h=Math.round(x*2)/2;return Math.floor(h)+':'+(h%1?'30':'00')+' min';};let m;
+       if(m=q.q.match(/^(\d+)-gallon tank, one line flowing (\d+) gpm\. How long/))want=H(m[1]/m[2]);
+       else if(m=q.q.match(/^(\d+)-gallon tank, two lines flowing (\d+) gpm and (\d+) gpm/))want=H(m[1]/(+m[2]+ +m[3]));
+       else if(m=q.q.match(/^(\d+)-gallon tank, three lines flowing (\d+), (\d+) and (\d+) gpm/))want=H(m[1]/(+m[2]+ +m[3]+ +m[4]));
+       else if(m=q.q.match(/^(\d+)-gallon tank\. One line flows (\d+) gpm for (\d+) minutes?, then a second line opens at (\d+) gpm/)){const used=m[2]*m[3];want=used<+m[1]?H(+m[3]+(m[1]-used)/(+m[2]+ +m[4])):null;}
+       else if(m=q.q.match(/^(\d+)-gallon tank, flowing (\d+) gpm\. At minute (\d+) a tanker carrying (\d+) gallons/)){want=m[1]/m[2]>+m[3]?H((+m[1]+ +m[4])/m[2]):null;}
+       else if(m=q.q.match(/^(\d+)-gallon tank, flowing (\d+) gpm while a tanker refills it at (\d+) gpm/))want=H(m[1]/(m[2]-m[3]));
+       else if(m=q.q.match(/^(\d+)-gallon tank, one line flowing (\d+) gpm for (\d+) minutes\. How many gallons/)){const g=m[1]-m[2]*m[3];want=g>0?g+' gal':null;}}
      if(k==='control'){const key=Object.keys(api.GUIDE_ALL).find(x=>api.GUIDE_ALL[x].what===q.q);want=key?api.GUIDE_ALL[key].name:null;}
      const opts=[q.a,...q.d];if(want!==q.a||new Set(opts).size!==3||q.d.includes(q.a))bad.push(`${k}: ${q.q.slice(0,50)} → ${q.a} (want ${want})`);}}}
    report('learn',`drills: ${checked} generated questions, answer keys match an independent recalculation, three distinct options`,bad.length===0,bad.slice(0,2).join(' | '));
-   for(const k of ['friction','pdp','control','hydrant']){const {api,store}=boot();api.drillStart(k);for(let i=0;i<api.QZ().qs.length;i++){const q=api.QZ().qs[i];api.quizAct({q:'ans',i:String(q.ord.indexOf(q.a))});api.quizAct({q:'next'});}const r=api.QZ().score;
+   for(const k of ['friction','pdp','control','hydrant','tank']){const {api,store}=boot();api.drillStart(k);for(let i=0;i<api.QZ().qs.length;i++){const q=api.QZ().qs[i];api.quizAct({q:'ans',i:String(q.ord.indexOf(q.a))});api.quizAct({q:'next'});}const r=api.QZ().score;
      const b=boot();b.api.drillStart(k);for(let i=0;i<b.api.QZ().qs.length;i++){const q=b.api.QZ().qs[i];b.api.quizAct({q:'ans',i:String(q.ord.findIndex(o=>o!==q.a))});b.api.quizAct({q:'next'});}const w=b.api.QZ().score;const ex=JSON.parse(store['e102-pump-trainer']).extra||[];
      report('learn',`${api.DRILLS[k].name}: all right = 100, all wrong = 0, recorded`,r===100&&w===0&&ex.some(x=>x.kind==='drill'&&x.id===k&&x.score===100),`${r} / ${w}`);}
    {const {api}=boot();let n=0;for(let r_=0;r_<20;r_++)for(const k of ['friction','pdp'])for(const q of api.DRILLS[k].items()){const len=[q.a,...q.d].map(x=>x.length);if(len[0]===Math.max(...len)&&len.filter(x=>x===len[0]).length===1)n++;}
-     report('learn','numeric drills: the right answer is not usually the longest option',n/(20*2*8)<=.45,`${n} of ${20*2*8}`);}}}
+     report('learn','numeric drills: the right answer is not usually the longest option',n/(20*2*8)<=.45,`${n} of ${20*2*8}`);}
+   {const {api}=boot();let lo=0,sh=0,n=0;for(let r_=0;r_<40;r_++)for(const q of api.DRILLS.tank.items()){n++;const len=[q.a,...q.d].map(x=>x.length);if(len[0]===Math.max(...len)&&len.filter(x=>x===len[0]).length===1)lo++;if(len[0]===Math.min(...len)&&len.filter(x=>x===len[0]).length===1)sh++;}
+     report('learn','Tank time: eight questions of every kind (one, two and three lines, a second line opening late, a tanker arriving mid-problem, a refill coming in, gallons left); the right answer is not usually the longest or the shortest option',lo/n<=.45&&sh/n<=.45&&api.DRILLS.tank.items().length===8,`longest ${lo}, shortest ${sh} of ${n}`);}}}
 
 /* boot-based checks run before the play harness is created: a later boot() would swap the harness's document and storage out from under it */
 if(want.includes('variants')){const {boot}=require('./qa_mock.js');const VARIANTS=boot().api.VARIANTS;const NZ={lpfog:[75,150],fog100:[100,150],sb1516:[50,185]},FLC2={1.75:15.5,2.5:2,3:0.8,5:0.08};const fl=(d,g,l)=>FLC2[d]*(g/100)*(g/100)*(l/100);

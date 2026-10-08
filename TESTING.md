@@ -117,3 +117,9 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 ## Spacing on the core (added October 3, 2026)
 
 - `inject` boot block: `dueInfo(i)` reads Not yet cleared with no runs, Next in N d right after a clear at 70+, Due for review once the interval has passed, and Try again after a failed run, all computed by the core's `pcSpacing` (not `scen.level`).
+
+## 2.15.0 checks (October 8, 2026, the Tank time drill)
+- `learn`: the drill keys check now covers Tank time, every question type recomputed from its text (one, two and three lines, the late second line, the tanker mid-problem, the refill, gallons left); all right scores 100 and all wrong 0, recorded; the right answer is the longest or the shortest option in no more than 45 % of 320 generated questions.
+- `qa2.js`: the CSV row count follows the drill list (`learnRows()`) instead of a fixed number.
+- Proven able to fail: computing the refill question as gallons ÷ (flow + fill) failed the recalculation check.
+- Browser check: Tank time played to the end at 320, 375 and 430 px, each answer tapped by its visible text, to a 100.

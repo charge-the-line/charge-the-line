@@ -2,7 +2,7 @@
 """Real-browser check (optional). Needs:  pip install playwright && playwright install chromium
 Opens every scenario at phone sizes; fails on any JavaScript error or anything off-screen.
 Usage:  python3 tests/browser_check.py"""
-import pathlib, sys
+import re, pathlib, sys
 from playwright.sync_api import sync_playwright
 URL = (pathlib.Path(__file__).resolve().parent.parent / 'index.html').as_uri()
 OVER = "(()=>{let m=0;document.querySelectorAll('body *').forEach(e=>{if(e.offsetParent===null)return;const r=e.getBoundingClientRect();m=Math.max(m,r.right-window.innerWidth);});return Math.round(m);})()"
@@ -18,6 +18,11 @@ with sync_playwright() as p:
         pg.click('#h-set'); pg.wait_for_timeout(150); rows.append((w, 'settings', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('#set-close')
         pg.click('#b-lesson'); pg.wait_for_timeout(200); rows.append((w, 'lesson', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('[data-l="quit"]'); pg.wait_for_timeout(150)
         pg.click('#b-drills'); pg.wait_for_timeout(200); rows.append((w, 'drills', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('[data-q="go"][data-k="friction"]'); pg.wait_for_timeout(200); rows.append((w, 'drill q', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('[data-q="quit"]'); pg.wait_for_timeout(150)
+        pg.click('#b-drills'); pg.wait_for_timeout(200); pg.locator('[data-q="go"]', has_text='Tank time').first.click(); pg.wait_for_timeout(300)   # the tank-time drill played to the end with real taps on the answer text
+        for _ in range(8):
+            ans = pg.evaluate("QZ.qs[QZ.i].a"); pg.locator('[data-q="ans"]', has_text=re.compile('^' + re.escape(ans) + '$')).first.click(); pg.wait_for_timeout(150); tap_next = pg.locator('[data-q="next"]').first; tap_next.click(); pg.wait_for_timeout(150)
+        rows.append((w, 'tank drill (full)', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)) + (0 if pg.evaluate("QZ.score===100") else 99))); pg.goto(URL); pg.wait_for_timeout(300)
+        if pg.is_visible('#b-start'): pg.click('#b-start')
         pg.click('#b-progress'); pg.wait_for_timeout(200); rows.append((w, 'progress', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('#b-progclose'); pg.wait_for_timeout(150)
         pg.click('#b-inst'); pg.click('.scen[data-i="0"]'); pg.wait_for_timeout(150); pg.click('#brief-go'); pg.wait_for_timeout(400); pg.click('#inst-fab'); pg.wait_for_timeout(200); rows.append((w, 'instructor', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('#inst-close'); pg.wait_for_timeout(150)
         pg.goto(URL+'?drill=hydrant'); pg.wait_for_timeout(300); rows.append((w, 'daily link', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)) + (0 if pg.is_visible('#quizov') else 99)))

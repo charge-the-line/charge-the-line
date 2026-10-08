@@ -35,7 +35,7 @@ $('b-report').onclick();$('r-name').value='QA';$('r-dept').value='Test FD';$('r-
 setTimeout(()=>{log(/From: QA \(Test FD\)/.test(global.__clip||''),'Report falls back to copy-to-clipboard when the share sheet is unavailable');
   // progress + CSV
   const p=api.load();log(Object.keys(p.scen).length>=CAMP.length,'Training record saved for every completed scenario ('+Object.keys(p.scen).length+' entries)');
-  $('b-export').onclick();const rows=(global.__blob||'').trim().split('\n');log(rows.length===CAMP.length+7,'CSV export: header + '+CAMP.length+' scenarios + lesson + 4 drills + pump math = '+rows.length+' rows');
+  $('b-export').onclick();const rows=(global.__blob||'').trim().split('\n');log(rows.length===CAMP.length+2+api.learnRows().length,'CSV export: header + '+CAMP.length+' scenarios + lesson + '+(api.learnRows().length-1)+' drills + pump math = '+rows.length+' rows');
   log(!/undefined|NaN/.test(global.__blob),'CSV has no undefined/NaN cells');
   // math drills
   let bad=0;for(let i=0;i<2000;i++){$('m-next').onclick();const pr=$('prob').innerHTML;if(/undefined|NaN/.test(pr))bad++;$('ans').value='1';$('m-check').onclick();if(/NaN|undefined/.test($('work').textContent))bad++;}

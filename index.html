@@ -241,7 +241,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.14.1 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.15.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -256,7 +256,7 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.14.1</span></h1></div>
+  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.15.0</span></h1></div>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div class="card"><div class="small">What this is</div><p style="margin:4px 0 0;font-size:15px;line-height:1.45">Pump operations on Engine 10-2: ten scenarios including five Real Saves from published accounts, a pump lesson, quick drills, pump math and a guide to every control on the panel. Guided shows every step, Recall makes you remember it, Chaos breaks things. <b>Your SOPs and your rig come first.</b></p></div>
   <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
@@ -1082,7 +1082,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.14.1';
+const APP_VERSION='2.15.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1157,10 +1157,22 @@ const HOSE_LABEL={1.75:'1¾"',2.5:'2½"',3:'3"',5:'5"'};
 function flOf(size,gpm,len){return FLC[size]*Math.pow(gpm/100,2)*(len/100);}
 const r5=x=>Math.round(x/5)*5,pk=a=>a[Math.floor(Math.random()*a.length)];
 function numOpts(a,spread){const c=new Set();const tries=[a+spread,a-spread,a+2*spread,a-2*spread,Math.round(a*2/5)*5,Math.round(a/2/5)*5];for(const t of tries){if(t>0&&t!==a)c.add(t);if(c.size===2)break;}return [...c];}
+/* Tank time: every key computed here and recomputed independently in the tests. Times to the nearest half minute, shown as m:ss. */
+const mss=x=>{const h=Math.round(x*2)/2;return `${Math.floor(h)}:${h%1?'30':'00'}`;};
+function tankOpts(a,errs){const want=Math.round(a*2)/2,c=[];for(const e of [...errs,want+1,want-1,want+1.5,want-.5,want+.5,want+2]){const v=Math.round(e*2)/2;if(v>0&&v!==want&&!c.includes(v))c.push(v);if(c.length===2)break;}return c.map(v=>mss(v)+' min');}
+function tankQ(t){const T=pk([500,750,800,1000]),L=[95,125,150,185,200,250];
+ if(t==='one'){const f=pk(L);return {q:`${T}-gallon tank, one line flowing ${f} gpm. How long until the tank is empty?`,a:mss(T/f)+' min',d:tankOpts(T/f,[T/f*1.5,T/f/2])};}
+ if(t==='two'){const f1=pk([125,150,185]),f2=pk([150,200,250]);const a=T/(f1+f2);return {q:`${T}-gallon tank, two lines flowing ${f1} gpm and ${f2} gpm. How long until the tank is empty?`,a:mss(a)+' min',d:tankOpts(a,[T/f1,T/f2])};}
+ if(t==='three'){const f1=pk([125,150]),f2=pk([150,185]),f3=pk([95,125]);const a=T/(f1+f2+f3);return {q:`${T}-gallon tank, three lines flowing ${f1}, ${f2} and ${f3} gpm. How long until the tank is empty?`,a:mss(a)+' min',d:tankOpts(a,[T/(f1+f2),T/f1])};}
+ if(t==='late'){const f1=pk([125,150]),f2=pk([150,185,200]),m=pk([1,2]);const a=m+(T-f1*m)/(f1+f2);return {q:`${T}-gallon tank. One line flows ${f1} gpm for ${m} minute${m>1?'s':''}, then a second line opens at ${f2} gpm. When does the tank run dry, counting from the start?`,a:mss(a)+' min',d:tankOpts(a,[T/(f1+f2),T/f1])};}
+ if(t==='tanker'){const f=pk([150,185,200,250]),G=pk([1500,2000,2500,3000]),m=T/f>3.5?pk([2,3]):1;const a=(T+G)/f;return {q:`${T}-gallon tank, flowing ${f} gpm. At minute ${m} a tanker carrying ${G} gallons hooks to your intake and feeds you until it is empty. When is all the water gone, counting from the start?`,a:mss(a)+' min',d:tankOpts(a,[m+(T+G)/f,T/f])};}
+ if(t==='fill'){const f=pk([185,200,250]),R=pk([50,75,100]);const a=T/(f-R);return {q:`${T}-gallon tank, flowing ${f} gpm while a tanker refills it at ${R} gpm. How long until the tank is empty?`,a:mss(a)+' min',d:tankOpts(a,[T/(f+R),T/f])};}
+ const f=pk([125,150,185,200]),m=f*3<T?pk([2,3]):2;const g=T-f*m;const a=Math.max(0,g);const o=[a+f,Math.max(0,a-f),T-f,a+50,Math.max(0,a-50)].filter((v,i,x)=>v!==a&&x.indexOf(v)===i).slice(0,2);return {q:`${T}-gallon tank, one line flowing ${f} gpm for ${m} minutes. How many gallons are left?`,a:a+' gal',d:o.map(v=>v+' gal')};}
 const DRILLS={
  friction:{name:'Friction loss',why:'FL = C × (gpm ÷ 100)² × (length ÷ 100). Coefficients: 1¾" 15.5, 2½" 2, 3" 0.8, 5" 0.08.',items:()=>Array.from({length:8},()=>{const size=pk([1.75,1.75,2.5,2.5,3,5]);const gpm=size===1.75?pk([125,150,185]):size===2.5?pk([200,250,300]):size===3?pk([300,400,500]):pk([500,750,1000]);const len=pk([100,150,200,250,300]);const a=r5(flOf(size,gpm,len));return {q:`${len} ft of ${HOSE_LABEL[size]} hose flowing ${gpm} gpm. Friction loss?`,a:a+' psi',d:numOpts(a,size===5?5:10).map(x=>x+' psi')};})},
  pdp:{name:'Pump discharge pressure',why:'PDP = nozzle pressure + friction loss + 5 psi per floor above the pump.',items:()=>Array.from({length:8},()=>{const size=pk([1.75,1.75,2.5]);const gpm=size===1.75?pk([125,150,185]):pk([200,250]);const len=pk([150,200,250]);const noz=pk([['75-psi fog',75],['100-psi fog',100],['smooth bore',50]]);const fl=pk([0,1,2,3]);const a=r5(noz[1]+flOf(size,gpm,len)+fl*5);return {q:`${len} ft of ${HOSE_LABEL[size]} at ${gpm} gpm, ${noz[0]} nozzle, ${fl===0?'ground floor':fl===1?'one floor up':fl+' floors up'}. Pump discharge pressure?`,a:a+' psi',d:numOpts(a,10).map(x=>x+' psi')};})},
  control:{name:'Find the control',why:'Every control and gauge on the panel has one job. Know it before the call.',items:()=>{const ks=Object.keys(GUIDE).filter(k=>GUIDE[k].kind==='Control'||GUIDE[k].kind==='Gauge');return pcShuf(ks).slice(0,8).map(k=>{const others=pcShuf(ks.filter(x=>x!==k)).slice(0,2);return {q:GUIDE[k].what,a:GUIDE[k].name,d:others.map(x=>GUIDE[x].name),why:GUIDE[k].when};});}},
+ tank:{name:'Tank time',why:'Minutes = gallons ÷ total gpm. Add every open line first. A tanker feeding you adds its gallons; a fill coming in while you flow slows the drain (flow − fill). Answers to the nearest half minute.',items:()=>pcShuf(['one','one','two','three','late','tanker','fill','left']).map(t=>tankQ(t))},
  hydrant:{name:'Hydrant math',why:'Percent drop = (static − residual) ÷ static. 0–10%: three more lines like the first. 11–15%: two. 16–25%: one. Over 25%: none.',items:()=>Array.from({length:8},()=>{const st=pk([60,65,70,80,90,100]);const target=pk([0.05,0.08,0.12,0.14,0.18,0.22,0.3,0.35]);const res=Math.round(st*(1-target));const drop=(st-res)/st*100;const a=drop<=10?'Three more':drop<=15?'Two more':drop<=25?'One more':'None';return {q:`Static ${st} psi. After the first line, residual ${res} psi. How many more lines like the first?`,a,d:pcShuf(['Three more','Two more','One more','None'].filter(x=>x!==a)).slice(0,2)};})}};
 let QZ=null;
 function drillMenu(){QZ={kind:'drill'};$('menu').classList.add('hidden');$('qz-title').textContent='Quick drills';$('qz-meta').textContent='';const ex=load().extra||[];const best=k=>{const r=ex.filter(x=>x.kind==='drill'&&x.id===k);return r.length?Math.max(...r.map(x=>x.score)):null;};
