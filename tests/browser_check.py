@@ -137,6 +137,7 @@ with sync_playwright() as p:
         pg.goto(URL); pg.evaluate("localStorage.setItem('preconnect-drill',JSON.stringify({on:true,inst:'Max',roster:['Jo','Sam'],who:'',start:new Date().toISOString()}))"); pg.goto(URL); pg.wait_for_timeout(300); rows.append((w, 'drill picker', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('.pc-drill-name'); pg.wait_for_timeout(200); rows.append((w, 'drill bar', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.evaluate("localStorage.removeItem('preconnect-drill')")
         if w == 375: ev_play(pg, w)
         if w == 320: play_real(pg, w, 11, 'B', 'Defensive fire B', lambda pg: True)
+        if w == 320: play_real(pg, w, 12, 'B', 'Fill site B', lambda pg: 'Turn times' in pg.inner_html('#done-body'))
         n = pg.evaluate("CAMP.length")
         for i in range(n):
             pg.goto(URL); pg.wait_for_timeout(250)

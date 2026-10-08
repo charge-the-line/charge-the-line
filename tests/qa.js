@@ -28,6 +28,12 @@ function stepAct(c,m,j,s){
   if(/second line charged/.test(tl))return;
   if(/throttle back until the intake/.test(tl)){if(S.mode!=='psi')click('b-psi');if(S.cavOn||api.resDemand()<10)setPsi(Math.max(40,S.set-10));return;}
   if(/^shut down #3 rear while/.test(tl)){if(S.valves.rear3.open>0)api.setValve('rear3','close');return;}
+  if(/clear the ice from the dry hydrant/.test(tl)){if(S.iceT<=0)click('dh-ice');return;}
+  if(/back-flush the dry hydrant/.test(tl)){if(S.primerOn)click('s-primer');else if(!S.ttp)click('s-ttp');else if(S.flushT<=0)click('dh-flush');return;}
+  if(/^primer off/.test(tl)){if(S.primerOn)click('s-primer');return;}
+  if(/tanker on the pad/.test(tl))return;
+  if(/connect the fill line to the tanker/.test(tl)){click('s-relay');return;}
+  if(/tanker nearly full: gate #4 rear down/.test(tl)){const v=S.valves.rear4;if(S.tk&&(S.tk.full||S.tk.near)){if(v.open>25)api.setValve('rear4','gate');else if(v.open>0&&S.tk.full)api.setValve('rear4','close');}else{if(v.open<100)api.setValve('rear4','crack');setPsi(60);}return;}
   if(/tanker pumping/.test(tl)){click('s-hyd');return;}
   if(/thermal camera check/.test(tl)){if(S.t>=(S.camNext||0))click('ev-cam');return;}
   if(/^shut down #3 front, keep/.test(tl)){if(S.valves.front3.open>0)api.setValve('front3','close');return;}
@@ -83,6 +89,7 @@ function upkeep(c){
   if(strainerFix){for(const k in S.valves)if(S.valves[k].open>0)S.valves[k].open=0;if(S.mode!=='rpm')click('b-rpm');if(!S.primerOn&&!S.primed)click('s-primer');if(S.primed){strainerFix=0;}}
   if(c.depth&&S.hardSuction){if(S.susp>60)click('d-dn');if(S.clog>40&&S.clearing<=0&&!api.DEC())click('d-clear');}
   if(c.cold&&S.primedEver&&api.totalFlow()<20&&!S.fill)click('s-fill');
+  if(c.fillSite&&S.primed&&api.totalFlow()<20&&!S.fill)click('s-fill');
   if(c.heat&&S.heatT>4&&!S.fill)click('s-fill');
 }
 function play(ci,tier,choice='good',opts={}){

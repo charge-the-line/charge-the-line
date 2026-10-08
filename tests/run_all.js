@@ -7,7 +7,7 @@
    Exit code 0 = all passed. */
 global.window=global.window||{};
 const path=require('path'),fs=require('fs'),vm=require('vm'),{execFileSync}=require('child_process');
-const ALL=['syntax','balance','learn','variants','inject','ev','def','play','paths','human','checks','guide','stress','fuzz'];
+const ALL=['syntax','balance','learn','variants','inject','ev','def','fill','play','paths','human','checks','guide','stress','fuzz'];
 let want=process.argv.slice(2);if(!want.length)want=ALL;if(want.includes('quick'))want=['syntax','balance','learn','guide','fuzz'];
 const results=[];let failed=0;const T0=Date.now();
 function report(section,name,ok,detail=''){results.push({ok});if(!ok)failed++;console.log(`${ok?'PASS':'FAIL'}  ${section.padEnd(8)} ${name}${detail?'  — '+detail:''}`);}
@@ -131,7 +131,7 @@ if(want.includes('inject')){const {boot}=require('./qa_mock.js');
 
 
 
-const env=(want.some(x=>['balance','variants','inject','ev','def','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
+const env=(want.some(x=>['balance','variants','inject','ev','def','fill','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
 if(want.includes('variants')){const {CAMP,VARIANTS}=env.env.api;
   // every named layout of every regular scenario completes on Guided and Recall, and a Chaos run too; the briefing names the layout
   for(const i of Object.keys(VARIANTS)){let ok=0,n=0,perfect=0,named=0;for(const v of VARIANTS[i])for(const tier of [0,1,2]){n++;const r=quiet(()=>env.play(+i,tier,'good',{variant:v.id}));if(r.ok)ok++;if(r.ok&&r.score===100&&tier<2)perfect++;if(r.variant===v.id)named++;}
@@ -195,6 +195,30 @@ if(want.includes('def')){const api=env.env.api;const D=api.CAMP.findIndex(c=>c.d
   {const r=run({choiceAt:{'Reading cavitation':'bad'}}),r2=run();report('def','reading cavitation as a governor problem costs 10; a crew that reads it, throttles back and recovers scores 100',r.ok&&r.score===90&&r2.ok&&r2.score===100,`${r.score} / ${r2.score}`);}
   {const r=run({inject:{f:'collapse',mission:2,at:24}});report('def','instructor: the collapse zone grows; the card and two spliced steps (shut the monitor down, recharge it) are answered at the panel and the run is marked',r.ok&&r.injected===true&&r.score===100&&(api.load().log||[]).slice(-1)[0].inst===1,`score ${r.score}, injected ${r.injected}`);}
   {const r=quiet(()=>env.play(D,0,'good',{variant:'C'}));report('def','layout C adds the 2½" exposure line on the tire shop, all three streams in band near the pump\'s rating',r.ok&&r.score===100&&api.CAMP[D].missions[2].steps.some(s=>/Open #2 rear/.test(s.t)));}}
+
+if(want.includes('fill')){const api=env.env.api;const F=api.CAMP.findIndex(c=>c.fillSite);const run=(o,v)=>quiet(()=>env.play(F,1,'good',Object.assign({variant:v||'A'},o||{})));
+  const load=v=>{global.window.FORCE_V={[F]:v};api.setTier(1);api.loadCampaign(F);global.window.FORCE_V=undefined;api.$('brief-go').onclick();return api.S;};
+  const prime=S=>{S.pump=true;S.hardSuction=true;S.ttp=false;for(const k in S.valves)S.valves[k].open=0;S.mode='rpm';S.rpm=1150;};
+  report('fill','the fill site is scenario 13 (appended) with three layouts: a good pond, a plugged dry hydrant, ice at 10°F',F===12&&api.VARIANTS[12].length===3&&api.VARIANTS[12][1].clog&&api.VARIANTS[12][2].ice&&api.VARIANTS[12][2].cold);
+  {const S=load('B');prime(S);api.$('s-primer').onclick();for(let i=0;i<40;i++)api.tick(0.25);const stuck=!S.primed&&S.vac>=20&&S.clogSaid;api.$('s-primer').onclick();const n0=api.RADIO_N();api.$('dh-flush').onclick();const refused=S.flushT<=0&&api.RADIO_N()===n0+1;
+   api.$('s-ttp').onclick();api.$('dh-flush').onclick();for(let i=0;i<40;i++)api.tick(0.25);const cleared=!S.dhClog;api.$('s-ttp').onclick();S.vac=0;api.$('s-primer').onclick();for(let i=0;i<60;i++)api.tick(0.25);
+   report('fill','layout B: the primer pulls high vacuum with no water (plugged, not leaking); a back-flush needs the pump, tank water and the primer off; after it the pump primes',stuck&&refused&&cleared&&S.primed,`stuck ${stuck}, refused ${refused}, cleared ${cleared}, primed ${S.primed}`);}
+  {const r=run({choiceAt:{'High vacuum, no water':'bad'}},'B'),r2=run({},'B');report('fill','reading the plugged dry hydrant as an air leak costs 10; the right read scores 100',r.ok&&r.score<=90&&r2.ok&&r2.score===100,`${r.score} / ${r2.score}`);}
+  {const S=load('C');const n0=api.RADIO_N();api.$('s-hard').onclick();const refused=!S.hardSuction&&api.RADIO_N()===n0+1;api.$('dh-ice').onclick();for(let i=0;i<24;i++)api.tick(0.25);api.$('s-hard').onclick();
+   report('fill','layout C: the hard suction cannot go on a frozen cap (nothing to connect to); clearing the ice takes about 5 seconds, then it connects; the cold-weather freeze rules apply',refused&&!S.dhIce&&S.hardSuction&&api.CAMP[F].cold===true);}
+  {const S=load('A');prime(S);S.primed=true;S.fill=false;for(let i=0;i<120;i++)api.tick(0.25);const lost=!S.primed&&S.incidents.some(x=>/drained back/.test(x));const T=load('A');prime(T);T.primed=true;T.fill=true;for(let i=0;i<120;i++)api.tick(0.25);
+   report('fill','between tankers, water that stops moving lets the dry hydrant drain back (prime lost, 5); with the tank fill cracked it stays primed',lost&&T.primed,`lost ${lost}, kept ${T.primed}`);}
+  {const S=load('A');prime(S);S.primed=true;S.tkOn=true;S.tk={n:1,gal:1990,cap:2000,arr:S.t,full:false,over:0};S.relayLine=true;S.mode='psi';S.set=60;S.valves.rear4.open=100;for(let i=0;i<40;i++)api.tick(0.25);const over=S.incidents.some(x=>/Overfilled/.test(x));
+   const T=load('A');prime(T);T.primed=true;T.mode='psi';T.set=60;T.valves.rear4.open=100;for(let i=0;i<8;i++)api.tick(0.25);api.setValve('rear4','close');const hammer=T.incidents.some(x=>/Water hammer — gate the fill line down/.test(x));
+   const U=load('A');prime(U);U.primed=true;U.mode='psi';U.set=60;U.valves.rear4.open=100;for(let i=0;i<8;i++)api.tick(0.25);['gate','gate','gate','close'].forEach(a=>api.setValve('rear4',a));const soft=!U.incidents.some(x=>/Water hammer/.test(x));
+   report('fill','flowing more than 5 seconds past full overfills the tanker (5); closing the fill line hard is water hammer (5); gating it down first costs nothing',over&&hammer&&soft,`over ${over}, hammer ${hammer}, gated ${soft}`);}
+  {const S=load('A');S.lastFillGpm=820;S.fillQ=null;const st=api.CAMP[F].missions[3].steps[0];st.f();const o=st.dec.opts;const h=Math.round(2000/820*2)/2;const want=Math.floor(h)+':'+(h%1?'30':'00')+' min';
+   report('fill','the fill-time card is computed from the tanker size and the measured fill rate (2,000 gal at 820 gpm), checked against an independent recalculation, options fixed once',o.find(x=>x.r==='good').t===want&&JSON.stringify(o)===JSON.stringify(st.dec.opts)&&new Set(o.map(x=>x.t)).size===3,o.map(x=>x.t).join(' / '));}
+  {const r=run();const b=api.$('done-body').innerHTML;report('fill','three tankers filled with turn times recorded; the debrief gives each, the average and the modeled target',r.ok&&r.score===100&&api.S.turns.length===3&&/Turn times:/.test(b)&&/modeled/.test(b),`turns ${api.S.turns.map(t=>t.toFixed(1)).join(' ')}`);}
+  {const S=load('A');S.mission=3;const m=api.CAMP[F].missions[3];const sd=api.stepsDone();sd.length=0;m.steps.forEach(()=>sd.push(false));sd[0]=true;S.running=true;S.briefing=false;S.tkOn=true;S.tk=null;S.filled=1;S.nextTk=S.t+20;S.primed=true;S.pump=true;S.hardSuction=true;S.fill=true;const t0=S.t,on=api.ffStep()===1;api.ffRun();
+   report('fill','fast-forward is offered while waiting for the next tanker (recirculating) and stops when it pulls onto the pad',on&&!!S.tk&&S.t-t0>=19&&S.t-t0<=22,`ran ${(S.t-t0).toFixed(1)} s`);}
+  {const r=run({inject:{f:'silt',mission:3,at:4}});report('fill','instructor: silt plugs the dry hydrant between tankers; the spliced steps (close up, back-flush, re-prime) bring it back and the run still scores 100, marked',r.ok&&r.injected===true&&r.score===100&&(api.load().log||[]).slice(-1)[0].inst===1,`score ${r.score}, injected ${r.injected}`);}
+  {const r=run({inject:{f:'pair',mission:2,at:20}});report('fill','instructor: two tankers arrive together; staging the second one in the lane is the right call',r.ok&&r.injected===true&&r.score===100,`score ${r.score}, injected ${r.injected}`);}}
 
 if(want.includes('balance')){const {CAMP}=env.env.api;let lo=0,sh=0,t=0,first=0;for(const c of CAMP)for(const m of c.missions)for(const s of m.steps)if(s.dec&&s.dec.opts){const L=s.dec.opts.map(x=>x.t.length),g=s.dec.opts.findIndex(x=>x.r==='good');t++;if(L[g]===Math.max(...L))lo++;else if(L[g]===Math.min(...L))sh++;}
   report('balance','right answer is not usually the longest',lo/t<=.45,`${lo} of ${t} (${Math.round(lo/t*100)}%)`);report('balance','right answer is not usually the shortest',sh/t<=.45,`${sh} of ${t} (${Math.round(sh/t*100)}%)`);

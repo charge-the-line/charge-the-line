@@ -137,3 +137,8 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 - `balance` caught the right answer as the longest option in six of seven new decisions; reworded.
 - Proven able to fail: removing the rating sag, the second line's hose effect or the cavitation pressure drop each failed checks.
 - Browser check: the defensive fire's layout B played to the end at 320 px with real taps (the valve Crack and Gate buttons for the two bands, the governor, the second supply, throttling back from cavitation).
+
+## 2.18.0 checks (October 8, 2026, the fill site at a dry hydrant)
+- `fill` (11 checks): scenario 13 with three layouts; B's plugged dry hydrant (high vacuum, no prime; the back-flush needs the pump, tank water and the primer off; then it primes); reading it as an air leak costs 10; C's frozen cap refuses the hard suction until the ice is cleared; water standing still loses the prime and the tank fill keeps it; overfill, hard shutoff and the gated shutoff; the fill-time card against an independent recalculation with its options fixed once; three turn times in the debrief with the modeled target; fast-forward to the next tanker; the silt and pair injects.
+- Found on the way: the fill-time card reshuffled its options every time it was read, so a right tap could score as wrong; at human pace the three gate taps and the close took longer than a 3-second overfill limit (now a call at 85 % and 5 seconds).
+- Browser check: the fill site's layout B played to the end at 320 px with real taps (the primer, the back-flush, the fill line, the gate-down and close, the tank fill between tankers, fast-forward to each tanker).
