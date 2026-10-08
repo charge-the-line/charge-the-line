@@ -7,7 +7,7 @@
    Exit code 0 = all passed. */
 global.window=global.window||{};
 const path=require('path'),fs=require('fs'),vm=require('vm'),{execFileSync}=require('child_process');
-const ALL=['syntax','balance','learn','variants','inject','ev','def','fill','play','paths','human','checks','guide','stress','fuzz'];
+const ALL=['syntax','balance','learn','variants','inject','ev','def','fill','omp','play','paths','human','checks','guide','stress','fuzz'];
 let want=process.argv.slice(2);if(!want.length)want=ALL;if(want.includes('quick'))want=['syntax','balance','learn','guide','fuzz'];
 const results=[];let failed=0;const T0=Date.now();
 function report(section,name,ok,detail=''){results.push({ok});if(!ok)failed++;console.log(`${ok?'PASS':'FAIL'}  ${section.padEnd(8)} ${name}${detail?'  — '+detail:''}`);}
@@ -131,7 +131,7 @@ if(want.includes('inject')){const {boot}=require('./qa_mock.js');
 
 
 
-const env=(want.some(x=>['balance','variants','inject','ev','def','fill','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
+const env=(want.some(x=>['balance','variants','inject','ev','def','fill','omp','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
 if(want.includes('variants')){const {CAMP,VARIANTS}=env.env.api;
   // every named layout of every regular scenario completes on Guided and Recall, and a Chaos run too; the briefing names the layout
   for(const i of Object.keys(VARIANTS)){let ok=0,n=0,perfect=0,named=0;for(const v of VARIANTS[i])for(const tier of [0,1,2]){n++;const r=quiet(()=>env.play(+i,tier,'good',{variant:v.id}));if(r.ok)ok++;if(r.ok&&r.score===100&&tier<2)perfect++;if(r.variant===v.id)named++;}
@@ -220,6 +220,17 @@ if(want.includes('fill')){const api=env.env.api;const F=api.CAMP.findIndex(c=>c.
   {const r=run({inject:{f:'silt',mission:3,at:4}});report('fill','instructor: silt plugs the dry hydrant between tankers; the spliced steps (close up, back-flush, re-prime) bring it back and the run still scores 100, marked',r.ok&&r.injected===true&&r.score===100&&(api.load().log||[]).slice(-1)[0].inst===1,`score ${r.score}, injected ${r.injected}`);}
   {const r=run({inject:{f:'pair',mission:2,at:20}});report('fill','instructor: two tankers arrive together; staging the second one in the lane is the right call',r.ok&&r.injected===true&&r.score===100,`score ${r.score}, injected ${r.injected}`);}}
 
+if(want.includes('omp')){const api=env.env.api;const O=api.CAMP.findIndex(c=>c.omp);const c=api.CAMP[O];const all=c.story+' '+c.outcome+' '+c.source;
+  const play=JSON.stringify(c.missions.map(m=>[m.title,typeof m.intro==='function'?m.intro():m.intro,m.steps.map(s=>[s.t,s.dec&&[typeof s.dec.q==='function'?s.dec.q():s.dec.q,s.dec.opts,s.dec.real]])]));
+  report('omp','One Meridian Plaza is scenario 14, a Real Save with one fixed record (no layouts) and no scripted faults on any tier (Chaos plays like Recall)',O===13&&c.real&&!api.VARIANTS[13]&&c.missions.every(m=>!m.faults));
+  {const need=['8:23 p.m.','passerby at a pay phone','8:27','Engine 43 arrived at 8:31 with fire showing from one window','second alarm went out at 8:33','Linseed oil-soaked rags left by a contractor in a vacant office','emergency generator failed','two electric fire pumps lost power','"effectively prevented the increased pressure in the standpipes from being discharged through the valves."','index 80 delivered 55 to 57 psi, about 40 to 45 psi at the nozzle','index of 88 to 91','150 to 158','2½-inch lines with straight-bore nozzles','1¾-inch hose with automatic fog nozzles needing 100 psi','several hours into the fire','a sprinkler contractor adjusted them','1:17 a.m.','about 2:15 a.m.','They had run out of air','up the west stair to the 24th floor','12th alarm went out at 2:21 a.m.','51 engine companies, 15 ladder companies, 11 specialized units and about 316 firefighters, with no mutual aid','Twenty-four firefighters were injured','At 7:00 a.m., after about 11 hours','pancake collapse','complete by 7:30','"the most courageous safety decision."','10 sprinklers','30, 31, 34 and 35','Eight floors were consumed','more than 19 hours','3:01 p.m. on February 24','"an essentially impossible situation and did a commendable job."','approved in the fall of 1992 for the 1993 edition','all existing high-rise buildings by 1997','In memory of Captain David P. Holcombe, Firefighter Phyllis McAllister and Firefighter James A. Chappell, Philadelphia Fire Department Engine 11.'];
+   const miss=need.filter(x=>!all.includes(x));report('omp','every fact Max had checked against USFA-TR-049 is in the story or the record, word for word where quoted, with the memorial line',miss.length===0,miss.join(' | '));}
+  {const banned=[/8:37/,/about 8:40/,/1999/,/dismantl/i,/white paper/i,/Life Safety/i,/demolish/i];const hit=banned.filter(r=>r.test(all+play));report('omp','dropped details stay out: no 8:37, no "about 8:40", nothing about the building\'s demolition, no valve-industry white paper as a source',hit.length===0,hit.join(' '));}
+  report('omp','the source is the USFA report with its authors; the engine and every pressure are labeled modeled',/Routley, Jennings and Chubb/.test(c.source)&&/USFA-TR-049/.test(c.source)&&/modeled/.test(c.story)&&c.missions.filter(m=>m.steps.some(s=>/PSI \(modeled/.test(s.t))).length>=2);
+  report('omp','no real person is portrayed in play: Engine 11 and its members appear only in the record, never in a radio line, decision or step',!/Engine 11|Holcombe|McAllister|Chappell|Captain is down|captain was down/.test(play)&&/Engine 11/.test(c.outcome));
+  {const m=c.missions[1];report('omp','the pressure-reducing valve lesson: on the fire floors the crews report weak streams even when the connection pressure is right',/weak/.test(String(m.chat.ok))&&/Still weak at the nozzle/.test(m.chat.ok.toString()));}
+  {const r=quiet(()=>env.play(O,1,'bad'));const r2=quiet(()=>env.play(O,2,'good'));report('omp','each wrong call costs 10 and the run still finishes; a clean run on Chaos scores 100 with no faults',r.ok&&r.score===60&&r2.ok&&r2.score===100,`${r.score} / ${r2.score}`);}
+  {const r=quiet(()=>env.play(O,0,'good'));const b=api.$('done-body').innerHTML;report('omp','the debrief tells the record and closes with the memorial line',r.ok&&/the most courageous safety decision/.test(b)&&/In memory of Captain David P. Holcombe/.test(b));}}
 if(want.includes('balance')){const {CAMP}=env.env.api;let lo=0,sh=0,t=0,first=0;for(const c of CAMP)for(const m of c.missions)for(const s of m.steps)if(s.dec&&s.dec.opts){const L=s.dec.opts.map(x=>x.t.length),g=s.dec.opts.findIndex(x=>x.r==='good');t++;if(L[g]===Math.max(...L))lo++;else if(L[g]===Math.min(...L))sh++;}
   report('balance','right answer is not usually the longest',lo/t<=.45,`${lo} of ${t} (${Math.round(lo/t*100)}%)`);report('balance','right answer is not usually the shortest',sh/t<=.45,`${sh} of ${t} (${Math.round(sh/t*100)}%)`);
   report('balance','answer order is shuffled on screen',/d\.opts\.map\(\(o,i\)=>\[o,i\]\)\.sort\(\(\)=>Math\.random\(\)-\.5\)/.test(html));}

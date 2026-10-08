@@ -26,6 +26,7 @@ def play_real(pg, w, idx, variant, label, need):   # a scenario played to the en
         if pg.is_visible('#done'):
             if 'scenario complete' in pg.text_content('#done-title'): break
             pg.click('#b-next'); pg.wait_for_timeout(300); continue
+        if pg.is_visible('#case-go'): pg.click('#case-go'); pg.wait_for_timeout(300); continue   # a Real Save opens on its case card
         if pg.is_visible('#briefov'): pg.click('#brief-go'); pg.wait_for_timeout(300); continue
         if pg.is_visible('#decov'):
             if pg.is_visible('#dec-opts'):
@@ -138,6 +139,7 @@ with sync_playwright() as p:
         if w == 375: ev_play(pg, w)
         if w == 320: play_real(pg, w, 11, 'B', 'Defensive fire B', lambda pg: True)
         if w == 320: play_real(pg, w, 12, 'B', 'Fill site B', lambda pg: 'Turn times' in pg.inner_html('#done-body'))
+        if w == 430: play_real(pg, w, 13, 'A', 'One Meridian Plaza', lambda pg: 'In memory of Captain David P. Holcombe' in pg.inner_html('#done-body'))
         n = pg.evaluate("CAMP.length")
         for i in range(n):
             pg.goto(URL); pg.wait_for_timeout(250)

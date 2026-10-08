@@ -34,6 +34,8 @@ function stepAct(c,m,j,s){
   if(/tanker on the pad/.test(tl))return;
   if(/connect the fill line to the tanker/.test(tl)){click('s-relay');return;}
   if(/tanker nearly full: gate #4 rear down/.test(tl)){const v=S.valves.rear4;if(S.tk&&(S.tk.full||S.tk.near)){if(v.open>25)api.setValve('rear4','gate');else if(v.open>0&&S.tk.full)api.setValve('rear4','close');}else{if(v.open<100)api.setValve('rear4','crack');setPsi(60);}return;}
+  if(/connect the 3" to the fdc/.test(tl)){click('s-fdc');return;}
+  if(/5" up the west stair connected/.test(tl)){click('s-relay');return;}
   if(/tanker pumping/.test(tl)){click('s-hyd');return;}
   if(/thermal camera check/.test(tl)){if(S.t>=(S.camNext||0))click('ev-cam');return;}
   if(/^shut down #3 front, keep/.test(tl)){if(S.valves.front3.open>0)api.setValve('front3','close');return;}
