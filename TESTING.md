@@ -130,3 +130,10 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 - `qa.js` takes `choiceAt:{tag:'good'|'bad'|'never'|'partial'}` and handles the tanker, camera and shut-down steps by their text.
 - Proven able to fail: a never option costing 10, gating counted as enough water, and a changed Guide 147 line in Upwind each failed a check.
 - Browser check: the EV fire played to the end at 375 px with real taps (decisions by visible text, the valve and governor buttons, the tanker hookup, the fast-forward button, the thermal camera), to a 100 with the Upwind link on the result screen.
+
+## 2.17.0 checks (October 8, 2026, the defensive commercial fire)
+- `def` (10 checks): scenario 12 with three layouts and the 1,250 gpm rating; the hydrant residual against an independent recalculation from each layout's numbers in 27 states (one or two lines, same main or another); past the rating the pressure sags; layout B's numbers (one line and a same-hydrant second line under 20, another main over 20) and the same-hydrant choice costing 10 with Engine 12-1's line 20 seconds later; the percent-drop card against the rule recalculated independently; throttling up really throttles up; cavitation lowers the discharge while RPM climbs, the penalty waits 15 seconds then costs 10; reading cavitation wrong costs 10 and a clean run scores 100; the collapse inject and its spliced steps; layout C's exposure line.
+- `stress` found the stuck hydrant-sharing fault (3 of 720 Chaos runs) before it was fixed.
+- `balance` caught the right answer as the longest option in six of seven new decisions; reworded.
+- Proven able to fail: removing the rating sag, the second line's hose effect or the cavitation pressure drop each failed checks.
+- Browser check: the defensive fire's layout B played to the end at 320 px with real taps (the valve Crack and Gate buttons for the two bands, the governor, the second supply, throttling back from cavitation).

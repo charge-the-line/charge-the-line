@@ -8,12 +8,21 @@ URL = (pathlib.Path(__file__).resolve().parent.parent / 'index.html').as_uri()
 OVER = "(()=>{let m=0;document.querySelectorAll('body *').forEach(e=>{if(e.offsetParent===null)return;const r=e.getBoundingClientRect();m=Math.max(m,r.right-window.innerWidth);});return Math.round(m);})()"
 SMALL = "(()=>{let n=0;document.querySelectorAll('button').forEach(e=>{if(e.offsetParent===null)return;const r=e.getBoundingClientRect();if(r.width<2||r.height<2||r.bottom<0||r.top>innerHeight)return;if(r.height<44)n++;});return n;})()"
 errs, rows = [], []
-def ev_play(pg, w):   # the EV fire played to the end with real taps: decisions by their visible text, the valve and governor buttons, the tanker hookup, the fast-forward button and the thermal camera
+def play_real(pg, w, idx, variant, label, need):   # a scenario played to the end with real taps: decisions by visible text, valve, governor, supply and panel buttons, the fast-forward button
     pg.goto(URL); pg.wait_for_timeout(250)
     if pg.is_visible('#b-start'): pg.click('#b-start')
-    pg.evaluate("window.FORCE_V={10:'A'}"); pg.click('.scen[data-i="10"]'); pg.wait_for_timeout(200); pg.evaluate("window.FORCE_V=undefined")
+    pg.evaluate("window.FORCE_V={%d:'%s'}" % (idx, variant)); pg.click('.scen[data-i="%d"]' % idx); pg.wait_for_timeout(200); pg.evaluate("window.FORCE_V=undefined")
     panel = None; ff_used = 0
-    for _ in range(900):
+    def valve_to(k, lo, hi, psi):   # gate a valve with Crack + / Gate − until its gauge reads in band at this pump pressure
+        o = pg.evaluate("S.valves['%s'].open" % k); lp = psi * (0.45 + 0.55 * o / 100)
+        if o == 0 or (lp < lo and o < 100): pg.click('#valve-%s [data-a="crack"]' % k)
+        elif lp > hi and o > 25: pg.click('#valve-%s [data-a="gate"]' % k)
+    def governor_to(target):
+        if pg.evaluate("S.mode") != 'psi': pg.click('#b-psi'); return
+        sp = pg.evaluate("S.set")
+        if sp < target - 5: pg.click('#b-up')
+        elif sp > target + 5: pg.click('#b-dn')
+    for _ in range(1100):
         if pg.is_visible('#done'):
             if 'scenario complete' in pg.text_content('#done-title'): break
             pg.click('#b-next'); pg.wait_for_timeout(300); continue
@@ -22,40 +31,91 @@ def ev_play(pg, w):   # the EV fire played to the end with real taps: decisions 
             if pg.is_visible('#dec-opts'):
                 t = pg.evaluate("DEC.s.dec.opts.find(o=>o.r==='good').t"); pg.locator('#dec-opts button', has_text=re.compile('^' + re.escape(t) + '$')).first.click(); pg.wait_for_timeout(200)
             pg.click('#dec-go'); pg.wait_for_timeout(300); continue
-        st = pg.evaluate("(()=>{const m=CAMP[S.camp].missions[S.mission];const j=stepsDone.findIndex(x=>!x);return j<0?'':m.steps[j].t;})()")
-        if panel is None and S_tank_shown(pg): panel = pg.evaluate(OVER) + 1000 * pg.evaluate(SMALL)
+        st, two, key, hk = pg.evaluate("(()=>{const c=CAMP[S.camp],m=c.missions[S.mission];const j=stepsDone.findIndex(x=>!x);const s=j<0?null:m.steps[j];return [s?s.t:'',s&&s.two?s.two:null,c.evKey||null,s&&s.k&&s.lo?[s.k,s.lo,s.hi]:null];})()")
+        if panel is None and pg.evaluate("S.mission>=1"): panel = pg.evaluate(OVER) + 1000 * pg.evaluate(SMALL)
         band = re.search(r'(\d+)–(\d+)', st)
-        def keep_band():
-            if pg.evaluate("S.valves.front.open") < 100: pg.click('#valve-front [data-a="crack"]'); return
-            if pg.evaluate("S.mode") != 'psi': pg.click('#b-psi'); return
-            lo, hi = int(band.group(1)), int(band.group(2)); sp = pg.evaluate("S.set")
-            if sp < lo + 3: pg.click('#b-up')
-            elif sp > hi - 3: pg.click('#b-dn')
+        if hk and not two: band = None
+        if pg.evaluate("!!CAMP[S.camp].fillSite&&S.primed&&totalFlow()<20&&!S.fill"): pg.click('#s-fill'); pg.wait_for_timeout(300); continue   # recirculate between tankers, as a pump operator would
         if st == '': pass
+        elif st.startswith('RPM mode, 1,000'):
+            if pg.evaluate("S.mode") != 'rpm': pg.click('#b-rpm')
+            elif pg.evaluate("S.rpm") < 1050: pg.click('#b-up')
+            elif pg.evaluate("S.rpm") > 1250: pg.click('#b-dn')
+        elif 'Clear the ice' in st: pg.click('#dh-ice'); pg.wait_for_timeout(600)
+        elif 'Connect hard suction' in st: pg.click('#s-hard')
+        elif 'Connect the hydrant line' in st: pg.click('#s-supply')
+        elif 'Open the intake gate' in st: pg.click('#miv-open')
+        elif 'to the FDC' in st and st.startswith('Connect'): pg.click('#s-fdc')
+        elif 'up the west stair connected' in st: pg.click('#s-relay')
+        elif 'Transfer valve set for pressure' in st:
+            if pg.evaluate("S.rpm>1100"): pg.click('#b-idle')
+            else: pg.click('#x-pres'); pg.wait_for_timeout(150); pg.click('#b-psi')
+        elif 'Every discharge closed' in st:
+            for k in pg.evaluate("Object.keys(S.valves).filter(k=>S.valves[k].open>0&&document.getElementById('valve-'+k))"): pg.click('#valve-%s [data-a="close"]' % k)
+        elif st.startswith('Run the primer'):
+            if not pg.evaluate("S.primerOn||S.primed"): pg.click('#s-primer')
+        elif st.startswith('Primer off'):
+            if pg.evaluate("S.primerOn"): pg.click('#s-primer')
+        elif 'Back-flush the dry hydrant' in st:
+            if pg.evaluate("S.flushT<=0"): pg.click('#dh-flush')
+        elif 'Past 15' in st or st.startswith('Primed'): pass
+        elif 'on the pad' in st:
+            if pg.is_visible('#b-ff'): pg.click('#b-ff'); ff_used += 1
+        elif 'Connect the fill line' in st: pg.click('#s-relay')
+        elif 'Tanker nearly full' in st:
+            if pg.evaluate("!!S.tk&&(S.tk.near||S.tk.full)"):
+                if pg.evaluate("S.valves.rear4.open") > 25: pg.click('#valve-rear4 [data-a="gate"]')
+                elif pg.evaluate("S.tk.full"): pg.click('#valve-rear4 [data-a="close"]')
+        elif 'crack the tank fill' in st:
+            if not pg.evaluate("S.fill"): pg.click('#s-fill')
+        elif hk and not two:
+            k, lo, hi = hk
+            if pg.is_visible('#b-ff') and pg.evaluate("S.valves['%s'].open===100" % k): pg.click('#b-ff'); ff_used += 1
+            elif pg.evaluate("S.valves['%s'].open" % k) < 100: pg.click('#valve-%s [data-a="crack"]' % k)
+            else: governor_to((lo + hi) / 2)
+        elif two:
+            top = max(two, key=lambda x: x['lo']); governor_to((top['lo'] + top['hi']) / 2); psi = pg.evaluate("S.set")
+            for x in two:
+                if x is top:
+                    if pg.evaluate("S.valves['%s'].open" % x['k']) < 100: pg.click('#valve-%s [data-a="crack"]' % x['k'])
+                else: valve_to(x['k'], x['lo'], x['hi'], psi)
+            if pg.is_visible('#b-ff'): pg.click('#b-ff'); ff_used += 1
         elif 'Engage the pump' in st: pg.click('#s-pump')
         elif 'Confirm tank-to-pump open' in st or 'Open tank-to-pump' in st:
             if not pg.evaluate("S.ttp"): pg.click('#s-ttp')
         elif st.startswith('Open #1 front'): pg.click('#valve-front [data-a="crack"]')
-        elif 'Connect the supply line' in st: pg.click('#s-supply')
-        elif 'Tanker pumping' in st: pg.click('#s-hyd')
+        elif st.startswith('Open the deck gun'): pg.click('#valve-deck [data-a="crack"]')
+        elif st.startswith('Open #3 rear'): pg.click('#valve-rear3 [data-a="crack"]')
+        elif st.startswith('Open #2 rear'): pg.click('#valve-rear2 [data-a="crack"]')
+        elif st.startswith('Open #4 rear'): pg.click('#valve-rear4 [data-a="crack"]')
+        elif 'Connect the second 5"' in st: pg.click('#s-relay')
+        elif 'Connect the supply line' in st or 'Connect the 5" supply' in st: pg.click('#s-supply')
+        elif 'Tanker pumping' in st or 'Open the hydrant' in st: pg.click('#s-hyd')
         elif 'Open the MIV' in st: pg.click('#miv-open')
         elif 'Bleed the air' in st: pg.click('#s-bleed')
         elif 'Close tank-to-pump' in st:
             if pg.evaluate("S.ttp"): pg.click('#s-ttp')
         elif 'Thermal camera check' in st: pg.click('#ev-cam'); pg.wait_for_timeout(600)
+        elif 'Throttle back until the intake' in st:
+            if pg.evaluate("S.cavOn||resDemand()<10"): pg.click('#b-dn')
         elif st.startswith('Shut down #1 front'): pg.click('#valve-front [data-a="close"]')
+        elif st.startswith('Shut down #3 rear'): pg.click('#valve-rear3 [data-a="close"]')
         elif 'Throttle to idle' in st: pg.click('#b-idle')
-        elif 'Close all discharges' in st: pg.click('#valve-front [data-a="close"]')
+        elif 'Close all discharges' in st:
+            for k in pg.evaluate("Object.keys(S.valves).filter(k=>S.valves[k].open>0&&document.getElementById('valve-'+k))"): pg.click('#valve-%s [data-a="close"]' % k)
         elif 'Disengage the pump' in st:
             if pg.evaluate("S.rpm<=950"): pg.click('#s-pump')
         elif band:
-            if pg.is_visible('#b-ff') and pg.evaluate("S.valves.front.open===100&&S.psi>150"): pg.click('#b-ff'); ff_used += 1
-            else: keep_band()
+            k = key or ('rear3' if st.startswith('FDC line') else 'deck' if 'deck gun' in st.lower() else 'rear3' if '#3 rear' in st else 'rear4' if '#4 rear' in st else 'rear2' if '#2 rear' in st else 'front')
+            lo, hi = int(band.group(1)), int(band.group(2))
+            if pg.is_visible('#b-ff') and pg.evaluate("S.valves['%s'].open===100" % k): pg.click('#b-ff'); ff_used += 1
+            elif pg.evaluate("S.valves['%s'].open" % k) < 100: pg.click('#valve-%s [data-a="crack"]' % k)
+            else: governor_to((lo + hi) / 2)
         pg.wait_for_timeout(400)
-    ok = pg.is_visible('#done') and 'scenario complete' in pg.text_content('#done-title') and pg.evaluate('S.score') == 100 and 'upwind/?scn=liion' in pg.inner_html('#done-body')
-    if not ok: print('EV run detail:', pg.evaluate("JSON.stringify({score:S.score,mission:S.mission,camp:S.camp,inc:S.incidents,title:document.getElementById('done-title').textContent,step:(()=>{const m=CAMP[S.camp].missions[S.mission];const j=stepsDone.findIndex(x=>!x);return j<0?'':m.steps[j].t;})(),dec:S.decisions})"))
-    rows.append((w, 'EV fire panel', panel if panel is not None else 99)); rows.append((w, 'EV fire (full, fast-forward x%d)' % ff_used, (pg.evaluate(OVER) + 1000 * pg.evaluate(SMALL)) + (0 if ok and ff_used > 0 else 99)))
-def S_tank_shown(pg): return pg.is_visible('#evp') and pg.evaluate("S.tankerReq!==null")
+    ok = pg.is_visible('#done') and 'scenario complete' in pg.text_content('#done-title') and pg.evaluate('S.score') == 100 and need(pg)
+    if not ok: print(label + ' run detail:', pg.evaluate("JSON.stringify({score:S.score,mission:S.mission,inc:S.incidents,step:(()=>{const m=CAMP[S.camp].missions[S.mission];const j=stepsDone.findIndex(x=>!x);return j<0?'':m.steps[j].t;})()})"))
+    rows.append((w, label + ' panel', panel if panel is not None else 99)); rows.append((w, label + ' (full, fast-forward x%d)' % ff_used, (pg.evaluate(OVER) + 1000 * pg.evaluate(SMALL)) + (0 if ok else 99)))
+def ev_play(pg, w): play_real(pg, w, 10, 'A', 'EV fire', lambda pg: 'upwind/?scn=liion' in pg.inner_html('#done-body'))
 with sync_playwright() as p:
     b = p.chromium.launch()
     for w in (320, 375, 430):
@@ -76,6 +136,7 @@ with sync_playwright() as p:
         pg.goto(URL+'?drill=hydrant'); pg.wait_for_timeout(300); rows.append((w, 'daily link', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)) + (0 if pg.is_visible('#quizov') else 99)))
         pg.goto(URL); pg.evaluate("localStorage.setItem('preconnect-drill',JSON.stringify({on:true,inst:'Max',roster:['Jo','Sam'],who:'',start:new Date().toISOString()}))"); pg.goto(URL); pg.wait_for_timeout(300); rows.append((w, 'drill picker', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('.pc-drill-name'); pg.wait_for_timeout(200); rows.append((w, 'drill bar', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.evaluate("localStorage.removeItem('preconnect-drill')")
         if w == 375: ev_play(pg, w)
+        if w == 320: play_real(pg, w, 11, 'B', 'Defensive fire B', lambda pg: True)
         n = pg.evaluate("CAMP.length")
         for i in range(n):
             pg.goto(URL); pg.wait_for_timeout(250)

@@ -7,7 +7,7 @@
    Exit code 0 = all passed. */
 global.window=global.window||{};
 const path=require('path'),fs=require('fs'),vm=require('vm'),{execFileSync}=require('child_process');
-const ALL=['syntax','balance','learn','variants','inject','ev','play','paths','human','checks','guide','stress','fuzz'];
+const ALL=['syntax','balance','learn','variants','inject','ev','def','play','paths','human','checks','guide','stress','fuzz'];
 let want=process.argv.slice(2);if(!want.length)want=ALL;if(want.includes('quick'))want=['syntax','balance','learn','guide','fuzz'];
 const results=[];let failed=0;const T0=Date.now();
 function report(section,name,ok,detail=''){results.push({ok});if(!ok)failed++;console.log(`${ok?'PASS':'FAIL'}  ${section.padEnd(8)} ${name}${detail?'  — '+detail:''}`);}
@@ -131,7 +131,7 @@ if(want.includes('inject')){const {boot}=require('./qa_mock.js');
 
 
 
-const env=(want.some(x=>['balance','variants','inject','ev','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
+const env=(want.some(x=>['balance','variants','inject','ev','def','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
 if(want.includes('variants')){const {CAMP,VARIANTS}=env.env.api;
   // every named layout of every regular scenario completes on Guided and Recall, and a Chaos run too; the briefing names the layout
   for(const i of Object.keys(VARIANTS)){let ok=0,n=0,perfect=0,named=0;for(const v of VARIANTS[i])for(const tier of [0,1,2]){n++;const r=quiet(()=>env.play(+i,tier,'good',{variant:v.id}));if(r.ok)ok++;if(r.ok&&r.score===100&&tier<2)perfect++;if(r.variant===v.id)named++;}
@@ -174,6 +174,28 @@ if(want.includes('ev')){const api=env.env.api;const EV=api.CAMP.findIndex(c=>c.e
   {const r=run({inject:{f:'flare',mission:2,at:6}});report('ev','instructor: a flare-up after knockdown is answered by the water already on the battery, and the run is marked',r.ok&&r.injected===true&&(api.load().log||[]).slice(-1)[0].inst===1);}
   {const r=run();const b=api.$('done-body').innerHTML;report('ev','the debrief carries the Guide 147 lines, says the gallons are modeled and links to Upwind\'s lithium-ion fire, Layout A',/From Guide 147 \(ERG2024\), UN3556/.test(b)&&/modeled/.test(b)&&/\.\.\/upwind\/\?scn=liion&amp;v=A/.test(b));}
   {const r=quiet(()=>env.play(10,0,'good',{variant:'C'}));report('ev','layout C (the garage beside the SUV): a second line protects the exposure and the tank still lasts until the tanker',r.ok&&r.score===100&&api.CAMP[10].missions[0].steps.some(s=>/Protect the garage/.test(s.t)));}}
+if(want.includes('def')){const api=env.env.api;const D=api.CAMP.findIndex(c=>c.def);const run=(o,v)=>quiet(()=>env.play(D,1,'good',Object.assign({variant:v||'A'},o||{})));
+  const load=(v,tier)=>{global.window.FORCE_V={[D]:v};api.setTier(tier===undefined?1:tier);api.loadCampaign(D);global.window.FORCE_V=undefined;api.$('brief-go').onclick();return api.S;};
+  const indep=(V,S)=>{const f=api.totalFlow();return V.hyd-(S.cavDone&&!S.cavBack?V.drop:0)-f*(V.mainK*(S.sup2&&S.sup2Other?0.5:1)+V.hoseK*(S.sup2?0.25:1));};
+  report('def','the defensive fire is scenario 12 (appended) with three layouts and Engine 10-2\'s 1,250 gpm rating',D===11&&api.VARIANTS[11].length===3&&api.CAMP[11].rated===1250);
+  {let bad=0,n=0;for(const V of api.VARIANTS[11]){const S=load(V.id);S.pump=true;S.supply=S.hydrant=S.bled=true;S.miv=100;S.ttp=false;for(const st of [[false,false],[true,false],[true,true]]){S.sup2=st[0];S.sup2Other=st[1];for(const o of [[50,0],[100,50],[100,100]]){S.valves.deck.open=o[0];S.valves.rear3.open=o[1];S.set=138;S.mode='psi';for(let i=0;i<8;i++)api.tick(0.25);n++;if(Math.abs(api.residual()-indep(V,S))>0.01)bad++;}}}
+   report('def','the hydrant residual matches an independent recalculation from each layout\'s main and hose numbers, with one or two supply lines, same main or another (27 states)',bad===0,`${bad} of ${n} off`);}
+  {const S=load('A');S.pump=true;S.supply=S.hydrant=S.bled=true;S.miv=100;S.ttp=false;S.sup2=true;S.hydCap=200;S.mode='rpm';S.rpm=2400;S.valves.deck.open=100;S.valves.rear3.open=100;for(let i=0;i<8;i++)api.tick(0.25);const f1=api.totalFlow(),p1=S.psi;const c=api.CAMP[D];const keep=c.rated;c.rated=1e9;for(let i=0;i<8;i++)api.tick(0.25);const p2=S.psi,f2=api.totalFlow();c.rated=keep;
+   report('def','past the 1,250 gpm rating the discharge pressure sags (same engine speed, same valves)',f2>1250&&p1<p2-20,`${Math.round(f2)} gpm unrated at ${Math.round(p2)} psi; rated it sags to ${Math.round(p1)} psi`);}
+  {const V=api.VARIANTS[11].find(v=>v.id==='B');const f=1100;const same=V.hyd-f*(V.mainK+V.hoseK*0.25),other=V.hyd-f*(V.mainK*0.5+V.hoseK*0.25),one=V.hyd-f*(V.mainK+V.hoseK);
+   const r1=run({},'B'),r2=run({choiceAt:{'Residual dropping':'bad'}},'B');
+   report('def','layout B (a dead-end main): at about 1,100 gpm one line or a second line from the same hydrant leaves the intake under 20, a line from another main brings it over 20; choosing the same hydrant costs 10 and Engine 12-1 lays the other-main line 20 seconds later',one<20&&same<20&&other>20&&r1.ok&&r1.score===100&&r2.ok&&r2.score===90,`one ${one.toFixed(1)}, same ${same.toFixed(1)}, other ${other.toFixed(1)}; ${r1.score} / ${r2.score}`);}
+  {const S=load('A',0);S.hydCap=75;let ok=0,n=0;for(const re of [74,70,66,60,52,40]){S.pdQ={st:75,re};const g=api.CAMP[D].missions[1].steps.find(s=>s.dec).dec.opts.find(o=>o.r==='good');const d=(75-re)/75*100;const want=(d<=10?'Three more':d<=15?'Two more':d<=25?'One more':'No more')+' like it';n++;if(g&&g.t===want)ok++;}S.pdQ=null;
+   report('def','the percent-drop card\'s right answer matches the rule recalculated independently (0–10 % three more, 11–15 two, 16–25 one, over 25 none)',ok===n,`${ok} of ${n}`);}
+  {const S=load('A');const where=api.CAMP[D].missions[2].steps.find(s=>s.dec).dec;S.set=120;S.lastChoiceT=where.opts.find(o=>/Throttle up/.test(o.t)).t;where.after();
+   report('def','choosing to throttle up really throttles up (rule 14): the set point rises 30 psi and the feedback names supply, not throttle, as the fix',S.set===150&&/More supply, not more throttle/.test(where.opts.find(o=>/Throttle up/.test(o.t)).why));}
+  {const S=load('A');S.pump=true;S.supply=S.hydrant=S.bled=true;S.miv=100;S.ttp=false;S.sup2=true;S.mode='psi';S.set=138;S.valves.deck.open=50;S.valves.rear3.open=100;for(let i=0;i<20;i++)api.tick(0.25);const p0=S.psi,r0=S.rpm;
+   S.mission=3;api.CAMP[D].missions[3].onStart();for(let i=0;i<24;i++)api.tick(0.25);const p1=S.psi,r1=S.rpm,res=api.intakeVal(),sc0=S.score;const early=S.incidents.some(x=>/Collapsed the hydrant/.test(x));for(let i=0;i<100;i++)api.tick(0.25);const late=S.incidents.some(x=>/Collapsed the hydrant/.test(x));
+   report('def','cavitation is real: with a second engine on the main the intake drops under 10, the governor climbs in RPM while the discharge falls; the penalty waits 15 seconds for the engineer to read it, then costs 10',res<10&&p1<p0-15&&r1>=r0&&!early&&late,`intake ${res.toFixed(1)}, ${Math.round(p0)}→${Math.round(p1)} psi, ${Math.round(r0)}→${Math.round(r1)} rpm, hyd ${api.supplied().hyd} def ${!!api.CAMP[S.camp].def} camp ${S.camp} cav ${S.cavDone} t ${S.t}`);}
+  {const r=run({choiceAt:{'Reading cavitation':'bad'}}),r2=run();report('def','reading cavitation as a governor problem costs 10; a crew that reads it, throttles back and recovers scores 100',r.ok&&r.score===90&&r2.ok&&r2.score===100,`${r.score} / ${r2.score}`);}
+  {const r=run({inject:{f:'collapse',mission:2,at:24}});report('def','instructor: the collapse zone grows; the card and two spliced steps (shut the monitor down, recharge it) are answered at the panel and the run is marked',r.ok&&r.injected===true&&r.score===100&&(api.load().log||[]).slice(-1)[0].inst===1,`score ${r.score}, injected ${r.injected}`);}
+  {const r=quiet(()=>env.play(D,0,'good',{variant:'C'}));report('def','layout C adds the 2½" exposure line on the tire shop, all three streams in band near the pump\'s rating',r.ok&&r.score===100&&api.CAMP[D].missions[2].steps.some(s=>/Open #2 rear/.test(s.t)));}}
+
 if(want.includes('balance')){const {CAMP}=env.env.api;let lo=0,sh=0,t=0,first=0;for(const c of CAMP)for(const m of c.missions)for(const s of m.steps)if(s.dec&&s.dec.opts){const L=s.dec.opts.map(x=>x.t.length),g=s.dec.opts.findIndex(x=>x.r==='good');t++;if(L[g]===Math.max(...L))lo++;else if(L[g]===Math.min(...L))sh++;}
   report('balance','right answer is not usually the longest',lo/t<=.45,`${lo} of ${t} (${Math.round(lo/t*100)}%)`);report('balance','right answer is not usually the shortest',sh/t<=.45,`${sh} of ${t} (${Math.round(sh/t*100)}%)`);
   report('balance','answer order is shuffled on screen',/d\.opts\.map\(\(o,i\)=>\[o,i\]\)\.sort\(\(\)=>Math\.random\(\)-\.5\)/.test(html));}

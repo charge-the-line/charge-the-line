@@ -5,6 +5,7 @@ const errors=[];
 function valveKeyFromText(t,c){
   const m=t.match(/#(\d) (front|rear)/i);if(m){const k=(m[2].toLowerCase()==='front'?(m[1]==='1'?'front':'front3'):('rear'+m[1]));if(S.valves[k])return k;}
   const d=t.match(/Discharge (\d)/);if(d&&c.valveNames){for(const k in c.valveNames)if(c.valveNames[k][0]==='Discharge '+d[1])return k;}
+  if(/deck gun/i.test(t))return 'deck';
   if(/FDC line|to the FDC/i.test(t))return 'rear3';if(/LDH at|#4 rear/i.test(t))return 'rear4';
   return null;}
 function band(t){const m=t.match(/(\d+)–(\d+)/);return m?[+m[1],+m[2]]:null;}
@@ -21,6 +22,12 @@ function stepAct(c,m,j,s){
   if(/steamer intake \(hydrant side\) closed|miv closed/.test(tl)){if(S.miv>0&&S.mivDir!==-1)click('miv-close');return;}
   if(/connect the 5" supply|connect the supply line$|connect the hydrant line/.test(tl)){click('s-supply');return;}
   if(/open the hydrant/.test(tl)){click('s-hyd');return;}
+  if(s.two){const bs=s.two.slice().sort((p,q)=>q.lo-p.lo);const top=bs[0];const psi=(top.lo+top.hi)/2;if(S.valves[top.k].open<100)api.setValve(top.k,'crack');setPsi(psi);bs.slice(1).forEach(o=>{const pick=[100,75,50,25].find(x=>{const lp=psi*(0.45+0.55*x/100);return lp>=o.lo&&lp<=o.hi;});if(S.valves[o.k].open===0)api.setValve(o.k,'crack');else S.valves[o.k].open=pick||100;});return;}
+  if(/open the deck gun/.test(tl)){if(S.valves.deck.open===0)api.setValve('deck','crack');return;}
+  if(/connect the second 5"/.test(tl)){click('s-relay');return;}
+  if(/second line charged/.test(tl))return;
+  if(/throttle back until the intake/.test(tl)){if(S.mode!=='psi')click('b-psi');if(S.cavOn||api.resDemand()<10)setPsi(Math.max(40,S.set-10));return;}
+  if(/^shut down #3 rear while/.test(tl)){if(S.valves.rear3.open>0)api.setValve('rear3','close');return;}
   if(/tanker pumping/.test(tl)){click('s-hyd');return;}
   if(/thermal camera check/.test(tl)){if(S.t>=(S.camNext||0))click('ev-cam');return;}
   if(/^shut down #3 front, keep/.test(tl)){if(S.valves.front3.open>0)api.setValve('front3','close');return;}
