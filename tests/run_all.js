@@ -7,7 +7,7 @@
    Exit code 0 = all passed. */
 global.window=global.window||{};
 const path=require('path'),fs=require('fs'),vm=require('vm'),{execFileSync}=require('child_process');
-const ALL=['syntax','balance','learn','variants','inject','play','paths','human','checks','guide','stress','fuzz'];
+const ALL=['syntax','balance','learn','variants','inject','ev','play','paths','human','checks','guide','stress','fuzz'];
 let want=process.argv.slice(2);if(!want.length)want=ALL;if(want.includes('quick'))want=['syntax','balance','learn','guide','fuzz'];
 const results=[];let failed=0;const T0=Date.now();
 function report(section,name,ok,detail=''){results.push({ok});if(!ok)failed++;console.log(`${ok?'PASS':'FAIL'}  ${section.padEnd(8)} ${name}${detail?'  — '+detail:''}`);}
@@ -131,7 +131,7 @@ if(want.includes('inject')){const {boot}=require('./qa_mock.js');
 
 
 
-const env=(want.some(x=>['balance','variants','inject','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
+const env=(want.some(x=>['balance','variants','inject','ev','play','paths','human','stress','fuzz'].includes(x)))?require('./qa.js'):null;
 if(want.includes('variants')){const {CAMP,VARIANTS}=env.env.api;
   // every named layout of every regular scenario completes on Guided and Recall, and a Chaos run too; the briefing names the layout
   for(const i of Object.keys(VARIANTS)){let ok=0,n=0,perfect=0,named=0;for(const v of VARIANTS[i])for(const tier of [0,1,2]){n++;const r=quiet(()=>env.play(+i,tier,'good',{variant:v.id}));if(r.ok)ok++;if(r.ok&&r.score===100&&tier<2)perfect++;if(r.variant===v.id)named++;}
@@ -149,6 +149,31 @@ if(want.includes('inject')){const {CAMP}=env.env.api;
    const p=quiet(()=>env.play(0,0,'good',{inject:{mission:0,at:12,f:'gov'}}));const log=env.env.api.load().log||[];const marked=(log[log.length-1]||{}).inst===1&&/Instructor injects/.test(env.env.api.$('done-body').innerHTML);
    report('inject','a run with an inject is marked in the record and named in the debrief',p.ok&&marked,`completed ${p.ok}, marked ${marked}`);}}
 
+if(want.includes('ev')){const api=env.env.api;const EV=api.CAMP.findIndex(c=>c.ev);const run=(o)=>quiet(()=>env.play(EV,1,'good',Object.assign({variant:'A'},o||{})));
+  report('ev','the EV fire is scenario 11 (appended, so older records keep their numbers) with three layouts',EV===10&&api.VARIANTS[10].length===3&&api.CAMP[10].name==='EV fire on a county road');
+  {const r=run({choiceAt:{'Water supply on arrival':'bad'}});report('ev','waiting to call for tankers: the officer calls late, the tank runs dry with the line flowing and the battery rekindles; the scenario can still be finished',r.ok&&r.score<=55&&api.S.rekN>=1,`score ${r.score}, rekindles ${api.S.rekN}`);}
+  {const r=run();report('ev','tankers on arrival: the tank lasts until the tanker is hooked up and the battery never comes back (100)',r.ok&&r.score===100&&api.S.rekN===0,`score ${r.score}`);}
+  {const r1=run({choiceAt:{'Disabling the vehicle':'never'}}),r2=run({choiceAt:{'Disabling the vehicle':'never','Getting water to the cells':'never'}});report('ev','the ERG "never" items cost 30 each (cutting the orange high-voltage cables, prying the battery cover)',r1.ok&&r1.score===70&&r2.ok&&r2.score===40,`${r1.score} / ${r2.score}`);}
+  {const decs=[];api.CAMP[10].missions.forEach(m=>m.steps.forEach(s=>{if(s.dec&&!Object.getOwnPropertyDescriptor(s.dec,'opts').get)decs.push(s.dec);}));const all=JSON.stringify(decs.map(d=>[d.opts,d.real]));
+   report('ev','every "never" option quotes the guide; the Guide 147 lines are there (large amounts of water on the battery, the maker\'s emergency guide first, never cut high-voltage cabling, do not pierce, cut, pry or dismantle, reignition up to weeks later, thermal imaging); tow and storage marked per department SOP',decs.every(x=>x.opts.filter(o=>o.r==='never').every(o=>/The guide says/.test(o.why)))&&decs.some(x=>x.opts.some(o=>o.r==='never'))&&/large amounts of water, sprayed directly onto the battery/.test(all)&&/manufacturer's emergency response guide/.test(all)&&/never cut high-voltage or medium-voltage cabling/.test(all)&&/do not pierce, cut, pry or dismantle/.test(all)&&/up to weeks later/.test(all)&&/thermal imaging/.test(all)&&/per department SOP \/ to confirm/.test(all));}
+  {const up=path.join(__dirname,'..','..','upwind','index.html');if(fs.existsSync(up)){const u=fs.readFileSync(up,'utf8');const liev=(u.match(/ liev:\{[^\n]*/)||[''])[0],liion=(u.match(/ liion:\{[^\n]*/)||[''])[0];
+    report('ev','the Guide 147 lines match Upwind\'s checked materials table (UN3556 and UN3480, Guide 147, read by Max from the printed ERG2024)',/guide:147/.test(liev)&&/un:'3556'/.test(liev)&&/never cut high-voltage or medium-voltage cabling/.test(liev)&&/large amounts of water, sprayed directly onto the battery/.test(liev)&&/do not pierce, cut, pry or dismantle/.test(liion)&&/up to weeks later/.test(liion)&&/2026-10-07 Max, ERG2024 printed book/.test(liev));}}
+  {global.window.FORCE_V={10:'A'};api.setTier(0);api.loadCampaign(10);global.window.FORCE_V=undefined;const S=api.S;api.$('brief-go').onclick();api.tick(0.25);api.$('dec-opts').onclick({target:{closest:()=>({dataset:{i:String(api.DEC().s.dec.opts.findIndex(o=>o.r==='good'))}})}});api.$('dec-go').onclick();
+   const n0=api.RADIO_N();api.$('s-supply').onclick();const refused=!S.supply&&api.RADIO_N()===n0+1;
+   S.pump=true;S.kd=true;S.flame=false;S.heat=60;S.valves.front.open=0;let smokeAt=null,flameAt=null;for(let i=0;i<80;i++){api.tick(0.25);if(smokeAt===null&&S.smokeSaid)smokeAt=i/4;if(flameAt===null&&S.flame)flameAt=i/4;}
+   report('ev','shutting the line down to stretch the tank is allowed (rule 14): the pack reheats, white smoke first, then flame, and it costs 10; connecting a tanker line before a tanker is there is refused (nothing to connect to)',refused&&smokeAt!==null&&flameAt!==null&&smokeAt<flameAt&&S.rekN===1&&S.incidents.some(x=>/battery rekindled/.test(x)),`smoke ${smokeAt}s, flame ${flameAt}s`);}
+  {global.window.FORCE_V={10:'A'};api.setTier(1);api.loadCampaign(10);global.window.FORCE_V=undefined;const S=api.S;api.$('brief-go').onclick();S.pump=true;S.mode='psi';S.set=170;S.kd=true;S.flame=false;S.heat=60;S.valves.front.open=25;S.decisions=[];for(let i=0;i<20;i++)api.tick(0.25);const tr=api.DEC();if(tr){api.$('dec-opts').onclick({target:{closest:()=>({dataset:{i:'0'}})}});api.$('dec-go').onclick();}
+   for(let i=0;i<80;i++)api.tick(0.25);report('ev','gating the line down to a quarter turn to stretch the tank is not enough water: the pack reheats and rekindles too',S.rekN>=1&&S.heat>0,`rekindles ${S.rekN}, heat ${Math.round(S.heat)}`);}
+  {global.window.FORCE_V={10:'B'};api.setTier(1);api.loadCampaign(10);global.window.FORCE_V=undefined;const S=api.S;S.tank=540;api.CAMP[10].missions[1].onStart();const o=api.CAMP[10].missions[1].steps[0].dec.opts;const h=Math.round(540/250*2)/2;const want=Math.floor(h)+':'+(h%1?'30':'00')+' min';
+   report('ev','the tank-math card is computed from the gauge and the line (540 gal at 250 gpm), checked against an independent recalculation, with three distinct options',o.filter(x=>x.r==='good').length===1&&o.find(x=>x.r==='good').t===want&&new Set(o.map(x=>x.t)).size===3,o.map(x=>x.t).join(' / '));}
+  {global.window.FORCE_V={10:'A'};api.setTier(1);api.loadCampaign(10);global.window.FORCE_V=undefined;const S=api.S;api.$('brief-go').onclick();const ff0=api.ffStep();
+   S.mission=3;api.CAMP[10].missions[3].onStart();const sd=api.stepsDone();sd.length=0;api.CAMP[10].missions[3].steps.forEach(()=>sd.push(false));sd[0]=true;sd[1]=true;S.running=true;S.briefing=false;S.heat=0;S.kd=true;S.flame=false;const t0=S.t;const on=api.ffStep()===2;api.ffRun();
+   report('ev','fast-forward is offered only on a waiting step (not on arrival), runs the same clock and stops the moment the white smoke comes back',ff0===null&&on&&S.smoke2&&S.t-t0>=19&&S.t-t0<=26&&S.heat>0,`offered ${on}, ran ${(S.t-t0).toFixed(1)} s`);}
+  {const r=run({inject:{f:'tanker',mission:1,at:8}});const r2=run({inject:{f:'tanker',mission:1,at:8},choiceAt:{'Tanker delayed':'bad'}});
+   report('ev','instructor: the tanker delay splices a decision card; asking for an engine to nurse you keeps the battery wet (100), gating the line down costs points',r.ok&&r.score===100&&r.injected===true&&r2.ok&&r2.score<100,`${r.score} / ${r2.score}`);}
+  {const r=run({inject:{f:'flare',mission:2,at:6}});report('ev','instructor: a flare-up after knockdown is answered by the water already on the battery, and the run is marked',r.ok&&r.injected===true&&(api.load().log||[]).slice(-1)[0].inst===1);}
+  {const r=run();const b=api.$('done-body').innerHTML;report('ev','the debrief carries the Guide 147 lines, says the gallons are modeled and links to Upwind\'s lithium-ion fire, Layout A',/From Guide 147 \(ERG2024\), UN3556/.test(b)&&/modeled/.test(b)&&/\.\.\/upwind\/\?scn=liion&amp;v=A/.test(b));}
+  {const r=quiet(()=>env.play(10,0,'good',{variant:'C'}));report('ev','layout C (the garage beside the SUV): a second line protects the exposure and the tank still lasts until the tanker',r.ok&&r.score===100&&api.CAMP[10].missions[0].steps.some(s=>/Protect the garage/.test(s.t)));}}
 if(want.includes('balance')){const {CAMP}=env.env.api;let lo=0,sh=0,t=0,first=0;for(const c of CAMP)for(const m of c.missions)for(const s of m.steps)if(s.dec&&s.dec.opts){const L=s.dec.opts.map(x=>x.t.length),g=s.dec.opts.findIndex(x=>x.r==='good');t++;if(L[g]===Math.max(...L))lo++;else if(L[g]===Math.min(...L))sh++;}
   report('balance','right answer is not usually the longest',lo/t<=.45,`${lo} of ${t} (${Math.round(lo/t*100)}%)`);report('balance','right answer is not usually the shortest',sh/t<=.45,`${sh} of ${t} (${Math.round(sh/t*100)}%)`);
   report('balance','answer order is shuffled on screen',/d\.opts\.map\(\(o,i\)=>\[o,i\]\)\.sort\(\(\)=>Math\.random\(\)-\.5\)/.test(html));}

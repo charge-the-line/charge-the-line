@@ -21,6 +21,10 @@ function stepAct(c,m,j,s){
   if(/steamer intake \(hydrant side\) closed|miv closed/.test(tl)){if(S.miv>0&&S.mivDir!==-1)click('miv-close');return;}
   if(/connect the 5" supply|connect the supply line$|connect the hydrant line/.test(tl)){click('s-supply');return;}
   if(/open the hydrant/.test(tl)){click('s-hyd');return;}
+  if(/tanker pumping/.test(tl)){click('s-hyd');return;}
+  if(/thermal camera check/.test(tl)){if(S.t>=(S.camNext||0))click('ev-cam');return;}
+  if(/^shut down #3 front, keep/.test(tl)){if(S.valves.front3.open>0)api.setValve('front3','close');return;}
+  if(/^shut down #\d (front|rear) discharge once/.test(tl)){const k=valveKeyFromText(t,c);if(k&&S.valves[k].open>0)api.setValve(k,'close');return;}
   if(/put the eductor in line/.test(tl)){click('e-in');return;}
   if(/pickup tube/.test(tl)){click('e-pick');return;}
   if(/metering valve at 3%/.test(tl)){S.eductPct=3;return;}
@@ -83,7 +87,7 @@ function play(ci,tier,choice='good',opts={}){
       if(opts.human){opts._rt=(opts._rt||0)+.25;}
       if(!$('briefov')._cls.has('hidden')){if(!opts.human||(opts._b=(opts._b||0)+.25)>=2){opts._b=0;$('brief-go').onclick();}else{t+=.25;continue;}}
       if(api.DEC()&&opts.human&&((opts._d=(opts._d||0)+.25)<3)){t+=.25;continue;}opts._d=0;
-      if(api.DEC()){if(decAt===null)decAt=S.t-S.mStart;const d=api.DEC().s.dec;let i=d.opts.findIndex(o=>o.r===choice);if(i<0)i=0;$('dec-opts').onclick({target:{closest:()=>({dataset:{i:String(i)}})}});$('dec-go').onclick();}
+      if(api.DEC()){if(decAt===null)decAt=S.t-S.mStart;const d=api.DEC().s.dec;let i=d.opts.findIndex(o=>o.r===((opts.choiceAt&&opts.choiceAt[d.tag])||choice));if(i<0)i=0;$('dec-opts').onclick({target:{closest:()=>({dataset:{i:String(i)}})}});$('dec-go').onclick();}
       if(!S.running&&!$('done')._cls.has('hidden')){done=true;break;}
       if(opts.inject&&mi===opts.inject.mission&&t>=opts.inject.at&&!opts._inj){if(api.inject(opts.inject.f)){opts._inj=true;res.injected=true;}else if(res.injected===undefined)res.injected=false;}
       const sd=api.stepsDone();const j=sd.findIndex(x=>!x);if(j>=0&&(!opts.human||(opts._a=(opts._a||0)+.25)>=1.25)){opts._a=0;stepAct(c,m,j,m.steps[j]);}

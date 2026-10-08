@@ -123,3 +123,10 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 - `qa2.js`: the CSV row count follows the drill list (`learnRows()`) instead of a fixed number.
 - Proven able to fail: computing the refill question as gallons ÷ (flow + fill) failed the recalculation check.
 - Browser check: Tank time played to the end at 320, 375 and 430 px, each answer tapped by its visible text, to a 100.
+
+## 2.16.0 checks (October 8, 2026, the EV fire on a county road)
+- `ev` (14 checks): scenario 11 with three layouts; waiting to call for tankers runs the tank dry and the battery rekindles; tankers on arrival scores 100 with no rekindle; each ERG "never" item costs 30; every never option quotes the guide and the Guide 147 lines are in the decisions; the lines match Upwind's checked materials table; shutting the line down (white smoke at 6 s, flame at 14 s) and gating it to a quarter turn both rekindle; the tanker line cannot connect before a tanker is there; the tank-math card against an independent recalculation; fast-forward only on a waiting step, stopping at the white smoke; the tanker-delay inject and its card; the flare inject; the debrief's Guide 147 lines and the Upwind link; layout C's exposure line.
+- `variants` and every other whole-catalog section now cover scenario 11 (every layout perfect on Guided and Recall, every tier finishes, human pace, stress, fuzz).
+- `qa.js` takes `choiceAt:{tag:'good'|'bad'|'never'|'partial'}` and handles the tanker, camera and shut-down steps by their text.
+- Proven able to fail: a never option costing 10, gating counted as enough water, and a changed Guide 147 line in Upwind each failed a check.
+- Browser check: the EV fire played to the end at 375 px with real taps (decisions by visible text, the valve and governor buttons, the tanker hookup, the fast-forward button, the thermal camera), to a 100 with the Upwind link on the result screen.

@@ -199,6 +199,12 @@ button{min-height:48px}
     <div id="pondtxt" style="font-size:14px;color:var(--muted);margin-top:6px"></div>
     <div id="coldtxt" style="font-size:14px;color:#7fc0ff;margin-top:2px"></div>
   </div>
+  <div class="miv hidden" id="evp" data-g="evbatt">
+    <h3>The SUV's battery</h3>
+    <div id="ev-st" style="font-size:16px"></div>
+    <div id="ev-tank" style="font-size:14px;color:var(--muted);margin-top:4px"></div>
+    <button id="ev-cam" style="width:100%;margin-top:6px">Thermal camera on the pack</button>
+  </div>
   <div class="miv hidden" id="depthp" data-g="depth">
     <h3>Suction in the flooded street</h3>
     <div style="display:flex;gap:10px;align-items:center">
@@ -230,6 +236,7 @@ button{min-height:48px}
   <h2 id="m-title">Mission</h2>
   <p class="jpr" id="m-jpr"></p>
   <ul class="steps" id="m-steps"></ul>
+  <button id="b-ff" class="hidden" style="width:100%;margin-bottom:8px">Fast-forward ▸▸</button>
   <div class="actions"><button id="b-reset">Restart scenario</button><button id="b-menu">Menu</button></div>
   <button id="b-report" style="width:100%;margin-top:8px">Report an issue or idea</button>
 </div>
@@ -241,7 +248,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.15.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.16.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -256,7 +263,7 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.15.0</span></h1></div>
+  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.16.0</span></h1></div>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div class="card"><div class="small">What this is</div><p style="margin:4px 0 0;font-size:15px;line-height:1.45">Pump operations on Engine 10-2: ten scenarios including five Real Saves from published accounts, a pump lesson, quick drills, pump math and a guide to every control on the panel. Guided shows every step, Recall makes you remember it, Chaos breaks things. <b>Your SOPs and your rig come first.</b></p></div>
   <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
@@ -391,14 +398,14 @@ const VALVES={
   booster:{n:'Booster reel',tag:'1" reel',cls:'',gpm:40}
 };
 const S={};const $=id=>document.getElementById(id);
-function radio(who,msg,cls=''){const cc=(typeof CAMP!=='undefined')&&CAMP[S.camp];if(cc&&cc.noise&&!S.earpiece&&S.rpm>1300&&!['Engineer','Guide','Officer'].includes(who)){msg='▒▒ unreadable over the pump ▒▒';cls='bad';if(TIER===0&&!S.noiseHint){S.noiseHint=true;setTimeout(()=>radio('Guide','You can\'t make out crew traffic over the pump. That is the real problem at the heart of this fire — keep playing.'),0);}}if(cls==='bad')pcFx('bad');else if(cls==='good')pcCue('good');const r=$('radio');const d=document.createElement('div');d.innerHTML=`<span class="who">${who}:</span> <span class="${cls}">${msg}</span>`;r.prepend(d);while(r.children.length>16)r.lastChild.remove();}
+function radio(who,msg,cls=''){RADIO_N++;const cc=(typeof CAMP!=='undefined')&&CAMP[S.camp];if(cc&&cc.noise&&!S.earpiece&&S.rpm>1300&&!['Engineer','Guide','Officer'].includes(who)){msg='▒▒ unreadable over the pump ▒▒';cls='bad';if(TIER===0&&!S.noiseHint){S.noiseHint=true;setTimeout(()=>radio('Guide','You can\'t make out crew traffic over the pump. That is the real problem at the heart of this fire — keep playing.'),0);}}if(cls==='bad')pcFx('bad');else if(cls==='good')pcCue('good');const r=$('radio');const d=document.createElement('div');d.innerHTML=`<span class="who">${who}:</span> <span class="${cls}">${msg}</span>`;r.prepend(d);while(r.children.length>16)r.lastChild.remove();}
 function ding(pts,why){S.score=Math.max(0,S.score-pts);S.incidents.push(why);radio('Engineer',`${why} (−${pts})`,'bad');if(TIER===0&&typeof incidentKey==='function'){const k=incidentKey(why);if(k)radio('Guide',`Why it matters: Panel guide → ${GUIDE[k].name}`);}}
 function freshState(){
   Object.assign(S,{pump:false,ttp:true,supply:false,hydrant:false,hydCap:60,bled:false,fill:false,fdcLine:false,relayLine:false,
     miv:0,mivDir:0,hardSuction:false,strainer:false,primerOn:false,primerT:0,primeHold:0,primed:false,vac:0,warnedOpen:false,
     foamOn:false,foamPct:3,foamTank:20,flushing:false,flushT:0,flushed:false,foamEmptyWarned:false,residWarned:false,residLow:0,
     tank:TANK,tankMax:TANK,xfer:'pressure',xferWarned:false,rpm:700,mode:'psi',set:150,psi:0,score:100,t:0,mission:0,hold:0,cav:0,incidents:[],running:false,dry:false,
-    fault:null,faultT:0,faultDue:0,burstT:0,bldg:false,sysPsi:300,pond:0,pondMax:3000,pondSet:false,nextTk:0,tkN:0,gapUntil:0,pondVortexT:0,freezeT:0,frozen:0,freezeWarned:false,primedEver:false,downClosed:false,downUntil:0,downStarted:false,downEnd:0,briefing:false,earpiece:false,noiseHint:false,educt:false,pickup:false,eductPct:6,eductOK:true,rerigT:0,conc:15,foamFlowing:false,noFoamT:0,foamOkT:0,heatT:0,heatWarned:false,susp:15,clog:0,clearing:0,vortexT:0,clogWarned:false,decisions:[],mStart:0,injects:[],variant:'',vtext:'',hydBase:60,valves:{}});
+    fault:null,faultT:0,faultDue:0,burstT:0,bldg:false,sysPsi:300,pond:0,pondMax:3000,pondSet:false,nextTk:0,tkN:0,gapUntil:0,pondVortexT:0,freezeT:0,frozen:0,freezeWarned:false,primedEver:false,downClosed:false,downUntil:0,downStarted:false,downEnd:0,briefing:false,earpiece:false,noiseHint:false,educt:false,pickup:false,eductPct:6,eductOK:true,rerigT:0,conc:15,foamFlowing:false,noFoamT:0,foamOkT:0,heatT:0,heatWarned:false,susp:15,clog:0,clearing:0,vortexT:0,clogWarned:false,decisions:[],mStart:0,injects:[],variant:'',vtext:'',hydBase:60,valves:{},heat:100,flame:true,kd:false,wetT:0,dryT:0,smokeSaid:false,rekN:0,tankerReq:null,tankerAt:null,camChecks:0,camNext:0,rekAt:0,smoke2:false,evTankQ:null,tankerDelayed:false});
   for(const k in VALVES)S.valves[k]={...VALVES[k],open:0,burst:false};
 }
 
@@ -424,7 +431,7 @@ $('miv-close').onclick=()=>{S.mivDir=-1;radio('Engineer','MIV closing');};
 /* ===== switches ===== */
 $('s-pump').onclick=()=>{if(!S.pump){S.pump=true;S.rpm=Math.max(S.rpm,900);radio('Engineer','Pump engaged — green light, fast idle');}else{if(S.rpm>1100||totalFlow()>20)ding(20,'Disengaged the pump while it was working — idle down and close discharges first');S.pump=false;S.primed=false;radio('Engineer','Pump disengaged');}refreshSwitches();};
 $('s-ttp').onclick=()=>{S.ttp=!S.ttp;radio('Engineer',`Tank to pump ${S.ttp?'open':'closed'}`);refreshSwitches();};
-$('s-supply').onclick=()=>{if(S.supply)return;S.supply=true;$('s-hyd').disabled=false;radio('FF Cruz','5" is on the left intake, I am at the hydrant');refreshSwitches();};
+$('s-supply').onclick=()=>{if(S.supply)return;if(CAMP[S.camp]&&CAMP[S.camp].ev&&S.tankerAt===null){radio('Engineer','No tanker on scene yet — nothing to connect to');return;}S.supply=true;$('s-hyd').disabled=false;radio('FF Cruz','5" is on the left intake, I am at the hydrant');refreshSwitches();};
 $('s-hyd').onclick=()=>{if(S.hydrant)return;S.hydrant=true;$('s-fill').disabled=false;if(S.miv>0)$('s-bleed').disabled=false;radio('FF Cruz','Hydrant open, water coming to you');refreshSwitches();};
 $('s-bleed').onclick=()=>{if(!S.hydrant||S.miv===0){radio('Engineer','Nothing to bleed — no water at the intake yet');return;}S.bled=true;radio('Engineer','Air bled at the left intake — solid stream','good');refreshSwitches();};
 $('s-fill').onclick=()=>{S.fill=!S.fill;radio('Engineer',`Tank fill ${S.fill?'open':'closed'}`);refreshSwitches();};
@@ -536,8 +543,26 @@ function tick(dt){
     if(S.primedEver&&!moving&&S.frozen<=0){S.freezeT+=dt;if(S.freezeT>12&&!S.freezeWarned){S.freezeWarned=true;radio('Engineer',TIER===0?'Water is sitting still in the pump at 0°F — it will freeze. Keep it moving: crack the tank fill':'Water is sitting still in the pump','bad');}
       if(S.freezeT>30){ding(15,'Water froze in the pump and discharges — 20 seconds to thaw');S.frozen=20;S.freezeT=0;}}
     else{S.freezeT=Math.max(0,S.freezeT-2*dt);if(S.freezeT<4)S.freezeWarned=false;}}
+  if(c.ev)evTick(dt,c);
   faults(dt);checkMission(dt);render();
 }
+
+/* the EV battery (2.16.0): a hidden heat level that falls only while enough water is on the pack; off it, the heat climbs back, white smoke, then flame */
+function evTick(dt,c){const v=S.valves[c.evKey];const fob=(v.open>0&&!v.burst&&S.psi>0&&!(S.burstT<0))?v.gpm*v.open/100*Math.sqrt(Math.max(S.psi,1)/150):0;const wet=fob>=c.evDemand*0.75;
+  if(S.tankerReq!==null&&S.tankerAt===null&&S.t>=S.tankerReq+c.evEta*60/c.tankScale){S.tankerAt=S.t;radio('Tanker 5-1','Tanker 5-1 on scene, our line is at your left intake. Hook us up and we will pump to you.');}
+  if(S.tankerReq===null&&S.kd&&S.tank<=S.tankMax*0.4){S.tankerReq=S.t;radio('Officer','Tank is under half and nobody called for water. I am requesting tankers now — they are a long way out.','bad');}
+  if(S.rekAt&&!S.smoke2&&S.t>=S.rekAt){S.smoke2=true;S.heat=35;S.flame=false;S.dryT=0;S.smokeSaid=true;radio('FF Cruz','White smoke from under the SUV again — the camera shows a hot spot climbing!','bad');}
+  if(wet){S.dryT=0;S.smokeSaid=false;if(S.flame){S.wetT+=dt;if(S.wetT>=8){S.flame=false;S.wetT=0;if(!S.kd){S.kd=true;radio('FF Nowak','Flame is down! It is still venting under the floor — keep the water on it','good');}else radio('FF Nowak','Flame is down again — keep it on the battery','good');}}
+    if(S.heat>0){S.heat=Math.max(0,S.heat-fob/60*dt*c.tankScale/c.evGal*100);if(S.heat===0)radio('FF Cruz','Thermal camera: the pack is reading cooler now','good');}}
+  else if(S.heat>0&&(S.kd||S.smoke2)){S.dryT+=dt;S.wetT=0;S.heat=Math.min(100,S.heat+0.6*dt);
+    if(S.dryT>6&&!S.smokeSaid&&!S.flame){S.smokeSaid=true;radio('FF Nowak','White smoke rolling out from under the SUV — it is coming back!','bad');}
+    if(S.dryT>14&&!S.flame){S.flame=true;S.wetT=0;S.rekN++;ding(10,'The battery rekindled — the water came off it before the pack was cool');}}}
+function evCam(){const c=CAMP[S.camp];if(!c||!c.ev||!S.active)return;if(S.t<S.camNext){radio('FF Cruz','Still scanning — give me a few seconds');return;}S.camNext=S.t+4;S.camChecks++;
+  radio('FF Cruz','Thermal camera: '+(S.flame?'the pack is burning':S.heat<=0?'the pack reads cool, no hot spots':S.heat<30?'warm, a hot spot near the rear of the pack':'hot under the whole floor pan'),S.heat<=0&&!S.flame?'good':'');}
+/* fast-forward (2.16.0): only on a step marked ff that is just waiting; runs the same ticks and stops the moment anything happens */
+let RADIO_N=0;
+function ffStep(){if(!S.running||DEC||S.briefing||!S.active)return null;const m=CAMP[S.camp].missions[S.mission];const j=stepsDone.findIndex(x=>!x);const s=j>=0?m.steps[j]:null;return s&&s.ff&&!s.dec&&!S.fault?j:null;}
+function ffRun(){const j0=ffStep();if(j0===null)return;const n0=RADIO_N,sc=S.score;let n=0;while(n<160){tick(0.25);n++;if(RADIO_N!==n0||S.score!==sc||!S.running||DEC||stepsDone.findIndex(x=>!x)!==j0||S.fault)break;}radio('Engineer',`Fast-forward: ${Math.round(n/4)} seconds later.`);}
 
 /* ===== faults (Chaos) ===== */
 function faults(dt){
@@ -588,6 +613,10 @@ function render(){
     const fv=S.valves.front;$('e-txt').innerHTML=S.rerigT>0?'Re-rigging the foam line…':S.foamFlowing?'<span style="color:#5fd88a">Picking up foam — finished foam at the nozzle</span>':(fv.open>0&&S.downClosed)?'Foam line charged — nozzle shut, holding':(fv.open>0&&S.psi>0)?`<span style="color:#ff7b6b">No pickup: ${S.foamWhy||'—'}</span>`:'Line not flowing';}
   $('wmark').style.bottom=S.susp+'%';$('clogbar').style.width=S.clog+'%';
   $('d-txt').textContent=S.clearing>0?'Clearing the strainer…':S.susp<20?'Buried in the sand':S.susp<35?'Near the bottom — picking up sand and debris':S.susp>80?'Out of the water':S.susp>65?'Near the surface — drawing air and floating trash':'Good depth';
+  if(CAMP[S.camp]&&CAMP[S.camp].ev){const c=CAMP[S.camp];const st=S.flame?(S.kd?'Burning again':'Burning'):S.heat<=0?'Reading cool on the camera':S.dryT>6?'White smoke — no water on it':S.kd?'Knocked down, still venting — keep water on it':'';if($('ev-st').textContent!==st)$('ev-st').textContent=st;
+    const fl=totalFlow(),left=fl>5&&!supplied().hyd?mss(S.tank/fl)+' min of tank water at this flow':supplied().hyd?'On tanker water':'Tank: '+Math.round(S.tank)+' gal';const tk=S.tankerReq===null?'Tankers: not requested':S.tankerAt!==null?'Tanker on scene':TIER===0?`Tanker about ${mss(Math.max(0,(S.tankerReq+c.evEta*60/c.tankScale-S.t)*c.tankScale/60))} min out`:'Tankers en route';
+    const tt=TIER===0?left+' · '+tk+' (modeled)':tk;if($('ev-tank').textContent!==tt)$('ev-tank').textContent=tt;}
+  {const ff=$('b-ff');if(ff){const on=ffStep()!==null;if(ff.classList.contains('hidden')===on)ff.classList.toggle('hidden',!on);}}
   $('score').textContent=S.score;const m=Math.floor(S.t/60),s=Math.floor(S.t%60);$('clock').textContent=`${m}:${s<10?'0':''}${s}`;
 }
 
@@ -675,11 +704,15 @@ const VARIANTS={
  1:[{id:'A',hyd:60},{id:'B',hyd:50},{id:'C',hyd:70}],
  2:[{id:'A',pre200:{len:200,noz:'lpfog'}},{id:'B',pre200:{len:150,noz:'fog100'}},{id:'C',pre200:{len:250,noz:'lpfog'}}],
  3:[{id:'A',pre200:{len:200,noz:'lpfog'}},{id:'B',pre200:{len:300,noz:'lpfog'}},{id:'C',pre200:{len:250,noz:'sb1516'}}],
- 4:[{id:'A',hyd:60,lay:800},{id:'B',hyd:50,lay:1000},{id:'C',hyd:70,lay:600}]};
+ 4:[{id:'A',hyd:60,lay:800},{id:'B',hyd:50,lay:1000},{id:'C',hyd:70,lay:600}],
+ 10:[{id:'A',key:'front',line:{dia:1.75,len:200,noz:'fog100',floor:1},eta:3.5,gal:1600,night:false,txt:'1¾" at 150 gpm, tankers about 3½ minutes out (modeled)'},
+  {id:'B',key:'rear2',line:{dia:2.5,len:200,noz:'fog250',floor:1},eta:2,gal:2400,night:true,txt:'a bigger pack and a 2½" at 250 gpm, tankers about 2 minutes out (modeled)'},
+  {id:'C',key:'front',line:{dia:1.75,len:200,noz:'fog100',floor:1},expo:{dia:1.75,len:200,noz:'fog100',floor:1},eta:3,gal:1600,night:false,txt:'the SUV in the ditch beside a garage, tankers about 3 minutes out (modeled)'}]};
 const HYDTXT={50:'weak hydrant on the map, expect the residual to sag',60:'average hydrant',70:'strong hydrant'};
 function pickVariant(i){const vs=VARIANTS[i];if(!vs)return null;const f=(typeof window!=='undefined'&&window.FORCE_V&&window.FORCE_V[i]);if(f)return vs.find(v=>v.id===f)||vs[0];if(load().std||pcDrill())return vs[0];return vs[Math.floor(Math.random()*vs.length)];}
 function applyVariant(i){resetLayout();const v=pickVariant(i);S.variant=v?v.id:'';S.vtext='';if(!v)return;
-  for(const k in LINE_DEF)if(v[k])Object.assign(LINE[k],v[k]);if(v.lay)RELAY.lay=v.lay;if(v.hyd)S.hydCap=v.hyd;
+  for(const k in LINE_DEF)if(v[k])Object.assign(LINE[k],v[k]);if(v.lay)RELAY.lay=v.lay;if(v.hyd)S.hydCap=v.hyd;if(v.txt)S.vtext=v.txt;
+  if(i>=5){if(CAMP[i]&&CAMP[i].build)CAMP[i]=Object.assign(CAMP[i].build(v),{build:CAMP[i].build});return;}
   const parts=[];if(v.pre200)parts.push(describe(LINE.pre200));if(v.lay)parts.push(`${v.lay} ft of 5" to 10-1`);if(v.hyd)parts.push(HYDTXT[v.hyd]||'');S.vtext=parts.filter(Boolean).join(' · ');
   CAMP[i]=regularCamp()[i];}
 
@@ -956,7 +989,7 @@ let crewState='none',crewT=0,stepsDone=[];
 function loadCampaign(i){
   exitLearn(false);DEC=null;['decov','done','caseov','menu','briefov','guideov'].forEach(id=>$(id).classList.add('hidden'));
   freshState();S.active=true;S.camp=i;INSTHOLD=false;applyVariant(i);pca('begin','ctl',`scenario-${i+1}`,()=>`mission-${S.mission+1}`);const c=CAMP[i];S.running=true;if(c.tank)S.tank=c.tank;
-  document.querySelectorAll('#sw-supply,#sw-hyd,#sw-bleed,#sw-fdc,#sw-relay,#sw-hard,#sw-strainer,#sw-primer,#foam,#miv,#depthp,#pondp,#eductp').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('#sw-supply,#sw-hyd,#sw-bleed,#sw-fdc,#sw-relay,#sw-hard,#sw-strainer,#sw-primer,#foam,#miv,#depthp,#pondp,#eductp,#evp').forEach(el=>el.classList.add('hidden'));
   document.querySelectorAll('.sw .lab').forEach(l=>{if(!l.dataset.def)l.dataset.def=l.textContent;l.textContent=l.dataset.def;});
   if(c.labels)for(const id in c.labels)$(id).querySelector('.lab').textContent=c.labels[id];
   if(c.hydCap)S.hydCap=c.hydCap;S.hydBase=S.hydCap;
@@ -1003,11 +1036,11 @@ function openDecision(s,j){S.running=false;DEC={s,j};const d=s.dec;
   $('dec-opts').innerHTML=d.opts.map((o,i)=>[o,i]).sort(()=>Math.random()-.5).map(([o,i])=>`<button class="scen" data-i="${i}"><b style="font-size:17px;font-family:Atkinson Hyperlegible,system-ui,sans-serif;font-weight:500">${o.t}</b></button>`).join('');
   $('dec-opts').classList.remove('hidden');$('dec-fb').classList.add('hidden');$('decov').classList.remove('hidden');}
 $('dec-opts').onclick=e=>{const b=e.target.closest('button');if(!b||!DEC)return;const d=DEC.s.dec,o=d.opts[+b.dataset.i];
-  const lab={good:'Matches what crews did.',partial:'Workable — but not what crews chose.',bad:'That would have hurt you.'}[o.r];
-  const col={good:'#5fd88a',partial:'#f0b323',bad:'#ff7b6b'}[o.r];
+  const lab={good:'Matches what crews did.',partial:'Workable — but not what crews chose.',bad:'That would have hurt you.',never:'The ERG says never.'}[o.r];
+  const col={good:'#5fd88a',partial:'#f0b323',bad:'#ff7b6b',never:'#ff5d3a'}[o.r];
   $('dec-res').innerHTML=`<b style="color:${col}">${lab}</b> ${o.why}`;
   $('dec-real').innerHTML=`<span style="color:var(--muted)">What happened:</span> ${d.real}`+(DECG[d.tag]?`<div class="chips" style="margin-top:8px"><button class="chip" data-k="${DECG[d.tag]}">Learn more: ${GUIDE[DECG[d.tag]].name}</button></div>`:'');
-  if(o.r==='bad')ding(10,'Decision — '+d.tag);else if(o.r==='partial')ding(5,'Decision — '+d.tag);
+  if(o.r==='never')ding(30,'Decision — '+d.tag);else if(o.r==='bad')ding(10,'Decision — '+d.tag);else if(o.r==='partial')ding(5,'Decision — '+d.tag);
   S.decisions.push({tag:d.tag,r:o.r});S.lastChoice=o.r;
   $('dec-opts').classList.add('hidden');$('dec-fb').classList.remove('hidden');};
 $('dec-real').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]');if(b)openCard(b.dataset.k,true);};
@@ -1020,6 +1053,7 @@ function finish(){keepAwake(false);pcFx('done');
   const learnKeys=[...new Set(S.incidents.map(incidentKey).filter(Boolean))];
   const prev=(load().log||[]).filter(r=>+r.i===S.camp);const compare=last?pcBestPrev(prev.map(r=>({d:r.d,score:r.score}))):null;
   let extra='';if(c.real&&last){const g=S.decisions.filter(d=>d.r==='good').length;extra=`<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:14px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
+  if(c.ev&&last)extra+=`<p><b>The battery:</b> ${S.rekN?`it rekindled ${S.rekN===1?'once':S.rekN+' times'} when the water came off it.`:'it never came back while you had it.'} ${S.tankerReq===null?'':''}</p><p><b>From Guide 147 (ERG2024), UN3556:</b> large amounts of water, sprayed directly onto the battery if possible; check the manufacturer's emergency response guide before disabling the vehicle; never cut high-voltage or medium-voltage cabling; never pierce, cut, pry or dismantle to reach the battery; reignition can come at any point after the fire is out, up to weeks later, so monitor it with a thermal camera. Gallon figures in this scenario are modeled.</p><p>The same battery from the hazmat side: <a href="../upwind/?scn=liion&amp;v=A" style="color:#7fc0ff">Upwind's lithium-ion battery fire, Layout A</a>.</p>`;
   if(S.injects&&S.injects.length)extra=`<p><b>Instructor injects:</b> ${esc(S.injects.join(', '))}.</p>`+extra;
   if(S.vtext&&last)extra=`<p style="font-size:14px;color:var(--muted)">Layout ${S.variant}: ${esc(S.vtext)}</p>`+extra;
   $('done-body').innerHTML=pcDebriefBody({score:S.score,compare,feedback:S.incidents,lessons:learnKeys.map(k=>({k,name:GUIDE[k].name})),steps:m.steps.map((st,j)=>({name:st.t,ok:!!stepsDone[j],missed:!stepsDone[j]})),extra});
@@ -1029,7 +1063,7 @@ function finish(){keepAwake(false);pcFx('done');
 }
 $('done-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]');if(b)openCard(b.dataset.k,true);};
 $('b-next').onclick=()=>{$('done').classList.add('hidden');const c=CAMP[S.camp];if(S.mission<c.missions.length-1){loadMission(S.mission+1);if(!S.briefing)S.running=true;}else showMenu();};
-$('b-reset').onclick=()=>loadCampaign(S.camp);$('b-menu').onclick=showMenu;
+$('b-reset').onclick=()=>loadCampaign(S.camp);$('b-ff').onclick=ffRun;$('ev-cam').onclick=evCam;$('b-menu').onclick=showMenu;
 
 /* ===== progress / spacing ===== */
 const KEY='e102-pump-trainer';const INT=[1,3,7,14,30];
@@ -1082,7 +1116,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.15.0';
+const APP_VERSION='2.16.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1152,6 +1186,73 @@ $('lesson-box').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-l]
 $('b-lesson').onclick=lessonStart;$('ld-again').onclick=()=>{$('ldone').classList.add('hidden');lessonStart();};$('ld-menu').onclick=()=>{$('ldone').classList.add('hidden');showMenu();};
 /* lessons and drills are recorded apart from scenario runs: p.extra = [{kind, id, score, d}] (the hub reads it) */
 function recordX(kind,id,score){const p=load();p.extra=(p.extra||[]).concat([pcDrillStamp({kind,id,score,d:new Date().toISOString()})]).slice(-300);save(p);}
+/* =================== EV fire on a county road (2.16.0, Max, October 8, 2026) ===================
+   A water-supply problem: an electric SUV burning on a rural road, no hydrants, an 800-gallon tank. The battery has a hidden heat level that only falls
+   while enough water is on it (S.heat, modeled), so stopping to stretch the tank lets it rekindle. Guide 147 (UN3556) rules as Max read them from the
+   printed ERG2024, the same lines as Upwind's MAT.liev: large amounts of water directly on the battery, never cut high-voltage cabling, never pierce,
+   cut, pry or dismantle to reach the battery, reignition up to weeks later, monitor with a thermal camera. Every gallon figure is modeled, never quoted
+   from a real EV fire. The tank drains on a modeled clock (tankScale): one modeled minute is 60/tankScale real seconds. */
+const EV_SCALE=4;
+const evMin=sec=>sec*EV_SCALE/60;   /* real seconds → modeled minutes */
+function evCamp(v){const L=v.line,k=v.key,[lo,hi,t]=bandOf(L);const ex=v.expo,[elo,ehi]=ex?bandOf(ex):[0,0];
+ const keep=(txt)=>({t:`${txt}: ${VALVES[k].n} at ${lo}–${hi} PSI`,f:()=>inB(k,lo,hi)});
+ return {name:'EV fire on a county road',ev:true,evKey:k,evDemand:NOZ[L.noz].gpm,evGal:v.gal,evEta:v.eta,tankScale:EV_SCALE,hydCap:55,
+  desc:'An electric SUV burning on the shoulder of a county road. No hydrants for miles. Your 800 gallons will not cool that battery — the water supply is the fire.',
+  valves:ex?['front','front3','rear2']:[k==='front'?'front':'rear2',k==='front'?'rear2':'front'],aux:k==='front'?'rear2':'front',gA:k,gALabel:VALVES[k].n,
+  show:['sw-supply','sw-hyd','sw-bleed','miv','evp'],labels:{'sw-supply':'Tanker line on #1 left intake','sw-hyd':'Tanker pumping to you','sw-bleed':'Air bleeder (left intake)'},
+  jpr:'Driver/Operator JPRs — pump from the booster tank; transfer to a supply source without interrupting the attack line; manage water supply.',
+  missions:[
+   {title:'On arrival',intro:()=>`${v.night?'0140 hrs':'1520 hrs'}. Linwood Road, a mile past the last hydrant. An electric SUV is burning on the shoulder${ex?', nosed into the ditch beside a detached garage':''}. Your crew pulls ${VALVES[k].n}: ${describe(L)}. You have 800 gallons on board.`,faults:['gov','burst'],
+    steps:[
+     {t:'Decision: water supply on arrival',dec:{tag:'Water supply on arrival',q:()=>`An EV battery can take far more water than one engine carries, and it has to keep getting it until the pack is cool. Your tank is 800 gallons; the line flows about ${NOZ[L.noz].gpm} gpm. What goes on the radio first?`,
+       opts:[{t:'Tankers now, before the first drop of water goes on it',r:'good',why:'Request them on arrival. Every minute they are not rolling is a minute your tank has to cover, and a battery needs large amounts of water, for a long time.'},
+             {t:'Knock it down first, then see whether the tank does it',r:'bad',why:'By the time you know the tank is not enough, the tankers are still at the station. The request has to go out on arrival.'},
+             {t:'Use the booster reel so the 800 gallons last longer',r:'bad',why:'The guide says a small amount of water can release toxic gases, and it will not cool the cells. Large amounts, on the battery.'}],
+       real:'Guide 147 (ERG2024) for a vehicle with a lithium-ion battery: use large amounts of water, sprayed directly onto the battery if possible. Rural engine companies plan the tanker request on dispatch for exactly this kind of fire. Figures here are modeled.',
+       after:()=>{if(S.lastChoice==='good'){S.tankerReq=S.t;radio('Dispatch',`Copy, tankers responding to Linwood Road${TIER===0?`, about ${v.eta} minutes out (modeled)`:''}.`);}}},f:()=>true},
+     {t:'Engage the pump',f:()=>S.pump},{t:'Confirm tank-to-pump open',f:()=>S.pump&&S.ttp},{t:`Open ${VALVES[k].n} (slowly)`,f:()=>S.valves[k].open>0},
+     {t:`Bring ${VALVES[k].n} to ${lo}–${hi} PSI (PDP ${t})`,f:()=>inB(k,lo,hi)},
+     ...(ex?[{t:`Protect the garage: bring #3 front to ${elo}–${ehi} PSI`,f:()=>inB('front3',elo,ehi)},{t:'Garage wall wet down: hold 10 seconds',hold:10,k:'front3',lo:elo,hi:ehi,f:()=>inB('front3',elo,ehi)},{t:'Shut down #3 front, keep the battery line flowing',f:()=>S.valves.front3.open===0&&inB(k,lo,hi)}]:[]),
+     {...keep('Flame knocked down — water stays on the battery'),f:()=>S.kd&&inB(k,lo,hi)}],
+    chat:chat('FF Nowak',k,L)},
+   {title:'Tank math',onStart:()=>{const f=NOZ[L.noz].gpm,m=S.tank/f;S.evTankQ={m,o:pcShuf([[mss(m)+' min','good'],...tankOpts(m,[m*1.6,m/2]).map(x=>[x,'bad'])])};},
+    intro:()=>'The flame is down but the pack is still venting. Command wants your water picture. Keep the water on the battery — the tanker is your next supply.',faults:['gov','burst'],
+    steps:[
+     {t:'Decision: how long will the tank last?',dec:{tag:'How long will the tank last?',q:()=>`Your tank reads ${Math.round(S.tank)} gallons and the line is flowing about ${NOZ[L.noz].gpm} gpm. How long until it is empty?`,
+       get opts(){return (S.evTankQ?S.evTankQ.o:[]).map(([t,r])=>({t,r,why:r==='good'?'Gallons ÷ gpm. That number is your deadline for the tanker.':`Gallons ÷ gpm: ${Math.round(S.tank)} ÷ ${NOZ[L.noz].gpm} is about ${mss(S.evTankQ.m)} minutes. Know your deadline before the water does.`}));},
+       real:'Tank minutes = gallons ÷ gpm. The Tank time drill on the menu practices exactly this.'},f:()=>true},
+     {...keep('Keep the water on the battery until the tanker arrives'),f:()=>S.tankerAt!==null},
+     {t:'Connect the supply line',f:()=>S.supply},{t:'Tanker pumping to you',f:()=>S.hydrant},{t:'Open the MIV',f:()=>S.miv>0},{t:'Bleed the air',f:()=>S.bled},{t:'Close tank-to-pump',f:()=>S.bled&&!S.ttp},
+     {t:'Line held on tanker water: hold 10 seconds',hold:10,k,lo,hi,f:()=>inB(k,lo,hi)&&supplied().hyd}],
+    chat:chat('FF Nowak',k,L)},
+   {title:'The battery',intro:'Tanker water is flowing. The pack is still hot under the floor, and the SUV may still have power.',faults:['gov','burst'],
+    steps:[
+     {t:'Decision: disabling the vehicle',dec:{tag:'Disabling the vehicle',q:'Dash lights are on and something under the SUV is clicking. Your officer asks how the crew should make it safe.',
+       opts:[{t:'Find the maker\'s emergency guide for this model, then follow it',r:'good',why:'The guide says check the manufacturer\'s emergency response guide before trying to disable the vehicle; then, if it is safe, ignition off and the 12-volt battery disconnected.'},
+             {t:'Cut the orange high-voltage cables so nothing on it is live',r:'never',why:'The guide says never cut high-voltage or medium-voltage cabling, and never touch damaged high-voltage parts. Orange cable stays whole.'},
+             {t:'Nothing to disable; with the flame out the battery is dead now',r:'bad',why:'A damaged battery keeps its energy after the fire. Treat it as live until the maker\'s guide shows how to shut it down.'}],
+       real:'Guide 147 (ERG2024): check the manufacturer\'s emergency response guide before attempting to disable the vehicle; turn off the ignition and disconnect the 12-volt battery if safe; never cut high-voltage or medium-voltage cabling.'},f:()=>true},
+     {t:'Decision: getting water to the cells',dec:{tag:'Getting water to the cells',q:'The nozzle crew says most of the water is running off the floor pan. They want to get it into the pack.',
+       opts:[{t:'Keep large amounts on the pack from outside, aimed under the car',r:'good',why:'Large amounts of water, sprayed directly onto the battery where you can reach it, for as long as it takes. Time and water cool it, not tools.'},
+             {t:'Pry the battery cover off so the water can reach the cells',r:'never',why:'The guide says do not pierce, cut, pry or dismantle to reach the battery. Flow water at it from where you are.'},
+             {t:'Finish it with dry chemical so the tanker water lasts longer',r:'bad',why:'Dry chemical can knock down flame but does nothing to cool cells. The flame comes back as soon as the powder settles.'}],
+       real:'Guide 147 (ERG2024): use large amounts of water, sprayed directly onto the battery if possible; do not pierce, cut, pry or dismantle to reach the battery.'},f:()=>true},
+     {...keep('Cool the pack until the thermal camera reads it cooling'),f:()=>S.heat<=0&&inB(k,lo,hi),ff:true},
+     {t:'Thermal camera check on the pack',f:()=>S.camChecks>=1&&S.heat<=0}],
+    chat:chat('FF Nowak',k,L)},
+   {title:'Watch and hand off',onStart:()=>{S.rekAt=S.t+20;S.smoke2=false;S.camChecks=0;},intro:'The camera reads the pack cooling. It can still come back — the guide says up to weeks later. Shut down the line and watch it.',faults:['gov'],
+    steps:[
+     {t:`Shut down ${VALVES[k].n} once the pack reads cool`,f:()=>S.valves[k].open===0},
+     {t:'Thermal camera check on the pack',f:()=>S.camChecks>=1},
+     {...keep('White smoke again — water back on the battery'),f:()=>S.smoke2&&S.heat<=0&&inB(k,lo,hi),ff:true},
+     {t:'Decision: the tow operator',dec:{tag:'The tow operator',q:'An hour later the pack reads cool. The tow operator backs up to take the SUV.',
+       opts:[{t:'Warn him it can reignite later; it goes outside, away from buildings',r:'good',why:'The guide says reignition can come at any point after the fire is out, up to weeks later. The tow operator needs that warning, and the SUV is stored outside, away from buildings and other vehicles (per department SOP / to confirm).'},
+             {t:'Release it; the fire is out and it is the tow company\'s now',r:'bad',why:'It can reignite on his truck or in his lot. He needs the warning before it leaves.'},
+             {t:'Have it towed into his heated shop overnight so it dries out',r:'bad',why:'Indoors is the worst place for a battery that can reignite. It stays outside, away from buildings.'}],
+       real:'Guide 147 (ERG2024): reignition may occur at any point after the initial fire is extinguished, up to weeks later; use thermal imaging to monitor. Tow and storage practices are general guidance, per department SOP / to confirm.'},f:()=>true}]},
+   shutdown()]};}
+CAMP.push(Object.assign(evCamp({id:'A',key:'front',line:{dia:1.75,len:200,noz:'fog100',floor:1},eta:5,gal:1600,night:false}),{build:evCamp}));
+
 /* =================== Quick drills (shared quiz engine). Every answer key is computed, and the tests recompute it independently. =================== */
 const HOSE_LABEL={1.75:'1¾"',2.5:'2½"',3:'3"',5:'5"'};
 function flOf(size,gpm,len){return FLC[size]*Math.pow(gpm/100,2)*(len/100);}
@@ -1209,6 +1310,7 @@ const GUIDE={
  primer:{name:'Primer',kind:'Control',what:'A small pump that evacuates air from the fire pump and hard suction so atmospheric pressure can push water up into the pump.',when:'Only when drafting. Close everything first: discharges, tank-to-pump, and any other intake.',wrong:'Any opening lets air in and the primer never catches. Running it too long can damage it.',tip:'A good setup usually primes within 30–45 seconds. If it has not, stop and hunt for the air leak instead of running it longer.',rig:{'102':'Per the panel photo: the gold PRIMER FIRE PUMP plate in the center of the panel.'},rel:['hard','strainer','compound','cavitation']},
  cavitation:{name:'Cavitation',kind:'Concept',what:'The pump trying to discharge more water than it is receiving. Pressure inside drops so low that water flashes into vapor bubbles, which collapse violently against the impeller.',when:'Starved supply: a collapsing hydrant, clogged strainer, too little from a supply engine, too much RPM at a draft.',wrong:'It can sound like gravel in the pump. RPM goes up but pressure does not. It erodes the impeller and can destroy the pump.',tip:'If more RPM does not give you more pressure, you are out of water, not out of engine. Throttle back and fix the supply.',rel:['compound','residual','strainer','governor']},
  transfer:{name:'Transfer valve (two-stage pumps)',kind:'Control',what:'Switches a two-stage pump between VOLUME (parallel — both impellers feed the discharge side by side, for big flow) and PRESSURE (series — one impeller feeds the other, for high pressure at lower flow).',when:'PRESSURE for high-rise, long lays, and high-pressure work at modest flow. VOLUME when you need a large share of the pump\'s rated capacity — master streams, relays, big draft operations.',wrong:'Switching under load shocks the pump. In PRESSURE when you need big flow, the pump cannot deliver it. In VOLUME up a high-rise, you run out of RPM before you reach pressure.',tip:'Idle down before you switch. A common rule of thumb: if you need more than about half the pump\'s rated capacity, use VOLUME.',rig:{'102':'10-2\'s Hale Q-Flo is a single-stage pump, so it has no transfer valve.',fdny10:'Engine 10\'s 2001 Seagrave was a two-stage high-pressure pumper.',lafd209:'Modeled as a two-stage pump. It arrives in VOLUME — and a high-rise needs PRESSURE.'},rel:['governor','pdp']},
+ evbatt:{name:'Lithium-ion vehicle battery fire',kind:'Concept',what:'An electric vehicle\'s battery pack is many cells under the floor. Once cells go into thermal runaway they keep heating each other, so the fire is knocked down long before the pack is cool.',when:'Any vehicle fire with a high-voltage battery: Guide 147 in the ERG (UN3556 for the vehicle).',wrong:'Too little water, or shutting down to save the tank, lets the pack reheat: white smoke, then flame again. Cutting orange high-voltage cables or prying into the pack is never done.',tip:'Request tankers on arrival, put large amounts of water directly on the battery, check the maker\'s emergency response guide before disabling anything, and watch it with a thermal camera. It can reignite up to weeks later; warn the tow operator.',rel:['tank','supply','deck']},
  foam:{name:'Foam system & proportioner',kind:'Control',what:'Mixes foam concentrate into the water stream at a set percentage.',when:'Class B foam for flammable-liquid fires; Class A foam for ordinary combustibles.',wrong:'The wrong percentage makes weak or wasted foam. Running the concentrate dry leaves you flowing plain water on a fuel fire. Skipping the flush leaves concentrate in the plumbing.',tip:'Set the percentage the concentrate label calls for (commonly 3% for Class B hydrocarbon fires), and flush with clean water afterward.',rel:['discharge']},
  depth:{name:'Suction depth in shallow water',kind:'Concept',what:'Where the suction sits between the bottom and the surface when drafting from shallow water like a flooded street.',when:'Any shallow-water draft — especially when the water level is changing, like a falling tide.',wrong:'Too low picks up sand and debris. Too high draws air and floating trash, and you lose prime.',tip:'Keep it mid-water, and assign someone to adjust it as conditions change.',rig:{fdny10:'Breezy Point crews drafted straight from flooded streets during Hurricane Sandy.'},rel:['strainer','compound','primer']},
  pond:{name:'Portable tank (dump site)',kind:'Control',what:'A folding tank that tankers dump into so a pumper can draft from it — the heart of a tanker shuttle.',when:'Rural fires, and anywhere hydrants cannot supply the fire.',wrong:'Flowing more than the shuttle delivers drains the pond. When the strainer takes air, you lose prime and every line fed from it dies at once.',tip:'Match your flow to what the tankers can sustain, and tell Command early when the shuttle falls behind.',rig:{dump:'At Port Jervis there was room for only one pond, so where it went decided how fast every tanker could cycle.'},rel:['strainer','hard','primer','freezing']},
@@ -1227,13 +1329,13 @@ const GUIDE={
  'rig-cfd151':{name:'Truck 151 · Corvallis (OR) FD',kind:'Apparatus',what:'A 104-foot tower ladder (bucket) with a fire pump — a quint.',when:'At this fire its crew took the attack line through the front door off its own pump while its engineer made the hydrant connection.',tip:'Truck 151\'s pump and tank specifications are not published; the game models a 1,250 GPM pump with a 400-gallon tank.',rel:['radio','mayday','tank']},
  'rig-dump':{name:'Dump-site pumper · Port Jervis 2005',kind:'Apparatus',what:'The pumper drafting from the portable tank and supplying the attack engine.',when:'Every gallon on the fire went through the dump-site pump.',tip:'A composite role — the published account does not name which engine worked the dump site. Modeled as a 1,250 GPM single-stage pumper with a 750-gallon tank.',rel:['pond','freezing','fill']}
 };
-const DECG={'Hydrant trouble on tank water':'tank','Radio at the pump panel':'radio','Mayday on your line':'mayday','Positioning at a fuel spill':'hazpos','Foam line rig':'eductor','Extinguish or let it burn':'letburn','Overpass cooling':'bleve','Beach 208th hydrant':'residual','Water source':'hard','Reading the compound gauge':'compound','Suction near the surface':'depth','Transfer valve for a high-rise':'transfer','Severed FDC line':'discharge','Building pumps overpower you':'churning','Charging the sprinklers':'fdc','Spotting the portable pond':'pond','Shuttle gap at 0°F':'pond','Freeze protection':'freezing'};
+const DECG={'Water supply on arrival':'tank','How long will the tank last?':'tank','Tanker delayed':'tank','Disabling the vehicle':'evbatt','Getting water to the cells':'evbatt','The tow operator':'evbatt','Hydrant trouble on tank water':'tank','Radio at the pump panel':'radio','Mayday on your line':'mayday','Positioning at a fuel spill':'hazpos','Foam line rig':'eductor','Extinguish or let it burn':'letburn','Overpass cooling':'bleve','Beach 208th hydrant':'residual','Water source':'hard','Reading the compound gauge':'compound','Suction near the surface':'depth','Transfer valve for a high-rise':'transfer','Severed FDC line':'discharge','Building pumps overpower you':'churning','Charging the sprinklers':'fdc','Spotting the portable pond':'pond','Shuttle gap at 0°F':'pond','Freeze protection':'freezing'};
 const RIGSHORT={cfd151:'Truck 151',fdny288:'FDNY Engine 288','102':'10-2',fdny10:'FDNY Engine 10',lafd209:'LAFD Engine 209',dump:'this pumper'};
 function rigKey(){const c=CAMP[S.camp];return (c&&c.rig&&c.rig.key)||'102';}
 function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
-function incidentKey(why){const W=[[/pond ran/i,'pond'],[/suction drew air/i,'depth'],[/collapsed the hydrant|residual/i,'residual'],[/water hammer/i,'waterhammer'],[/transfer valve/i,'transfer'],[/froze/i,'freezing'],[/overheated|churning/i,'churning'],[/cavitat|over-revving/i,'cavitation'],[/prime|primer/i,'primer'],[/tank ran dry/i,'tank'],[/disengaged/i,'pump'],[/burst|nozzle team|over-pressure/i,'discharge'],[/foam tank/i,'foam']];
+function incidentKey(why){const W=[[/battery rekindled/i,'evbatt'],[/pond ran/i,'pond'],[/suction drew air/i,'depth'],[/collapsed the hydrant|residual/i,'residual'],[/water hammer/i,'waterhammer'],[/transfer valve/i,'transfer'],[/froze/i,'freezing'],[/overheated|churning/i,'churning'],[/cavitat|over-revving/i,'cavitation'],[/prime|primer/i,'primer'],[/tank ran dry/i,'tank'],[/disengaged/i,'pump'],[/burst|nozzle team|over-pressure/i,'discharge'],[/foam tank/i,'foam']];
   const d=why.match(/^Decision — (.*)$/);if(d)return DECG[d[1]]||null;for(const [r,k] of W)if(r.test(why))return k;return null;}
-function missionControls(c,m){const M=[[/disengage|engage the pump/i,'pump'],[/tank-to-pump/i,'ttp'],[/^connect the supply line$|hydrant line|5" supply/i,'supply'],[/hydrant/i,'hydrant'],[/miv|intake gate|steamer intake|intake valve/i,'miv'],[/bleed/i,'bleeder'],[/\bfdc\b|(east|west) inlet/i,'fdc'],[/ldh|relay|tl-159|10-1|attack engine/i,'relay'],[/eductor|pickup|metering|foam at the nozzle/i,'eductor'],[/proportioner|flush|foam system/i,'foam'],[/cooling|saddle/i,'bleve'],[/idle|throttle|rpm mode|set point|psi/i,'governor'],[/open #|open discharge|discharges|shut down the 2|crosslay|lines? in band|line to|line still/i,'discharge'],[/hard suction/i,'hard'],[/strainer/i,'strainer'],[/primer|primed|vacuum/i,'primer'],[/tank fill/i,'fill'],[/suction mid|green zone/i,'depth'],[/transfer/i,'transfer'],[/pond|tanker/i,'pond'],[/residual/i,'residual'],[/radio/i,'radio'],[/mayday|151\'s line/i,'mayday'],[/tank above/i,'tank']];
+function missionControls(c,m){const M=[[/thermal camera|battery/i,'evbatt'],[/disengage|engage the pump/i,'pump'],[/tank-to-pump/i,'ttp'],[/^connect the supply line$|hydrant line|5" supply/i,'supply'],[/hydrant/i,'hydrant'],[/miv|intake gate|steamer intake|intake valve/i,'miv'],[/bleed/i,'bleeder'],[/\bfdc\b|(east|west) inlet/i,'fdc'],[/ldh|relay|tl-159|10-1|attack engine/i,'relay'],[/eductor|pickup|metering|foam at the nozzle/i,'eductor'],[/proportioner|flush|foam system/i,'foam'],[/cooling|saddle/i,'bleve'],[/idle|throttle|rpm mode|set point|psi/i,'governor'],[/open #|open discharge|discharges|shut down the 2|crosslay|lines? in band|line to|line still/i,'discharge'],[/hard suction/i,'hard'],[/strainer/i,'strainer'],[/primer|primed|vacuum/i,'primer'],[/tank fill/i,'fill'],[/suction mid|green zone/i,'depth'],[/transfer/i,'transfer'],[/pond|tanker/i,'pond'],[/residual/i,'residual'],[/radio/i,'radio'],[/mayday|151\'s line/i,'mayday'],[/tank above/i,'tank']];
   const set=new Set();m.steps.forEach(s=>{if(s.dec){const g=DECG[s.dec.tag];if(g)set.add(g);return;}M.forEach(([r,k])=>{if(r.test(s.t))set.add(k);});if(/\d+–\d+ PSI|PSI \(PDP|at \d+–\d+/i.test(s.t)&&!/RPM/.test(s.t)){set.add('master');set.add('pdp');}});
   (m.learn||[]).forEach(k=>set.add(k));
   if(set.has('primer')||set.has('residual'))set.add('compound');if(c.cold)set.add('freezing');
@@ -1278,7 +1380,17 @@ const INJECTS=[
  {id:'gov',label:'Governor drops out of pressure mode',ok:()=>!S.fault&&S.pump&&S.mode==='psi'},
  {id:'hydrant',label:'Another engine lays in off your main',ok:()=>!S.fault&&supplied().hyd},
  {id:'strainer',label:'Strainer fouls in the mud',ok:()=>{const c=CAMP[S.camp];return !S.fault&&!!c.draft&&!c.depth&&!c.pond&&S.primed;}},
+ {id:'tanker',label:'The tanker is delayed (EV fire)',ok:()=>{const c=CAMP[S.camp];return !!c.ev&&S.tankerReq!==null&&S.tankerAt===null&&!S.tankerDelayed&&!DEC;},run:()=>{const c=CAMP[S.camp];S.tankerDelayed=true;S.tankerReq+=2*60/c.tankScale;radio('Dispatch','Tanker 5-1 is held up at the rail crossing — add two minutes (modeled).','bad');
+   addDecision({tag:'Tanker delayed',q:()=>`The tanker just lost two minutes. Your tank reads ${Math.round(S.tank)} gallons on a line flowing about ${c.evDemand} gpm. What do you do?`,
+    opts:[{t:'Ask for the closest engine with a full tank to come and nurse you',r:'good',why:'A second tank of water buys the minutes the tanker lost, and the battery never goes without water.',},
+          {t:'Gate the line down to half so the tank lasts longer',r:'bad',why:'Half the water is not enough to cool the pack; it reheats while you watch the gauge. Large amounts, or none of it works.'},
+          {t:'Shut the line down until the tanker gets here',r:'bad',why:'Off the water, the pack reheats: white smoke, then flame, and you start over with less water.'}],
+    real:'Guide 147 (ERG2024): use large amounts of water on the battery. When the water supply slips, the answer is more water coming, not less going on the fire.',after:()=>{if(S.lastChoice==='good'){S.tankerReq-=1.5*60/c.tankScale;radio('Engine 12-1','12-1 copies, coming with 750 gallons to nurse you — we will be there before the tanker.');}}});}},
+ {id:'flare',label:'The battery flares up again (EV fire)',ok:()=>{const c=CAMP[S.camp];return !!c.ev&&S.kd&&!S.flame;},run:()=>{S.flame=true;S.wetT=0;S.heat=Math.min(100,Math.max(S.heat,0)+40);if(S.rekAt)S.smoke2=true;radio('FF Nowak','Cells just popped and it is jetting flame from under the floor again!','bad');}},
  {id:'lowtank',label:'Tank gauge drops to 100 gallons',ok:()=>{const sup=supplied();return sup.tank&&!sup.hyd&&!sup.draft&&S.tank>150;},run:()=>{S.tank=100;radio('FF Cruz','Tank gauge just dropped — about a hundred gallons left','bad');}}];
+/* splice a decision card in front of the current step (instructor injects); the steps list is rebuilt once, never on a timer */
+function addDecision(dec){const m=CAMP[S.camp].missions[S.mission];const j=Math.max(0,stepsDone.findIndex(x=>!x));m.steps.splice(j,0,{t:'Decision: '+dec.tag.toLowerCase(),dec,f:()=>true});stepsDone.splice(j,0,false);
+  if(TIER===0)$('m-steps').innerHTML=m.steps.map((s,i)=>`<li id="st-${i}"${stepsDone[i]?' class="done"':''}><span class="box"></span><span>${s.t}${s.hold?` <span class="cond" id="hold-${i}"></span>`:''}</span></li>`).join('');}
 function inject(id){const x=INJECTS.find(y=>y.id===id);if(!x||!S.active||!x.ok())return false;if(x.run)x.run();else applyFault(id);S.injects=(S.injects||[]).concat(x.label);return true;}
 const instOn=()=>INST||!!pcDrill();
 function instSync(){$('b-inst').textContent='Instructor mode: '+(INST?'on':pcDrill()?'on (Drill Night)':'off');$('b-inst').classList.toggle('on',instOn());$('inst-fab').classList.toggle('hidden',!(instOn()&&S.active));$('inst-fab').textContent=INSTHOLD?'Frozen — tap to resume':'Instructor';}
