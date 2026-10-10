@@ -341,4 +341,8 @@ if(want.includes('syntax')){// final sweep M2: the gauges are drawn once and onl
  {const b=boot();b.els['b-drills'].onclick();b.api.drillStart('friction');for(let i=0;i<8;i++){b.api.quizAct({q:'ans',i:'0'});b.api.quizAct({q:'next'});}const foot=b.els['qz-foot'].innerHTML;
   report('voice','a quick drill result offers Again · Home · Next and the links',/>Again</.test(foot)&&/>Home</.test(foot)&&/data-q="nextact" class="go">Next</.test(foot)&&/feedback\.html\?from=ctl/.test(foot)&&/class="big (pc-lo|pc-mid|)">/.test(b.els['qz-body'].innerHTML),foot.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());}
 }
+
+{// Continue opens the activity itself (milestone 8): ?scn= a scenario (a Real Save on its card), ?lesson=1 the lesson, ?drill=math Pump math
+ const {boot}=require('./qa_mock.js');global.__loc={search:'?scn=3'};const a=boot();global.__loc={search:'?scn=5'};const b=boot();global.__loc={search:'?lesson=1'};const c=boot();global.__loc={search:'?drill=math'};const d=boot();global.__loc={search:'?scn=99'};const e=boot();global.__loc=undefined;
+ report('voice','deep links open the activity itself: a scenario, a Real Save card, the lesson, Pump math; an unknown scenario is ignored',a.api.S.camp===3&&a.api.S.active===true&&!b.els.caseov.classList.contains('hidden')&&c.api.LS()!==null&&!d.els.mathov.classList.contains('hidden')&&e.api.S.active!==true,`camp ${a.api.S.camp} case ${!b.els.caseov.classList.contains('hidden')} lesson ${c.api.LS()!==null} math ${!d.els.mathov.classList.contains('hidden')}`);}
 console.log(`\n${results.length-failed}/${results.length} checks passed · ${Math.round((Date.now()-T0)/1000)} s`);process.exit(failed?1:0);
