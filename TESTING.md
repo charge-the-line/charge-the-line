@@ -27,7 +27,7 @@ python3 tests/browser_check.py
 |---|---|
 | `syntax` | The script compiles; the service-worker cache name matches `APP_VERSION`; the service worker ignores `/patient-contact/` |
 | `balance` | The right answer is neither usually the longest nor usually the shortest (limit 45% each), and answers are shuffled on screen |
-| `play` | All 10 scenarios complete on Guided, Recall, and Chaos with a competent bot |
+| `play` | Every scenario completes on Guided, Recall, and Chaos with a competent bot |
 | `paths` | Every Real Save is still completable after partial and wrong decisions |
 | `human` | Every scenario completes on every tier at human speed (an action about every 1.25 s, 2–3 s reactions) |
 | `checks` | `qa2.js`: chaos faults, wrong-answer paths, pacing, duplicate IDs, and simulation cost per tick |
@@ -158,3 +158,7 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 ## Rule 15 and the wake lock (final sweep milestone 2, October 10, 2026)
 - The real clock stops while the screen is off: tests call `pcPauseHide()`, advance the fake clock, `pcPauseShow()`, and assert no penalty and no metric change (and that an instructor freeze is left alone where there is one). Proven to fail (scratch): removing the hookup (BLS Ready) or scoring on the wall clock again (Bleed Control) fails the check.
 - The wake lock is released on every quit path added in this milestone (stubbed `navigator.wakeLock`, one request per one release).
+
+## Truth and counts (final sweep milestone 3, October 10, 2026)
+- `learn`: Pump math — five right answers and Exit save a drill run of 100 with `ctl/start/drill-math` and a finish event, and the progress table shows the row; one answer and Exit is a quit and saves nothing. Units: no upper-case PSI or GPM outside the governor's labels.
+- `syntax`: the docs guard (CLAUDE.md "Current version" equals `APP_VERSION`; README.txt names `preconnect-core.js` and `fonts/`).
