@@ -111,7 +111,7 @@ button{min-height:48px}
   #menu h3{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft);margin:18px 0 8px;display:flex;align-items:center;gap:10px}#menu h3:after{content:"";flex:1;height:1px;background:var(--line)}
   .scen b{display:block;font-family:"Saira Condensed";font-size:20px;font-weight:600;margin-bottom:2px} .scen span{font-size:15px;color:var(--muted)}
   .scen .due{position:static;display:table;margin-top:6px;font-size:13px;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--yellow);color:#1a1c20}
-  .scen .ok{background:var(--green);color:#fff} .scen .dim{background:#2a2e34;color:var(--muted);border:1px solid #3a3f48}
+  .scen .ok{background:var(--green);color:#fff} .card.rdy{background:linear-gradient(135deg,rgba(240,179,35,.22),var(--panel) 70%)} .scen .dim{background:#2a2e34;color:var(--muted);border:1px solid #3a3f48}
   .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 12px} .tiers button{padding:8px 4px;font-size:15px}
   .tierhelp{font-size:15px;color:var(--muted);margin:0 0 10px;line-height:1.4}
   .stat{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #33373e;font-size:15px} .stat:first-child{border-top:0} .stat span{color:var(--muted)}
@@ -256,7 +256,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:15px;color:var(--muted)">Version 2.19.5 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:15px;color:var(--muted)">Version 2.20.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -271,17 +271,17 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:15px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.19.5</span></h1></div>
+  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.20.0</span></h1></div>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
+  <div class="card rdy" id="rdy"><div class="flex"><div><div class="small">Your readiness</div><b id="rdy-t" style="display:block;font-family:'Saira Condensed';font-size:22px;line-height:1.05"></b><div class="stat" id="rdy-s" style="margin-top:2px"></div></div><div class="sp"></div><div class="num" id="rdy-n"></div></div><div style="height:8px;margin-top:10px;background:var(--line,#2a2f37);border-radius:4px;overflow:hidden"><div id="rdy-bar" style="height:100%;width:0;background:var(--acc);transition:width .6s ease-out"></div></div></div>
   <div class="card"><div class="small">What this is</div><p style="margin:4px 0 0;font-size:15px;line-height:1.45">Pump operations on Engine 10-2: fourteen scenarios including six Real Saves from published accounts, a pump lesson, quick drills, pump math and a guide to every control on the panel. Guided shows every step, Recall makes you remember it, Chaos breaks things. <b>Your SOPs and your rig come first.</b></p></div>
   <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"><button id="b-drills">Quick drills</button><button id="b-math">Pump math</button><button id="b-progress">My progress</button><button id="b-howto">How to play</button></div>
-  <button id="b-gindex" class="guidebtn" style="width:100%;margin-bottom:12px;font-size:16px;padding:10px">Panel guide — every control, gauge, and concept</button>
-  <h3 style="margin:0 0 4px;font-size:18px">Difficulty</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px"><button id="b-drills">Quick drills</button><button id="b-progress">My progress</button><button id="b-gindex" class="guidebtn">Panel guide</button><button id="b-howto">How to play</button></div>
+  <div class="sec">Difficulty</div>
   <div class="tiers"><button data-tier="0">Guided</button><button data-tier="1">Recall</button><button data-tier="2">Chaos</button></div>
   <p class="tierhelp" id="tierhelp"></p>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px"><button id="b-std">Layouts: varied</button><button id="b-inst">Instructor mode: off</button></div>
-  <h3 style="margin:0 0 6px;font-size:18px">Scenarios</h3>
+  <div class="sec">Scenarios</div>
   <div id="scenlist"></div>
 </div></div>
 
@@ -1107,10 +1107,17 @@ function recordClear(i,score){const p=load();const s=p.scen[i]||{level:0,best:0,
 /* due-again spacing comes from the shared core (pcSpacing over this scenario's runs), the same rule the home page uses; scen.level is kept for older records */
 function dueInfo(i){const p=load();const runs=(p.log||[]).filter(r=>+r.i===i).map(r=>({d:r.d,score:r.score}));const s=p.scen[i];if(!runs.length&&s&&s.last)runs.push({d:s.last,score:s.best});const sp=pcSpacing(runs);
   if(sp.status==='never')return {txt:'Not yet cleared',due:true,cls:'dim'};if(sp.status==='missed')return {txt:'Try again',due:true};if(sp.status==='due')return {txt:'Due for review',due:true};return {txt:`Next in ${Math.max(1,Math.ceil(sp.dueIn))} d`,due:false};}
+const ACTS=()=>[...CAMP.map((c,i)=>['scenario',String(i)]),['lesson','lesson'],...Object.keys(DRILLS).map(k=>['drill',k]),['drill','math']];
+function readiness(){const p=load();const done=new Set();Object.keys(p.scen||{}).forEach(i=>{if(p.scen[i]&&p.scen[i].runs>0)done.add('scenario:'+i);});(p.log||[]).forEach(r=>done.add('scenario:'+r.i));(p.extra||[]).forEach(x=>done.add(x.kind+':'+x.id));
+  const A=ACTS();const n=A.filter(([k,i])=>done.has(k+':'+i)).length;return {done:n,total:A.length,pct:Math.round(n/A.length*100)};}
+function homeRender(){const R=readiness(),p=load();const t=`${R.done} of ${R.total} activities`;if($('rdy-t').textContent!==t)$('rdy-t').textContent=t;
+  const due=CAMP.filter((c,i)=>{const d=dueInfo(i);return d.due&&d.txt!=='Not yet cleared';}).length;
+  const sub=R.done?`${due?due+' due for review · ':''}${['Guided','Recall','Chaos'][TIER]} · layouts ${p.std?'standard':'varied'}`:'Start with the lesson, then a scenario. Your best scores show up here.';if($('rdy-s').textContent!==sub)$('rdy-s').textContent=sub;
+  const n=R.pct+'%';if($('rdy-n').textContent!==n)$('rdy-n').textContent=n;$('rdy-bar').style.width=R.pct+'%';}
 function showMenu(){keepAwake(false);exitLearn(false);$('briefov').classList.add('hidden');S.running=false;$('b-resume').classList.toggle('hidden',!S.active||!!DEC);$('tierhelp').textContent=TIERTXT[TIER];$('menu').querySelectorAll('[data-tier]').forEach(b=>b.classList.toggle('on',+b.dataset.tier===TIER));
   const card=(c,i)=>{const d=dueInfo(i);return `<button class="scen" data-i="${i}"><b>${c.name}</b><span>${c.desc}</span><span class="due ${d.cls||(d.due?'':'ok')}">${d.txt}</span></button>`;};
-  $('scenlist').innerHTML=CAMP.map((c,i)=>c.real?'':card(c,i)).join('')+(CAMP.some(c=>c.real)?`<h3 style="margin:16px 0 6px;font-size:18px">Real Saves <span style="font-size:14px;color:var(--muted);font-weight:400">· based on real events</span></h3>`+CAMP.map((c,i)=>c.real?card(c,i):'').join(''):'');
-  $('menu').classList.remove('hidden');$('menu').scrollTop=0;instSync();nowUpd();}
+  $('scenlist').innerHTML=CAMP.map((c,i)=>c.real?'':card(c,i)).join('')+(CAMP.some(c=>c.real)?`<div class="sec" style="margin-top:18px">Real Saves</div><p style="font-size:15px;color:var(--muted);margin:0 0 8px;line-height:1.4">Based on published accounts, with the source cited in each.</p>`+CAMP.map((c,i)=>c.real?card(c,i):'').join(''):'');
+  homeRender();$('menu').classList.remove('hidden');$('menu').scrollTop=0;instSync();nowUpd();}
 $('menu').querySelectorAll('[data-tier]').forEach(b=>b.onclick=()=>{TIER=+b.dataset.tier;showMenu();});
 $('scenlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('menu').classList.add('hidden');const i=+b.dataset.i;if(CAMP[i].real)showCase(i);else loadCampaign(i);};
 $('b-start').onclick=()=>{$('intro').classList.add('hidden');const p=load();if(!p.seenIntro){p.seenIntro=true;save(p);}showMenu();};
@@ -1149,12 +1156,11 @@ $('m-next').onclick=newProblem;$('ans').onkeydown=e=>{if(e.key==='Enter')$('m-ch
 const MATH_SET=5;/* a set of five typed answers is a recorded activity (Max, October 10, 2026): Pump math is Charge the Line's 21st activity */
 function mathOpen(){keepAwake(true);mSess={r:0,t:0};$('m-session').textContent='0 / 0';$('work').textContent='';pca('begin','ctl','drill-math',()=>`problem-${mSess.t+1}`);$('mathov').classList.remove('hidden');newProblem();}
 function mathClose(){if(mSess.t>=MATH_SET){const sc=Math.round(mSess.r/mSess.t*100);pca('end',pca('bkt',sc));recordX('drill','math',sc);}else pca('abandon');keepAwake(false);$('mathov').classList.add('hidden');showMenu();}
-$('b-math').onclick=()=>{$('menu').classList.add('hidden');mathOpen();};
 $('m-exit').onclick=mathClose;
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.19.5';
+const APP_VERSION='2.20.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1486,8 +1492,8 @@ const DRILLS={
  hydrant:{name:'Hydrant math',why:'Percent drop = (static − residual) ÷ static. 0–10%: three more lines like the first. 11–15%: two. 16–25%: one. Over 25%: none.',items:()=>Array.from({length:8},()=>{const st=pk([60,65,70,80,90,100]);const target=pk([0.05,0.08,0.12,0.14,0.18,0.22,0.3,0.35]);const res=Math.round(st*(1-target));const drop=(st-res)/st*100;const a=drop<=10?'Three more':drop<=15?'Two more':drop<=25?'One more':'None';return {q:`Static ${st} psi. After the first line, residual ${res} psi. How many more lines like the first?`,a,d:pcShuf(['Three more','Two more','One more','None'].filter(x=>x!==a)).slice(0,2)};})}};
 let QZ=null;
 function drillMenu(){QZ={kind:'drill'};$('menu').classList.add('hidden');$('qz-title').textContent='Quick drills';$('qz-meta').textContent='';const ex=load().extra||[];const best=k=>{const r=ex.filter(x=>x.kind==='drill'&&x.id===k);return r.length?Math.max(...r.map(x=>x.score)):null;};
-  $('qz-body').innerHTML=Object.keys(DRILLS).map(k=>{const b=best(k);return `<button class="scen" data-q="go" data-k="${k}"><b>${DRILLS[k].name}</b><span>8 questions${b!==null?' · best '+b:''}</span></button>`;}).join('')+`<button class="scen" id="dr-math"><b>Pump math</b><span>Type the PDP. Within 5 psi counts · five or more answers make a set</span></button>`;
-  $('qz-foot').innerHTML='<button data-q="quit" style="width:100%">Back to menu</button>';$('quizov').classList.remove('hidden');$('dr-math').onclick=()=>{$('quizov').classList.add('hidden');mathOpen();};}
+  $('qz-body').innerHTML=Object.keys(DRILLS).map(k=>{const b=best(k);return `<button class="scen" data-q="go" data-k="${k}"><b>${DRILLS[k].name}</b><span>8 questions${b!==null?' · best '+b:''}</span></button>`;}).join('')+`<button class="scen" id="b-math"><b>Pump math</b><span>Type the PDP. Within 5 psi counts · five or more answers make a set</span></button>`;
+  $('qz-foot').innerHTML='<button data-q="quit" style="width:100%">Back to menu</button>';$('quizov').classList.remove('hidden');$('b-math').onclick=()=>{$('quizov').classList.add('hidden');mathOpen();};}
 function drillStart(k){keepAwake(true);pca('begin','ctl','drill-'+k,()=>QZ&&QZ.qs?`question-${QZ.i+1}`:'');QZ=pcQuizStart({name:DRILLS[k].name,qs:DRILLS[k].items(),kind:'drill',id:k,why:DRILLS[k].why,menuAction:'menu',menuLabel:'All drills',onDone:sc=>{keepAwake(false);pca('end',pca('bkt',sc));recordX('drill',k,sc);},onQuit:()=>{pca('abandon');keepAwake(false);$('quizov').classList.add('hidden');QZ=null;showMenu();}});}
 function quizAct(ds){const a=ds.q;if(a==='menu'){drillMenu();return;}if(a==='again'){drillStart(QZ.id);return;}if(a==='go'){drillStart(ds.k);return;}if(a==='quit'&&QZ&&!QZ.cfg){$('quizov').classList.add('hidden');QZ=null;showMenu();return;}pcQuizAct(QZ,ds);}
 $('qz-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-q]');if(b)quizAct(b.dataset);};$('qz-foot').onclick=$('qz-body').onclick;$('b-drills').onclick=drillMenu;

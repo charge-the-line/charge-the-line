@@ -98,6 +98,11 @@ if(want.includes('learn')){const {boot}=require('./qa_mock.js');
 
 /* boot-based checks run before the play harness is created: a later boot() would swap the harness's document and storage out from under it */
 if(want.includes('learn')){const {boot}=require('./qa_mock.js');/* final sweep M4: layout and touch */
+{// milestone 4b: every module's home opens in the same order: title with the version, readiness, What this is, the lesson, the tool grid, Difficulty, the Drill night row, then the activity lists
+  const home=html.slice(html.indexOf('id="menu"'),html.indexOf('id="mathov"'));const at=re=>{const m=re.exec(home);return m?m.index:-1;};
+  const order=[/id="rdy"/,/What this is/,/id="b-lesson"/,/id="b-drills"/,/class="sec">Difficulty</,/class="tiers"/,/id="b-inst"/,/class="sec">Scenarios</].map(at);
+  report('inject','the home opens in the standard order: readiness, What this is, the lesson, the tool grid, Difficulty, Drill night, then the lists (milestone 4b)',order.every(x=>x>=0)&&order.every((x,i)=>i===0||x>order[i-1]),order.join(' < '));
+  report('inject','the title line carries the shipped version (milestone 4b)',new RegExp('>v'+(html.match(/APP_VERSION='([^']+)'/)||[])[1].replace(/\./g,'\\.')+'<').test(html),'');}
   {const {api,els}=boot();api.setTier(0);api.loadCampaign(0);els['brief-go'].onclick();api.render();
    const shown=!els.nowbar._cls.has('hidden'),step=els['now-step'].textContent;api.radio('FF Nowak','Too much pressure, back it down','bad');const line=els['now-radio'].textContent,cls=els['now-radio'].className;
    els.menu.scrollTop=640;api.showMenu();const hid=els.nowbar._cls.has('hidden');
@@ -110,9 +115,9 @@ if(want.includes('learn')){const {boot}=require('./qa_mock.js');/* final sweep M
 if(want.includes('learn')){const {boot}=require('./qa_mock.js');/* final sweep M3 */
   {// final sweep M3: Pump math is the 21st activity — a set of five or more typed answers is saved as a drill run with statistics; fewer is a quit
    const {api,els}=boot();const W=global.window;const snip=[];W.PCA={begin:(m,a)=>snip.push('begin:'+m+'/'+a),end:d=>snip.push('end:'+d),abandon:()=>snip.push('abandon'),bkt:n=>'score-'+n,err(){}};
-   els['b-math'].onclick();for(let i=0;i<5;i++){els.ans.value=String(api.MP().r.total);els['m-check'].onclick();els['m-next'].onclick();}els['m-exit'].onclick();
+   els['b-drills'].onclick();els['b-math'].onclick();for(let i=0;i<5;i++){els.ans.value=String(api.MP().r.total);els['m-check'].onclick();els['m-next'].onclick();}els['m-exit'].onclick();
    const rec=(api.load().extra||[]).find(x=>x.kind==='drill'&&x.id==='math');
-   els['b-math'].onclick();els.ans.value='1';els['m-check'].onclick();els['m-exit'].onclick();const n2=(api.load().extra||[]).length;delete W.PCA;
+   els['b-drills'].onclick();els['b-math'].onclick();els.ans.value='1';els['m-check'].onclick();els['m-exit'].onclick();const n2=(api.load().extra||[]).length;delete W.PCA;
    els['b-progress'].onclick();const prog=/Pump math \(sets of five or more\)<\/td><td>best 100 · 1 run/.test(els.proglist.innerHTML);
    report('learn','pump math: five right answers then Exit save a drill run (100) with start and finish events and a progress row; one answer then Exit is a quit and saves nothing',!!rec&&rec.score===100&&n2===1&&prog&&snip.join()==='begin:ctl/drill-math,end:score-100,begin:ctl/drill-math,abandon',`${snip.join()} · records ${n2} · progress ${prog}`);}
   {// final sweep M3: units read psi and gpm in lower case everywhere except the governor's own PSI / RPM labels
