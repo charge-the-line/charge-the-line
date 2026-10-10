@@ -55,7 +55,7 @@ button{min-height:48px}
   button:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
   input{font-family:inherit;font-size:18px;padding:10px;border-radius:6px;border:1px solid var(--panel-edge);background:#0e0f11;color:var(--text);width:100%}
   .on{background:var(--green)!important;border-color:var(--green)!important;color:#fff}
-  .warn{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:18px;letter-spacing:.5px;text-transform:uppercase}
+  .warn,.go{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:18px;letter-spacing:.5px;text-transform:uppercase}
   .brand{font-family:"Saira Condensed",sans-serif;font-weight:700;letter-spacing:2px;font-size:14px;color:var(--yellow);padding:2px 2px 0}
   .strip{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:4px 2px 10px}
   .strip h1{font-size:24px;font-weight:600;margin:0} .strip .meta{font-size:15px;color:var(--muted)} .strip .meta b{color:var(--text);font-weight:500}
@@ -244,8 +244,8 @@ button{min-height:48px}
   <h2 id="m-title">Mission</h2>
   <p class="jpr" id="m-jpr"></p>
   <ul class="steps" id="m-steps"></ul>
-  <button id="b-ff" class="hidden" style="width:100%;margin-bottom:8px">Fast-forward ▸▸</button>
-  <div class="actions"><button id="b-reset">Restart scenario</button><button id="b-menu">Menu</button></div>
+  <button id="b-ff" class="pc-ff hidden">Fast-forward ▸▸</button><div id="ff-why" class="pc-ffwhy hidden">Only waiting is left. It stops the moment anything happens.</div>
+  <div class="actions"><button id="b-reset">Restart scenario</button><button id="b-menu">Stop and go back</button><button class="gear" data-pc-set>Settings</button></div>
   <button id="b-report" style="width:100%;margin-top:8px">Report an issue or idea</button>
 </div>
 <div class="card"><h2>Radio</h2><div class="radio" id="radio"></div></div>
@@ -256,7 +256,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:15px;color:var(--muted)">Version 2.20.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:15px;color:var(--muted)">Version 2.21.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -266,12 +266,15 @@ button{min-height:48px}
   <p>Three tiers per scenario: <b>Guided</b> shows every step and the target pressure. <b>Recall</b> hides the checklist and makes you figure the PDP from the hose layout. <b>Chaos</b> is Recall plus things going wrong.</p>
   <p><b>Panel guide.</b> Tap <b>Panel guide</b> (top right) during any mission, then tap any control to learn what it does, when to use it, and what goes wrong. Free in Guided, 2 points per lookup in Recall, locked in Chaos.</p>
   <p style="font-size:15px">Training aid only. Department SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <div class="pc-sec">About</div>
+  <p>Charge the Line is a free pump-panel practice tool, in the same family as Patient Contact, Bleed Control, BLS Ready and Upwind. The Real Saves follow published accounts, with the source cited in each; everything not published is modeled and says so.</p>
+  <div id="how-about"></div>
   <button class="warn" id="how-close" style="width:100%;font-size:18px">Close</button>
 </div></div>
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:15px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.20.0</span></h1></div>
+  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.21.0</span></h1></div>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div class="card rdy" id="rdy"><div class="flex"><div><div class="small">Your readiness</div><b id="rdy-t" style="display:block;font-family:'Saira Condensed';font-size:22px;line-height:1.05"></b><div class="stat" id="rdy-s" style="margin-top:2px"></div></div><div class="sp"></div><div class="num" id="rdy-n"></div></div><div style="height:8px;margin-top:10px;background:var(--line,#2a2f37);border-radius:4px;overflow:hidden"><div id="rdy-bar" style="height:100%;width:0;background:var(--acc);transition:width .6s ease-out"></div></div></div>
   <div class="card"><div class="small">What this is</div><p style="margin:4px 0 0;font-size:15px;line-height:1.45">Pump operations on Engine 10-2: fourteen scenarios including six Real Saves from published accounts, a pump lesson, quick drills, pump math and a guide to every control on the panel. Guided shows every step, Recall makes you remember it, Chaos breaks things. <b>Your SOPs and your rig come first.</b></p></div>
@@ -290,7 +293,7 @@ button{min-height:48px}
   <p style="font-size:15px">PDP = nozzle pressure + friction loss + elevation + appliances. FL = C × (gpm/100)² × (length/100). Coefficients: 1¾" 15.5 · 2½" 2 · 3" 0.8 · 5" 0.08. Answer within ±5 psi counts.</p>
   <div class="prob" id="prob"></div>
   <input id="ans" type="number" inputmode="numeric" placeholder="PDP in psi">
-  <div style="display:flex;gap:8px;margin-top:8px"><button id="m-check" class="warn" style="flex:1">Check</button><button id="m-next" style="flex:1">Next problem</button><button id="m-exit">Exit</button></div>
+  <div style="display:flex;gap:8px;margin-top:8px"><button id="m-check" class="warn" style="flex:1">Check</button><button id="m-next" style="flex:1">Next problem</button><button id="m-exit">Stop and go back</button></div>
   <div class="work" id="work"></div>
   <div class="stat" style="margin-top:12px"><span>This session</span><b id="m-session">0 / 0</b></div>
   <p class="stat" style="margin:6px 0 0">Answer five or more, then Exit: the set is saved to your record and counts as an activity.</p>
@@ -318,7 +321,7 @@ button{min-height:48px}
   <h2 id="case-t"></h2>
   <div id="case-body"></div>
   <p id="case-src" style="font-size:15px;color:var(--muted)"></p>
-  <div style="display:flex;gap:8px"><button class="warn" id="case-go" style="flex:1;font-size:18px">Begin</button><button id="case-back">Back</button></div>
+  <div style="display:flex;gap:8px"><button class="warn" id="case-go" style="flex:1;font-size:18px">Start</button><button id="case-back">Back</button></div>
 </div></div>
 <div class="overlay hidden" id="decov"><div class="box">
   <span class="tag-real" style="background:#ff5d3a;color:#fff">DECISION POINT</span>
@@ -328,7 +331,7 @@ button{min-height:48px}
 </div></div>
 <div class="overlay hidden" id="lessonov" style="z-index:12"><div class="box slide" id="lesson-box"></div></div>
 <div class="overlay hidden" id="quizov" style="z-index:12"><div class="box"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 id="qz-title" style="margin:0">Drills</h2><span id="qz-meta" style="font-size:15px;color:var(--muted)"></span></div><div id="qz-body" style="margin-top:10px"></div><div id="qz-foot" style="margin-top:10px"></div></div></div>
-<div class="overlay hidden" id="ldone" style="z-index:13"><div class="box"><h2>Lesson complete</h2><div class="big" id="ld-score"></div><div id="ld-body"></div><div style="display:flex;gap:8px;margin-top:10px"><button id="ld-again" style="flex:1">Again</button><button class="warn" id="ld-menu" style="flex:1">Menu</button></div></div></div>
+<div class="overlay hidden" id="ldone" style="z-index:13"><div class="box"><h2>Lesson complete</h2><div class="big" id="ld-score"></div><div id="ld-body"></div><div class="pc-row3"><button id="ld-again">Again</button><button id="ld-menu">Home</button><button class="warn" id="ld-next">Next</button></div><p class="pc-links"><a href="../">◂ Preconnect</a><a href="../feedback.html?from=ctl">Feedback</a></p></div></div>
 <div class="overlay hidden" id="briefov"><div class="box">
   <span class="tag-real" style="background:#2f6fb7;color:#fff">MISSION BRIEFING</span>
   <h2 id="brief-t" style="font-size:24px"></h2>
@@ -336,7 +339,7 @@ button{min-height:48px}
   <div style="font-family:'Saira Condensed';font-size:16px;letter-spacing:1px;color:var(--yellow)">CONTROLS YOU'LL USE — TAP TO LEARN</div>
   <div class="chips" id="brief-chips"></div>
   <p id="brief-tier" style="font-size:15px;color:var(--muted)"></p>
-  <div style="display:flex;gap:8px"><button class="warn" id="brief-go" style="flex:1;font-size:18px">Start mission</button><button id="brief-back">Back to menu</button></div>
+  <div style="display:flex;gap:8px"><button class="warn" id="brief-go" style="flex:1;font-size:18px">Start</button><button id="brief-back">Back</button></div>
 </div></div>
 <div class="overlay hidden" id="guideov"><div class="box gcard">
   <div id="g-body"></div>
@@ -353,7 +356,7 @@ button{min-height:48px}
   <h2 id="done-title">Mission complete</h2>
   <div class="big" id="done-score">100</div>
   <p id="done-body"></p>
-  <button class="warn" id="b-next" style="width:100%;font-size:18px">Next mission</button>
+  <div class="pc-row3" id="done-row"><button id="b-again">Again</button><button id="b-home">Home</button><button class="warn" id="b-next">Next</button></div><p class="pc-links"><a href="../">◂ Preconnect</a><a href="../feedback.html?from=ctl">Feedback</a></p>
 </div></div>
 
 <div class="overlay hidden" id="setov" style="z-index:20"><div class="box">
@@ -364,7 +367,7 @@ button{min-height:48px}
  <div class="set"><div class="k">Motion<small>Auto follows your phone's Reduce Motion setting.</small></div><div class="seg2" data-set="motion"><button data-val="auto">Auto</button><button data-val="off">Off</button></div></div>
  <div class="sec">Feedback</div>
  <div class="set"><div class="k">Sound<small>A metronome for compressions, a tone for right and wrong, a chime when you finish, and Patient Contact's monitor.</small></div><div class="seg2" data-set="sound"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
- <div class="set"><div class="k">Haptics<small>A tap you can feel on compressions and mistakes.</small></div><div class="seg2" data-set="haptics"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
+ <div class="set"><div class="k">Vibration<small>A tap you can feel on compressions and mistakes.</small></div><div class="seg2" data-set="haptics"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
  <div class="sec">Privacy</div>
  <div class="set"><div class="k">Anonymous statistics<small>Counts like "someone finished the infant station." Never names. <a href="../privacy.html" style="color:var(--acc)">Details</a></small></div><div class="seg2" data-set="stats"><button data-val="off">Off</button><button data-val="on">On</button></div></div>
  <p class="stat" style="margin-top:10px">Settings apply to every Preconnect module on this phone.</p>
@@ -581,7 +584,7 @@ function evCam(){const c=CAMP[S.camp];if(!c||!c.ev||!S.active)return;if(S.t<S.ca
   radio('FF Cruz','Thermal camera: '+(S.flame?'the pack is burning':S.heat<=0?'the pack reads cool, no hot spots':S.heat<30?'warm, a hot spot near the rear of the pack':'hot under the whole floor pan'),S.heat<=0&&!S.flame?'good':'');}
 /* fast-forward (2.16.0): only on a step marked ff that is just waiting; runs the same ticks and stops the moment anything happens */
 let RADIO_N=0;
-function ffStep(){if(!S.running||DEC||S.briefing||!S.active)return null;const m=CAMP[S.camp].missions[S.mission];const j=stepsDone.findIndex(x=>!x);const s=j>=0?m.steps[j]:null;return s&&s.ff&&!s.dec&&!S.fault?j:null;}
+function ffStep(){if(!S.running||DEC||S.briefing||!S.active)return null;const m=CAMP[S.camp].missions[S.mission];const j=stepsDone.findIndex(x=>!x);const s=j>=0?m.steps[j]:null;const ffv=s&&(typeof s.ff==='function'?s.ff():s.ff);return s&&ffv&&!s.dec&&!S.fault?j:null;}
 function ffRun(){const j0=ffStep();if(j0===null)return;const n0=RADIO_N,sc=S.score;let n=0;while(n<160){tick(0.25);n++;if(RADIO_N!==n0||S.score!==sc||!S.running||DEC||stepsDone.findIndex(x=>!x)!==j0||S.fault)break;}radio('Engineer',`Fast-forward: ${Math.round(n/4)} seconds later.`);}
 
 /* ===== faults (Chaos) ===== */
@@ -644,13 +647,13 @@ function render(){nowUpd();
     const tt=TIER===0?left+' · '+tk+' (modeled)':tk;if($('ev-tank').textContent!==tt)$('ev-tank').textContent=tt;}
   if(CAMP[S.camp]&&CAMP[S.camp].fillSite){const c=CAMP[S.camp];const st=S.tk?`Tanker ${['5-1','12-2','7-1'][S.tk.n-1]}: ${Math.round(S.tk.gal).toLocaleString()} of ${S.tk.cap.toLocaleString()} gal${S.tk.full?' — FULL':''}${S.relayLine?'':' · fill line not connected'}`:S.tkOn?(S.filled>=3?'All three tankers filled':'Pad empty'):'Tankers not here yet';if($('fill-st').textContent!==st)$('fill-st').textContent=st;
     const nx=(S.dhIce?'Ice on the dry hydrant head · ':'')+(S.dhClog?'Dry hydrant plugged · ':'')+(S.tkOn&&!S.tk&&S.filled<3?`Next tanker in ${Math.max(0,Math.ceil(S.nextTk-S.t))} s · `:'')+`${S.turns.length?'Last turn '+mss(S.turns[S.turns.length-1])+' min (modeled) · ':''}${S.primed?'primed':'not primed'}`;if($('fill-next').textContent!==nx)$('fill-next').textContent=nx;}
-  {const ff=$('b-ff');if(ff){const on=ffStep()!==null;if(ff.classList.contains('hidden')===on)ff.classList.toggle('hidden',!on);}}
+  {const ff=$('b-ff');if(ff){const on=ffStep()!==null;const w=$('ff-why');if(w&&w.classList.contains('hidden')===on)w.classList.toggle('hidden',!on);if(ff.classList.contains('hidden')===on)ff.classList.toggle('hidden',!on);}}
   $('score').textContent=S.score;const m=Math.floor(S.t/60),s=Math.floor(S.t%60);$('clock').textContent=`${m}:${s<10?'0':''}${s}`;
 }
 
 /* ===== scenarios ===== */
 let TIER=0;
-const TIERTXT=['Every step listed, target pressure given. Learn the sequence.','Checklist hidden. The officer tells you the hose layout — you calculate the PDP and remember the order.','Recall, plus faults mid-mission: burst lines, governor dropouts, hydrant sharing, fouled strainers.'];
+const TIERTXT=[pcTierHelp(0,'Target pressures given.'),pcTierHelp(1,'The officer gives the hose layout; you work out the PDP. Panel guide lookups cost 2 points.'),pcTierHelp(2,'Burst lines, governor dropouts, hydrant sharing, fouled strainers.')];
 const inB=(k,lo,hi)=>{const p=linePsi(S.valves[k]);return p>=lo&&p<=hi;};
 /* line spec objects: {k, cfg} -> band computed from pdp */
 const Q24={dia:2.5,len:200,noz:'fog250',floor:1};
@@ -1080,21 +1083,23 @@ function showCase(i){const c=CAMP[i];$('case-t').textContent=c.name;$('case-body
 $('case-back').onclick=()=>{$('caseov').classList.add('hidden');showMenu();};
 function finish(){keepAwake(false);pcFx('done');
   const c=CAMP[S.camp],m=c.missions[S.mission],last=S.mission>=c.missions.length-1;
-  $('done-title').textContent=m.title+(last?' — scenario complete':' — complete');countUp($('done-score'),S.score,600);
+  $('done-title').textContent=m.title+(last?' — scenario complete':' — complete');pcBand($('done-score'),S.score);countUp($('done-score'),S.score,600);
   const learnKeys=[...new Set(S.incidents.map(incidentKey).filter(Boolean))];
   const prev=(load().log||[]).filter(r=>+r.i===S.camp);const compare=last?pcBestPrev(prev.map(r=>({d:r.d,score:r.score}))):null;
   let extra='';if(c.real&&last){const g=S.decisions.filter(d=>d.r==='good').length;extra=`<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:15px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
-  if(c.fillSite&&last&&S.turns.length){const avg=S.turns.reduce((a,b)=>a+b,0)/S.turns.length,tgt=c.tkCap/800+1.25;extra+=`<p><b>Turn times:</b> ${S.turns.map(t=>mss(t)).join(', ')} min; average ${mss(avg)} against a target of ${mss(tgt)} (modeled: the fill at about 800 gpm plus a minute and a quarter to hook up and pull out).</p>`;}
+  if(c.fillSite&&last&&S.turns.length){const avg=S.turns.reduce((a,b)=>a+b,0)/S.turns.length,tgt=c.tkCap/800+1.25;extra+=`<p><b>Turn times:</b> ${S.turns.map(t=>mss(t)).join(', ')} min; average ${mss(avg)} against a target of ${mss(tgt)} ${pcTag('modeled')} (the fill at about 800 gpm plus a minute and a quarter to hook up and pull out).</p>`;}
   if(c.ev&&last)extra+=`<p><b>The battery:</b> ${S.rekN?`it rekindled ${S.rekN===1?'once':S.rekN+' times'} when the water came off it.`:'it never came back while you had it.'} ${S.tankerReq===null?'':''}</p><p><b>From Guide 147 (ERG2024), UN3556:</b> large amounts of water, sprayed directly onto the battery if possible; check the manufacturer's emergency response guide before disabling the vehicle; never cut high-voltage or medium-voltage cabling; never pierce, cut, pry or dismantle to reach the battery; reignition can come at any point after the fire is out, up to weeks later, so monitor it with a thermal camera. Gallon figures in this scenario are modeled.</p><p>The same battery from the hazmat side: <a href="../upwind/?scn=liion&amp;v=A" style="color:#7fc0ff">Upwind's lithium-ion battery fire, Layout A</a>.</p>`;
   if(S.injects&&S.injects.length)extra=`<p><b>Instructor injects:</b> ${esc(S.injects.join(', '))}.</p>`+extra;
   if(S.vtext&&last)extra=`<p style="font-size:15px;color:var(--muted)">Layout ${S.variant}: ${esc(S.vtext)}</p>`+extra;
   $('done-body').innerHTML=pcDebriefBody({score:S.score,compare,feedback:S.incidents,lessons:learnKeys.map(k=>({k,name:GUIDE[k].name})),steps:m.steps.map((st,j)=>({name:st.t,ok:!!stepsDone[j],missed:!stepsDone[j]})),extra});
-  $('b-next').textContent=last?'Back to menu':'Next mission';
+  /* one voice: Again · Home · Next. Between missions: Home pauses (Resume on the home list) and Next is the next mission; after the last mission Again restarts the scenario and Next opens the next one on the list. */
+  $('b-again').classList.toggle('hidden',!last);$('b-next').classList.toggle('hidden',last&&S.camp+1>=CAMP.length);$('done-row').classList.toggle('two',!last||S.camp+1>=CAMP.length);$('b-home').classList.toggle('go',last&&S.camp+1>=CAMP.length);
   if(last){const pr=load(),ps=pr.scen&&pr.scen[S.camp];pca('end',`${['guided','recall','chaos'][TIER]}/${pca('att',(ps?ps.runs:0)+1)}/${pca('bkt',S.score)}`);recordClear(S.camp,S.score);}
   $('done').classList.remove('hidden');instSync();
 }
 $('done-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]');if(b)openCard(b.dataset.k,true);};
-$('b-next').onclick=()=>{$('done').classList.add('hidden');const c=CAMP[S.camp];if(S.mission<c.missions.length-1){loadMission(S.mission+1);if(!S.briefing)S.running=true;}else showMenu();};
+$('b-next').onclick=()=>{$('done').classList.add('hidden');const c=CAMP[S.camp];if(S.mission<c.missions.length-1){loadMission(S.mission+1);if(!S.briefing)S.running=true;}else if(S.camp+1<CAMP.length){S.active=false;const n=S.camp+1;if(CAMP[n].real)showCase(n);else loadCampaign(n);}else showMenu();};
+$('b-home').onclick=()=>{$('done').classList.add('hidden');const c=CAMP[S.camp];if(S.mission>=c.missions.length-1)S.active=false;showMenu();};$('b-again').onclick=()=>{$('done').classList.add('hidden');loadCampaign(S.camp);};
 $('b-reset').onclick=()=>loadCampaign(S.camp);$('b-ff').onclick=ffRun;$('ev-cam').onclick=evCam;
 $('dh-ice').onclick=()=>{if(!CAMP[S.camp].dryHyd||!S.dhIce||S.iceT>0)return;S.iceT=5;radio('FF Cruz','Chipping the ice off the head with the axe — give me a few seconds');};
 $('dh-flush').onclick=()=>{if(!CAMP[S.camp].dryHyd||S.flushT>0)return;if(!S.dhClog){radio('Engineer','Nothing to flush — the dry hydrant is flowing');return;}if(!S.pump||!S.ttp||S.primerOn){radio('Engineer','To back-flush: primer off, tank-to-pump open, pump engaged — tank water goes back down the pipe');return;}S.flushT=8;radio('Engineer','Back-flushing tank water down the dry hydrant pipe');};$('b-menu').onclick=showMenu;
@@ -1124,18 +1129,18 @@ $('b-start').onclick=()=>{$('intro').classList.add('hidden');const p=load();if(!
 $('b-resume').onclick=()=>{$('menu').classList.add('hidden');INSTHOLD=false;if(S.active)keepAwake(true);if(S.briefing)$('briefov').classList.remove('hidden');else if(S.active)S.running=true;instSync();};
 $('b-howmore').onclick=()=>$('howov').classList.remove('hidden');$('how-close').onclick=()=>$('howov').classList.add('hidden');
 $('b-howto').onclick=()=>{$('howov').classList.remove('hidden');return;$('menu').classList.add('hidden');$('intro').classList.remove('hidden');};
-$('b-progress').onclick=()=>{const p=load();$('uname').value=p.name||'';const ex=p.extra||[];const bestOf=(kind,id)=>{const r=ex.filter(x=>x.kind===kind&&x.id===id);return r.length?{best:Math.max(...r.map(x=>x.score)),runs:r.length,last:r[r.length-1].d}:null;};
+$('b-progress').onclick=()=>{const p=load();$('uname').value=pcProfile().name||p.name||'';const ex=p.extra||[];const bestOf=(kind,id)=>{const r=ex.filter(x=>x.kind===kind&&x.id===id);return r.length?{best:Math.max(...r.map(x=>x.score)),runs:r.length,last:r[r.length-1].d}:null;};
   const row=(n,v)=>`<tr><td class="l">${n}</td><td>${v}</td></tr>`;const lay=i=>{const vs=[...new Set((p.log||[]).filter(r=>+r.i===i&&r.v).map(r=>r.v))].sort();return vs.length?` · layouts ${vs.join(' ')}`:'';};const runs=n=>`${n} run${n>1?'s':''}`;
   $('proglist').innerHTML=`<div class="sec">Scenarios</div><table class="pc-table">`+CAMP.map((c,i)=>{const sc=p.scen[i];return row(esc(c.name),sc?`best ${sc.best} · ${runs(sc.runs)} · ${['Guided','Recall','Chaos'][sc.tier]}${lay(i)} · ${dueInfo(i).txt}`:'—');}).join('')+`</table><div class="sec">Lesson and drills</div><table class="pc-table">`+learnRows().map(([k,id,n])=>{const b=bestOf(k,id);return row(esc(n),b?`best ${b.best} · ${runs(b.runs)} · ${b.last.slice(0,10)}`:'—');}).join('')+row('Pump math, every problem ever typed',p.math.total?Math.round(p.math.right/p.math.total*100)+'% of '+p.math.total:'—')+'</table>';
   $('progov').classList.remove('hidden');};
 function learnRows(){return [['lesson','lesson','Pump lesson'],...Object.keys(DRILLS).map(k=>['drill',k,DRILLS[k].name]),['drill','math','Pump math (sets of five or more)']];}
-$('uname').onchange=()=>{const p=load();p.name=$('uname').value;save(p);};
+$('uname').onchange=()=>{const p=load();p.name=$('uname').value.trim();save(p);pcProfileSet(p.name,undefined);};
 $('b-progclose').onclick=()=>$('progov').classList.add('hidden');
-$('b-export').onclick=()=>{const p=load();const rows=[['Name','Scenario','Tier','Runs','Best score','Last cleared','Spacing level']];CAMP.forEach((c,i)=>{const s=p.scen[i];rows.push([p.name||'',c.name,s?['Guided','Recall','Chaos'][s.tier]:'',s?s.runs:0,s?s.best:'',s&&s.last?String(s.last).slice(0,10):'',s?s.level:0]);});
+$('b-export').onclick=()=>{const p=load();if(pcProfile().name)p.name=pcProfile().name;const rows=[['Name','Scenario','Tier','Runs','Best score','Last cleared','Spacing level']];CAMP.forEach((c,i)=>{const s=p.scen[i];rows.push([p.name||'',c.name,s?['Guided','Recall','Chaos'][s.tier]:'',s?s.runs:0,s?s.best:'',s&&s.last?String(s.last).slice(0,10):'',s?s.level:0]);});
   const ex=p.extra||[];learnRows().forEach(([k,id,n])=>{const r=ex.filter(x=>x.kind===k&&x.id===id);rows.push([p.name||'',n,'',r.length,r.length?Math.max(...r.map(x=>x.score)):'',r.length?String(r[r.length-1].d).slice(0,10):'','']);});
   rows.push([p.name||'','Pump math drills','',p.math.total,p.math.total?Math.round(p.math.right/p.math.total*100)+'%':'','','']);
   const csv=pcCsv(rows);/* the core quotes every cell and defuses =, +, -, @ formulas (this writer never doubled quotes before) */
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='charge-the-line-training-record.csv';a.click();};
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='charge-the-line-practice-record.csv';a.click();};
 
 /* ===== pump math drills ===== */
 let MP=null,mSess={r:0,t:0};
@@ -1160,7 +1165,7 @@ $('m-exit').onclick=mathClose;
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.20.0';
+const APP_VERSION='2.21.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1185,10 +1190,10 @@ function snapshot(){
     S.incidents.length?`Incidents: ${S.incidents.join('; ')}`:'',
     `Device: ${navigator.userAgent.replace(/\s+/g,' ').slice(0,120)}`].filter(Boolean).join('\n');
 }
-$('b-report').onclick=()=>{const p=load();$('r-name').value=p.name||'';$('r-dept').value=p.dept||'';$('r-note').value='';$('r-msg').textContent='';$('repov').classList.remove('hidden');};
+$('b-report').onclick=()=>{const p=load(),pr=pcProfile();$('r-name').value=pr.name||p.name||'';$('r-dept').value=pr.org||p.dept||'';$('r-note').value='';$('r-msg').textContent='';$('repov').classList.remove('hidden');};
 $('r-cancel').onclick=()=>$('repov').classList.add('hidden');
 $('r-send').onclick=async()=>{
-  const p=load();p.name=$('r-name').value.trim();p.dept=$('r-dept').value.trim();save(p);
+  const p=load();p.name=$('r-name').value.trim();p.dept=$('r-dept').value.trim();save(p);pcProfileSet(p.name,p.dept);
   const text=`From: ${p.name||'—'} (${p.dept||'—'})\nNote: ${$('r-note').value.trim()||'—'}\n\n${snapshot()}`;
   if(navigator.share){try{await navigator.share({title:'Charge the Line report',text});$('repov').classList.add('hidden');return;}catch(e){if(e.name==='AbortError')return;}}
   try{await navigator.clipboard.writeText(text);$('r-msg').textContent='Report copied — paste it into a text or email to the trainer admin.';}
@@ -1225,9 +1230,9 @@ let LS=null;
 function lessonStart(){keepAwake(true);$('menu').classList.add('hidden');pca('begin','ctl','lesson',()=>LS?`slide-${LS.i+1}`:'');LS=pcLessonStart({slides:LESSON,label:'Pump lesson',onDone:lessonDone,onQuit:()=>{pca('abandon');LS=null;keepAwake(false);showMenu();}});}
 function lessonAct(ds){pcLessonAct(LS,ds);}
 function lessonDone(score,right,n){keepAwake(false);pcFx('done');pca('end',pca('bkt',score));const prev=(load().extra||[]).filter(x=>x.kind==='lesson');recordX('lesson','lesson',score);LS=null;
-  $('ld-score').textContent='';countUp($('ld-score'),score,600);$('ld-body').innerHTML=pcDebriefBody({score,compare:pcBestPrev(prev),kicker:'Next: run a scenario and watch the gauges do what the lesson said.',metrics:[['Right on the first try',`${right} of ${n}`]],clean:false});$('ldone').classList.remove('hidden');}
+  $('ld-score').textContent='';pcBand($('ld-score'),score);countUp($('ld-score'),score,600);$('ld-body').innerHTML=pcDebriefBody({score,compare:pcBestPrev(prev),kicker:'Next: run a scenario and watch the gauges do what the lesson said.',metrics:[['Slides',`${n} of ${n}`],['Right on the first try',`${right} of ${n}`]],clean:false});$('ldone').classList.remove('hidden');}
 $('lesson-box').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-l]');if(b)lessonAct(b.dataset);};
-$('b-lesson').onclick=lessonStart;$('ld-again').onclick=()=>{$('ldone').classList.add('hidden');lessonStart();};$('ld-menu').onclick=()=>{$('ldone').classList.add('hidden');showMenu();};
+$('b-lesson').onclick=lessonStart;$('ld-again').onclick=()=>{$('ldone').classList.add('hidden');lessonStart();};$('ld-menu').onclick=()=>{$('ldone').classList.add('hidden');showMenu();};$('ld-next').onclick=()=>{$('ldone').classList.add('hidden');loadCampaign(0);};
 /* lessons and drills are recorded apart from scenario runs: p.extra = [{kind, id, score, d}] (the hub reads it) */
 function recordX(kind,id,score){const p=load();p.extra=(p.extra||[]).concat([pcDrillStamp({kind,id,score,d:new Date().toISOString()})]).slice(-300);save(p);}
 /* =================== EV fire on a county road (2.16.0, Max, October 8, 2026) ===================
@@ -1265,7 +1270,7 @@ function evCamp(v){const L=v.line,k=v.key,[lo,hi,t]=bandOf(L);const ex=v.expo,[e
      {t:'Decision: how long will the tank last?',dec:{tag:'How long will the tank last?',q:()=>`Your tank reads ${Math.round(S.tank)} gallons and the line is flowing about ${NOZ[L.noz].gpm} gpm. How long until it is empty?`,
        get opts(){return (S.evTankQ?S.evTankQ.o:[]).map(([t,r])=>({t,r,why:r==='good'?'Gallons ÷ gpm. That number is your deadline for the tanker.':`Gallons ÷ gpm: ${Math.round(S.tank)} ÷ ${NOZ[L.noz].gpm} is about ${mss(S.evTankQ.m)} minutes. Know your deadline before the water does.`}));},
        real:'Tank minutes = gallons ÷ gpm. The Tank time drill on the menu practices exactly this.'},f:()=>true},
-     {...keep('Keep the water on the battery until the tanker arrives'),f:()=>S.tankerAt!==null},
+     {...keep('Keep the water on the battery until the tanker arrives'),f:()=>S.tankerAt!==null,ff:()=>S.tankerReq!==null},
      {t:'Connect the supply line',f:()=>S.supply},{t:'Tanker pumping to you',f:()=>S.hydrant},{t:'Open the MIV',f:()=>S.miv>0},{t:'Bleed the air',f:()=>S.bled},{t:'Close tank-to-pump',f:()=>S.bled&&!S.ttp},
      {t:'Line held on tanker water: hold 10 seconds',hold:10,k,lo,hi,f:()=>inB(k,lo,hi)&&supplied().hyd}],
     chat:chat('FF Nowak',k,L)},
@@ -1290,10 +1295,10 @@ function evCamp(v){const L=v.line,k=v.key,[lo,hi,t]=bandOf(L);const ex=v.expo,[e
      {t:'Thermal camera check on the pack',f:()=>S.camChecks>=1},
      {...keep('White smoke again — water back on the battery'),f:()=>S.smoke2&&S.heat<=0&&inB(k,lo,hi),ff:true},
      {t:'Decision: the tow operator',dec:{tag:'The tow operator',q:'An hour later the pack reads cool. The tow operator backs up to take the SUV.',
-       opts:[{t:'Warn him it can reignite; it is stored outside, clear of buildings',r:'good',why:'The guide says reignition can come at any point after the fire is out, up to weeks later. The tow operator needs that warning, and the SUV is stored outside, away from buildings and other vehicles (per department SOP / to confirm).'},
+       opts:[{t:'Warn him it can reignite; it is stored outside, clear of buildings',r:'good',why:'The guide says reignition can come at any point after the fire is out, up to weeks later. The tow operator needs that warning, and the SUV is stored outside, away from buildings and other vehicles. '+pcTag('sop')},
              {t:'Release it; the fire is out and the SUV is the tow company\'s problem now',r:'bad',why:'It can reignite on his truck or in his lot. He needs the warning before it leaves.'},
              {t:'Have it towed into his heated shop overnight so it dries out',r:'bad',why:'Indoors is the worst place for a battery that can reignite. It stays outside, away from buildings.'}],
-       real:'Guide 147 (ERG2024): reignition may occur at any point after the initial fire is extinguished, up to weeks later; use thermal imaging to monitor. Tow and storage practices are general guidance, per department SOP / to confirm.'},f:()=>true}]},
+       real:'Guide 147 (ERG2024): reignition may occur at any point after the initial fire is extinguished, up to weeks later; use thermal imaging to monitor. Tow and storage practices are general guidance. '+pcTag('sop')},f:()=>true}]},
    shutdown()]};}
 CAMP.push(Object.assign(evCamp({id:'A',key:'front',line:{dia:1.75,len:200,noz:'fog100',floor:1},eta:5,gal:1600,night:false}),{build:evCamp}));
 
@@ -1438,7 +1443,7 @@ CAMP.push({name:'One Meridian Plaza — Philadelphia, 1991',real:true,omp:true,p
             {t:'Shut down until the building engineer restarts the pumps',r:'bad',why:'Crews are on the stairs with hose. Shutting down leaves them with nothing; the engines are the building\'s pumps now.'}],
       real:'The report records a total loss of electrical power shortly after the attack team reached the 11th floor; the emergency generator failed and the building\'s two electric fire pumps lost power.'},f:()=>true},
     {t:'Transfer valve set for pressure',f:()=>S.xfer==='pressure'},
-    {t:`FDC line at ${bandOf(OMP_STAND)[0]}–${bandOf(OMP_STAND)[1]} psi (modeled: 22 floors, riser, hose and fog nozzle)`,f:()=>inB('rear3',bandOf(OMP_STAND)[0],bandOf(OMP_STAND)[1])},
+    {t:`FDC line at ${bandOf(OMP_STAND)[0]}–${bandOf(OMP_STAND)[1]} psi ${pcTag('modeled')} (22 floors, riser, hose and fog nozzle)`,f:()=>inB('rear3',bandOf(OMP_STAND)[0],bandOf(OMP_STAND)[1])},
     {t:'Hold it 10 seconds',hold:10,k:'rear3',lo:bandOf(OMP_STAND)[0],hi:bandOf(OMP_STAND)[1],f:()=>inB('rear3',bandOf(OMP_STAND)[0],bandOf(OMP_STAND)[1])}],
    chat:{k:'rear3',lo:bandOf(OMP_STAND)[0],hi:bandOf(OMP_STAND)[1],low:()=>radio('22nd floor','Weak stream up here — we need pressure!','bad'),high:()=>radio('22nd floor','Still weak at the nozzle, whatever you are sending','bad'),ok:()=>radio('22nd floor','Still weak at the nozzle — the fog pattern is falling apart','bad')}},
   {title:'Weak streams on 22',intro:()=>'Your gauge says the connection is getting its pressure. The crews say the streams are still weak.',
@@ -1456,7 +1461,7 @@ CAMP.push({name:'One Meridian Plaza — Philadelphia, 1991',real:true,omp:true,p
    chat:{k:'rear3',lo:bandOf(OMP_STAND)[0],hi:bandOf(OMP_STAND)[1],low:()=>radio('Lobby','Connection pressure is dropping','bad'),high:()=>radio('FF (engine)','The 3" is jumping at the connection — that is a lot of pressure for nothing','bad'),ok:()=>radio('Lobby','Connection is steady','good')}},
   {title:'2:15 a.m. · The 5-inch up the west stair',intro:()=>`Crews have stretched 5-inch hose up the west stair to the 24th floor, past the standpipe valves. You supply it: ${describe(OMP_FIVE)}.`,
    steps:[{t:'5" up the west stair connected',f:()=>S.relayLine},{t:'Open #2 rear (slowly)',f:()=>S.valves.rear2.open>0},
-    {t:`Bring #2 rear to ${bandOf(OMP_FIVE)[0]}–${bandOf(OMP_FIVE)[1]} psi (modeled: 23 floors up, 500 ft of 5", the wye and the attack lines)`,f:()=>inB('rear2',bandOf(OMP_FIVE)[0],bandOf(OMP_FIVE)[1])},
+    {t:`Bring #2 rear to ${bandOf(OMP_FIVE)[0]}–${bandOf(OMP_FIVE)[1]} psi ${pcTag('modeled')} (23 floors up, 500 ft of 5", the wye and the attack lines)`,f:()=>inB('rear2',bandOf(OMP_FIVE)[0],bandOf(OMP_FIVE)[1])},
     {t:'Hold it 15 seconds',hold:15,k:'rear2',lo:bandOf(OMP_FIVE)[0],hi:bandOf(OMP_FIVE)[1],f:()=>inB('rear2',bandOf(OMP_FIVE)[0],bandOf(OMP_FIVE)[1])}],
    chat:{k:'rear2',lo:bandOf(OMP_FIVE)[0],hi:bandOf(OMP_FIVE)[1],low:()=>radio('24th floor','The wye up here is starving — more on the 5"','bad'),high:()=>radio('24th floor','Ease off — the lines off the wye are fighting us','bad'),ok:()=>radio('24th floor','Real pressure up here now','good')}},
   {title:'7:00 a.m. · Everyone out',intro:()=>'Command orders every firefighter out of the building. A structural engineer has warned of a collapse.',
@@ -1493,11 +1498,11 @@ const DRILLS={
 let QZ=null;
 function drillMenu(){QZ={kind:'drill'};$('menu').classList.add('hidden');$('qz-title').textContent='Quick drills';$('qz-meta').textContent='';const ex=load().extra||[];const best=k=>{const r=ex.filter(x=>x.kind==='drill'&&x.id===k);return r.length?Math.max(...r.map(x=>x.score)):null;};
   $('qz-body').innerHTML=Object.keys(DRILLS).map(k=>{const b=best(k);return `<button class="scen" data-q="go" data-k="${k}"><b>${DRILLS[k].name}</b><span>8 questions${b!==null?' · best '+b:''}</span></button>`;}).join('')+`<button class="scen" id="b-math"><b>Pump math</b><span>Type the PDP. Within 5 psi counts · five or more answers make a set</span></button>`;
-  $('qz-foot').innerHTML='<button data-q="quit" style="width:100%">Back to menu</button>';$('quizov').classList.remove('hidden');$('b-math').onclick=()=>{$('quizov').classList.add('hidden');mathOpen();};}
-function drillStart(k){keepAwake(true);pca('begin','ctl','drill-'+k,()=>QZ&&QZ.qs?`question-${QZ.i+1}`:'');QZ=pcQuizStart({name:DRILLS[k].name,qs:DRILLS[k].items(),kind:'drill',id:k,why:DRILLS[k].why,menuAction:'menu',menuLabel:'All drills',onDone:sc=>{keepAwake(false);pca('end',pca('bkt',sc));recordX('drill',k,sc);},onQuit:()=>{pca('abandon');keepAwake(false);$('quizov').classList.add('hidden');QZ=null;showMenu();}});}
+  $('qz-foot').innerHTML='<button data-q="quit" style="width:100%">Close</button>';$('quizov').classList.remove('hidden');$('b-math').onclick=()=>{$('quizov').classList.add('hidden');mathOpen();};}
+function drillStart(k){keepAwake(true);pca('begin','ctl','drill-'+k,()=>QZ&&QZ.qs?`question-${QZ.i+1}`:'');QZ=pcQuizStart({name:DRILLS[k].name,qs:DRILLS[k].items(),kind:'drill',id:k,why:DRILLS[k].why,from:'ctl',next:(()=>{const ks=Object.keys(DRILLS),n=ks.indexOf(k)+1;return n<ks.length?()=>drillStart(ks[n]):()=>mathOpen();})(),onDone:sc=>{keepAwake(false);pca('end',pca('bkt',sc));recordX('drill',k,sc);},onQuit:()=>{pca('abandon');keepAwake(false);$('quizov').classList.add('hidden');QZ=null;showMenu();}});}
 function quizAct(ds){const a=ds.q;if(a==='menu'){drillMenu();return;}if(a==='again'){drillStart(QZ.id);return;}if(a==='go'){drillStart(ds.k);return;}if(a==='quit'&&QZ&&!QZ.cfg){$('quizov').classList.add('hidden');QZ=null;showMenu();return;}pcQuizAct(QZ,ds);}
 $('qz-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-q]');if(b)quizAct(b.dataset);};$('qz-foot').onclick=$('qz-body').onclick;$('b-drills').onclick=drillMenu;
-applySettings();settingsBind();
+applySettings();settingsBind();$('how-about').innerHTML=pcAboutFoot('ctl',APP_VERSION);
 if('serviceWorker' in navigator && location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 
 /* ===== PANEL GUIDE: content ===== */

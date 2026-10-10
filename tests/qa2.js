@@ -1,5 +1,5 @@
 const q=require('./qa.js');const {api,missing}=q.env;const {S,CAMP,$}=api;
-const A11Y=['run-now','run-coach','g-now','l-fb','qz-fb','dr-fb','b-msg','d-msg','r-msg','m-session','rc','st-live'];  // ids the shared core's accessibility hook probes on every page; not all exist here
+const A11Y=['pc-gear','run-now','run-coach','g-now','l-fb','qz-fb','dr-fb','b-msg','d-msg','r-msg','m-session','rc','st-live'];  // ids the shared core's accessibility hook probes on every page; not all exist here
 let fails=0;const log=(ok,msg)=>{if(!ok)fails++;console.log((ok?'  ✓ ':'  ✗ ')+msg);};
 console.log('A. Chaos tier — 10 randomized runs per scenario (faults fire at random times)');
 for(let ci=0;ci<CAMP.length;ci++){let pass=0,f=new Set(),minScore=100;for(let k=0;k<10;k++){const r=q.play(ci,2);if(r.ok)pass++;(r.faults||[]).forEach(x=>f.add(x));minScore=Math.min(minScore,r.score);}

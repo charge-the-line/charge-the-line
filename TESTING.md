@@ -34,6 +34,7 @@ python3 tests/browser_check.py
 | `guide` | `qa_guide.js`: every guide card complete, links valid, every penalty and decision mapped to a lesson |
 | `stress` | 600 randomized playthroughs with no failures |
 | `fuzz` | Random tapping on every button never crashes or produces NaN pressures |
+| `voice` | One voice (milestone 5): Start · Stop and go back · Again + Home + Next everywhere, ◂ Preconnect · Feedback under every result, the EV tanker wait fast-forwards once tankers are requested, the modeled and SOP chips, tier help from the core, About and version in How to play, the hub name store, the practice-record CSV |
 
 The suite has been verified to **catch planted bugs**: removing the answer shuffle, bumping the version without the cache, and breaking the hydrant control all fail. The broken hydrant fails exactly the seven scenarios that use a hydrant.
 

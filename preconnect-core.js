@@ -1,9 +1,9 @@
-/* preconnect-core 1.8.0 sha256:f686bb80ebfe7f8d816bc107291bd14f9a03c86c17c36459d76c84edbc84e22a */
+/* preconnect-core 1.9.0 sha256:e3eaca8e51bc2140bee9e69e51110a1f88d2ed41032c9084bd70b384f01884ff */
 /* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all five modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
    Never define $ or esc here: every app has its own. */
-const PCORE_VERSION='1.8.0';
+const PCORE_VERSION='1.9.0';
 function pcEsc(t){return String(t===undefined||t===null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* ---------- Settings: one sheet, one key ('preconnect-settings'), honored by every module. Statistics use the Privacy page's key. ---------- */
@@ -21,7 +21,14 @@ function settingsRender(){const s=settings();if(typeof document==='undefined'||!
 function pcA11y(){if(typeof document==='undefined')return;const set=(e,k,v)=>{if(e&&e.setAttribute&&!(e.getAttribute&&e.getAttribute(k)))e.setAttribute(k,v);};
   ['run-now','run-coach','g-now','radio','l-fb','qz-fb','dr-fb','b-msg','d-msg','r-msg','m-session','rc','st-live'].forEach(id=>set(document.getElementById(id),'aria-live','polite'));
   if(document.querySelectorAll){document.querySelectorAll('.overlay').forEach(o=>{set(o,'role','dialog');set(o,'aria-modal','true');});document.querySelectorAll('.pad').forEach(p=>set(p,'role','button'));}}
-function settingsBind(){pcA11y();pcPauseBind();const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const gear=g('h-set');if(gear)gear.onclick=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};}
+function settingsBind(){pcA11y();pcPauseBind();const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const open=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};const gear=g('h-set');if(gear)gear.onclick=open;if(document.querySelectorAll)document.querySelectorAll('[data-pc-set]').forEach(b=>b.onclick=open);pcGearBind(open);}
+/* One voice (milestone 5): Settings reachable from inside every overlay. One floating Settings button, shown whenever an overlay that has no
+   Settings button of its own is open (a lesson, a run, a station, a result, a card) and hidden while the settings sheet, the instructor sheet or the
+   Drill Night picker is up. The sheet itself sits above every overlay (#setov z-index 40). */
+function pcGearShould(){if(typeof document==='undefined'||!document.querySelectorAll)return false;const ovs=[...document.querySelectorAll('.overlay')].filter(o=>!o.classList.contains('hidden'));if(ovs.some(o=>o.id==='setov'||o.id==='instov'||o.id==='pc-drillov'))return false;return ovs.some(o=>!(o.querySelector&&o.querySelector('#h-set,[data-pc-set]')));}
+function pcGearSync(){const b=document.getElementById('pc-gear');if(!b)return;b.classList.toggle('hidden',!pcGearShould());}
+function pcGearBind(open){if(typeof document==='undefined'||!document.body||!document.createElement||!document.body.appendChild||document.getElementById('pc-gear'))return;const b=document.createElement('button');b.id='pc-gear';b.className='gear pc-gear hidden';b.type='button';b.setAttribute('aria-label','Settings');b.title='Settings';b.textContent='⚙';b.onclick=open;document.body.appendChild(b);
+  if(typeof MutationObserver!=='undefined'){let q=false;const mo=new MutationObserver(()=>{if(q)return;q=true;(typeof requestAnimationFrame==='function'?requestAnimationFrame:f=>setTimeout(f,0))(()=>{q=false;pcGearSync();});});mo.observe(document.body,{attributes:true,attributeFilter:['class'],subtree:true,childList:true});}pcGearSync();}
 function motionOK(){if(settings().motion==='off')return false;try{if(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches)return false;}catch(e){}return true;}
 /* A score that counts up to its final value (about 0.6 s). Stamps data-final at once; without animation frames or with motion off it lands immediately. */
 function countUp(el,to,ms){if(!el)return;if(el.setAttribute)el.setAttribute('data-final',String(to));if(el.dataset)el.dataset.final=String(to);const n=+to||0,raf=(typeof requestAnimationFrame==='function')?requestAnimationFrame:null;if(!raf||!motionOK()){el.textContent=String(to);return;}const t0=performance.now();const step=t=>{const p=Math.min(1,(t-t0)/(ms||600)),e=1-Math.pow(1-p,3);el.textContent=String(Math.round(n*e));if(p<1)raf(step);else el.textContent=String(to);};raf(step);}
@@ -63,7 +70,7 @@ function pcLessonRender(S){const c=S.cfg,L=c.slides,s=L[S.i];S.answered=false;S.
    ${S.ord.map(k=>`<button class="opt" data-l="ans" data-k="${k}">${pcEsc(s.o[k][0])}</button>`).join('')}<p id="l-fb" style="font-size:15px"></p></div>
    <div class="dots">${L.map((_,k)=>`<i class="${k<=S.i?'on2':''}"></i>`).join('')}</div>
    <div class="row"><button data-l="prev" ${S.i?'':'disabled'}>Back</button><button class="go" data-l="next" id="l-next" disabled>${S.i+1<L.length?'Next':'Finish'}</button></div>
-   <button data-l="quit" style="width:100%;margin-top:8px">Leave the lesson</button>`;const ov=document.getElementById(c.ov||'lessonov');if(ov)ov.scrollTop=0;}
+   <button data-l="quit" style="width:100%;margin-top:8px">Stop and go back</button>`;const ov=document.getElementById(c.ov||'lessonov');if(ov)ov.scrollTop=0;}
 function pcLessonAct(S,ds){if(!S)return;const c=S.cfg,L=c.slides,a=ds.l,g=id=>document.getElementById(id);
   if(a==='ans'){if(S.answered)return;const s=L[S.i],o=s.o[+ds.k];if(!o)return;const ok=o[1]==='good';if(S.first[S.i]===undefined)S.first[S.i]=ok;if(ok)pcCue('good');else pcFx('bad');if(ok){S.answered=true;const n=g('l-next');if(n)n.disabled=false;}const fb=g('l-fb');if(fb)fb.innerHTML=`<b style="color:${ok?'#7fe3a4':o[1]==='partial'?'#ffc23d':'#ff9a96'}">${ok?'Right.':o[1]==='partial'?'Not quite.':'No.'}</b> ${pcEsc(ok?s.why:'Try again.')}`;}
   else if(a==='next'){if(!S.answered)return;if(S.i+1<L.length){S.i++;pcLessonRender(S);}else{const right=Object.values(S.first).filter(Boolean).length;const ov=g(c.ov||'lessonov');if(ov)ov.classList.add('hidden');if(c.onDone)c.onDone(Math.round(right/L.length*100),right,L.length);}}
@@ -74,11 +81,12 @@ function pcLessonAct(S,ds){if(!S)return;const c=S.cfg,L=c.slides,a=ds.l,g=id=>do
    Renders data-q buttons; the app's click handler passes the dataset to pcQuizAct and handles its own extra actions first. Every option list is shuffled once. */
 function pcQuizStart(cfg){const qs=cfg.qs.map(x=>Object.assign({},x,{ord:pcShuf([x.a,...x.d])}));const S={cfg,qs,i:0,right:0,kind:cfg.kind,id:cfg.id,name:cfg.name};const ov=document.getElementById(cfg.ov||'quizov');if(ov)ov.classList.remove('hidden');pcQuizQ(S);return S;}
 function pcQuizQ(S){const c=S.cfg,q=S.qs[S.i],g=id=>document.getElementById(id);const t=g(c.titleEl||'qz-title'),m=g(c.metaEl||'qz-meta');if(t)t.textContent=c.name;if(m)m.textContent=`${S.i+1} of ${S.qs.length} · ${S.right} right`;
-  const b=g(c.bodyEl||'qz-body');if(b)b.innerHTML=`<p style="font-size:18px;margin:0 0 10px">${pcEsc(q.q)}</p>${q.ord.map((o,i)=>`<button class="opt" data-q="ans" data-i="${i}">${pcEsc(o)}</button>`).join('')}<p id="qz-fb" style="font-size:15px"></p>`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<button data-q="quit" style="width:100%">${pcEsc(c.quitLabel||'Quit')}</button>`;}
+  const b=g(c.bodyEl||'qz-body');if(b)b.innerHTML=`<p style="font-size:18px;margin:0 0 10px">${pcEsc(q.q)}</p>${q.ord.map((o,i)=>`<button class="opt" data-q="ans" data-i="${i}">${pcEsc(o)}</button>`).join('')}<p id="qz-fb" style="font-size:15px"></p>`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<button data-q="quit" style="width:100%">${pcEsc(c.quitLabel||'Stop and go back')}</button>`;}
 function pcQuizAct(S,ds){if(!S||!S.cfg)return false;const c=S.cfg,a=ds.q,g=id=>document.getElementById(id);
   if(a==='quit'){if(c.onQuit)c.onQuit();else{const ov=g(c.ov||'quizov');if(ov)ov.classList.add('hidden');}return true;}
+  if(a==='nextact'){if(c.onQuit)c.onQuit();else{const ov=g(c.ov||'quizov');if(ov)ov.classList.add('hidden');}if(c.next)c.next();return true;}
   if(a==='ans'){const q=S.qs[S.i];if(!q||q.done)return true;q.done=true;const ok=q.ord[+ds.i]===q.a;if(ok)S.right++;if(ok)pcCue('good');else pcFx('bad');const fb=g('qz-fb');if(fb)fb.innerHTML=`<b style="color:${ok?'#7fe3a4':'#ff9a96'}">${ok?'Right.':'Answer: '+pcEsc(q.a)+'.'}</b> ${pcEsc(q.why||c.why||'')}`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<button data-q="next" class="go" style="width:100%">${S.i+1<S.qs.length?'Next':'Results'}</button>`;return true;}
-  if(a==='next'){S.i++;if(S.i<S.qs.length)pcQuizQ(S);else{const sc=Math.round(S.right/S.qs.length*100);S.score=sc;const b=g(c.bodyEl||'qz-body');if(b)b.innerHTML=`<div class="big">${sc}</div><p>${S.right} of ${S.qs.length} right.${c.note?' '+pcEsc(c.note(sc)):''}</p>`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=`<div class="row"><button data-q="${c.menuAction||'quit'}">${pcEsc(c.menuLabel||'Done')}</button><button data-q="again" class="go">Again</button></div>`;if(c.onDone)c.onDone(sc,S.right,S.qs.length);}return true;}
+  if(a==='next'){S.i++;if(S.i<S.qs.length)pcQuizQ(S);else{const sc=Math.round(S.right/S.qs.length*100);S.score=sc;const b=g(c.bodyEl||'qz-body');if(b)b.innerHTML=`<div class="big ${pcBandClass(sc)}">${sc}</div><p>${S.right} of ${S.qs.length} right.${c.note?' '+pcEsc(c.note(sc)):''}</p>`;const f=g(c.footEl||'qz-foot');if(f)f.innerHTML=pcResultRow({again:'again',home:c.menuAction||'quit',next:c.next?'nextact':null,attr:'data-q'})+(c.from?pcLinks(c.from):'');if(c.onDone)c.onDone(sc,S.right,S.qs.length);}return true;}
   return false;}
 /* The Station look shared by every app (Milestone 4) plus the debrief styles, injected once in <head>; each app's own tokens apply, with safe fallbacks. */
 /* ===== Sound and haptics (Milestone 6): short synthesized cues, no audio files, gated by the shared switches (sound off by default, haptics on). pcCue(name) plays tick, good, bad, done, breathe or warn; pcBuzz(name) vibrates a pattern; pcFx(name) does both. pcMetro(bpm) runs a drift-free metronome on the audio clock; pcMetro(0) stops it. iOS only starts audio inside a tap, so the first pointerdown on any page resumes the context. ===== */
@@ -142,8 +150,35 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
 function pcInstallCSS(){if(typeof document==='undefined'||!document.head||!document.createElement||document.getElementById('pc-core-css'))return;const st=document.createElement('style');st.id='pc-core-css';
   st.textContent=PC_LOOK_CSS+'.pc-sec{font-family:"Saira Condensed","Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft,#aab2bd);margin:14px 0 6px;display:flex;align-items:center;gap:10px}.pc-sec:after{content:"";flex:1;height:1px;background:var(--line,#2a2f37)}'
   +'.pc-table{width:100%;border-collapse:collapse;font-size:15px;table-layout:auto;overflow-wrap:anywhere}.pc-table td{padding:8px 0;border-top:1px solid var(--line,#2a2f37);vertical-align:top}.pc-table tr:first-child td{border-top:0}.pc-table td.l{color:var(--soft,#aab2bd)}.pc-table td:last-child{text-align:right;font-family:"Saira Condensed","Barlow Condensed","Arial Narrow",sans-serif;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;white-space:normal;padding-left:10px}'
-  +'.pc-compare{font-size:15px;color:var(--soft,#aab2bd);margin:0 0 8px;line-height:1.4}.pc-kicker{font-size:15px;line-height:1.45;margin:0 0 10px}.pc-feedback{margin:0;padding-left:18px;font-size:15px;line-height:1.45}.pc-clean{font-size:15px;color:var(--soft,#aab2bd);margin:8px 0 0}.pc-ok{color:#7fe3a4}.pc-miss{color:#ffc23d}.pc-detail{color:var(--soft,#aab2bd)}';
+  +'.pc-compare{font-size:15px;color:var(--soft,#aab2bd);margin:0 0 8px;line-height:1.4}.pc-kicker{font-size:15px;line-height:1.45;margin:0 0 10px}.pc-feedback{margin:0;padding-left:18px;font-size:15px;line-height:1.45}.pc-clean{font-size:15px;color:var(--soft,#aab2bd);margin:8px 0 0}.pc-ok{color:#7fe3a4}.pc-miss{color:#ffc23d}.pc-detail{color:var(--soft,#aab2bd)}'
+  +'.pc-row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}.pc-row3.two{grid-template-columns:repeat(2,minmax(0,1fr))}'
+  +'.pc-links{display:flex;justify-content:center;align-items:center;gap:0;margin:6px 0 0;font-size:15px}.pc-links a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;color:var(--soft,#aab2bd);text-decoration:none}.pc-links a+a:before{content:"·";margin-right:14px;color:var(--soft,#aab2bd)}.pc-ver{margin:10px 0 0}'
+  +'.pc-tag{display:inline-block;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:13px;letter-spacing:.6px;text-transform:uppercase;padding:1px 7px;border-radius:4px;background:var(--deck2,#1c2026);color:var(--soft,#aab2bd);white-space:nowrap;line-height:1.5;vertical-align:baseline}'
+  +'.big.pc-lo{color:#ff6b61!important}.big.pc-mid{color:#ffc23d!important}'
+  +'button.pc-ff{width:100%;border:2px dashed var(--acc,#ff7a1a)!important;background:transparent!important;color:var(--acc,#ff7a1a)!important;text-transform:uppercase}.pc-ffwhy{font-size:15px;color:var(--soft,#aab2bd);line-height:1.4;margin:4px 0 10px}'
+  +'#setov{z-index:40!important}.pc-gear{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));z-index:39;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;font-size:22px;line-height:1;background:var(--deck,#14171c)!important}.pc-gear.hidden{display:none}'
+  +'.overlay:not(#setov):not(#instov):not(#pc-drillov):not(:has(#h-set)):not(:has([data-pc-set])) .box>:first-child{padding-right:52px}';
   document.head.appendChild(st);}
+/* ---------- One voice (milestone 5): the same words and the same pieces on every module. ---------- */
+/* Result row: Again · Home, plus Next when the module names a next activity. Next is the primary button when there is one, Home otherwise.
+   attr is the data attribute the app's click handler reads (data-q for the quiz engine); each value is that handler's action name. */
+function pcResultRow(o){o=o||{};const at=o.attr||'data-act';const nx=o.next?`<button ${at}="${pcEsc(o.next)}" class="go">Next</button>`:'';return `<div class="pc-row3${nx?'':' two'}"><button ${at}="${pcEsc(o.again||'again')}">Again</button><button ${at}="${pcEsc(o.home||'home')}"${nx?'':' class="go"'}>Home</button>${nx}</div>`;}
+/* Links under every result and About: back to Preconnect and Feedback (mod = ctl | pc | bc | bls | uw, the feedback page's module code). */
+function pcLinks(mod){return `<p class="pc-links"><a href="../">◂ Preconnect</a><a href="../feedback.html?from=${pcEsc(mod||'')}">Feedback</a></p>`;}
+/* The version line every About ends with. */
+function pcAboutFoot(mod,ver){return `<p class="stat pc-ver">Version ${pcEsc(ver||'')} · Practice, not certification.</p>`+pcLinks(mod);}
+/* Score band for a result's big number: red under 50, amber under 80, the module accent from 80 up. */
+function pcBandClass(sc){sc=+sc||0;return sc<50?'pc-lo':sc<80?'pc-mid':'';}
+function pcBand(el,sc){if(!el||!el.classList)return;el.classList.remove('pc-lo','pc-mid');const k=pcBandClass(sc);if(k)el.classList.add(k);}
+/* Tier help: one core sentence per tier, plus the module's own clause. */
+const PC_TIER_BASE=['Guided: every step listed, with coaching.','Recall: no checklist. Run it from memory.','Chaos: Recall, and things go wrong.'];
+function pcTierHelp(tier,clause){const b=PC_TIER_BASE[+tier]||'';return clause?b+' '+clause:b;}
+/* The tag chip for content that is not a published figure: modeled | to confirm | per protocol · MCA review pending. The content itself is unchanged; the chip replaces the parenthetical. */
+const PC_TAGS={modeled:'modeled',confirm:'to confirm',mca:'per protocol · MCA review pending',sop:'per department SOP · to confirm'};
+function pcTag(kind){return `<span class="pc-tag">${pcEsc(PC_TAGS[kind]||kind)}</span>`;}
+/* One name store: the hub's profile key. Every module reads and writes the same name and organization. */
+function pcProfile(){let h={};try{h=JSON.parse(localStorage.getItem('preconnect'))||{};}catch(e){}return {name:h.name||'',org:h.org||''};}
+function pcProfileSet(name,org){let h={};try{h=JSON.parse(localStorage.getItem('preconnect'))||{};}catch(e){}if(name!==undefined&&name!==null)h.name=String(name).trim();if(org!==undefined&&org!==null)h.org=String(org).trim();try{localStorage.setItem('preconnect',JSON.stringify(h));}catch(e){}}
 /* CSV cells (final sweep, milestone 1). A spreadsheet runs a cell that starts with = + - @ (or a tab or return) as a
    formula, so a typed name like =HYPERLINK(...) would execute when a department opens the record. Such cells get a
    leading apostrophe (the spreadsheet shows it as text); quotes are doubled; every cell is quoted. Every CSV writer

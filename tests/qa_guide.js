@@ -15,7 +15,7 @@ let emptyBrief=0;CAMP.forEach(c=>c.missions.forEach(m=>{const ks=api.missionCont
 log(!emptyBrief,'Every mission briefing lists at least one control');
 console.log('\nTier rules');
 api.setTier(0);api.loadCampaign(0);log(!$('briefov')._cls.has('hidden')&&!S.running,'Guided: briefing opens and the clock waits');
-$('brief-go').onclick();log(S.running,'Guided: "Start mission" starts the clock');
+$('brief-go').onclick();log(S.running,'Guided: "Start" starts the clock');
 $('b-guide').onclick();log(api.LEARN()&&!S.running,'Panel guide enters learn mode and pauses the clock');
 const sc=S.score;api.openCard('primer');log(S.score===sc&&!$('guideov')._cls.has('hidden'),'Guided: looking up a card is free');
 $('g-close').onclick();$('lb-done').onclick();log(!api.LEARN()&&S.running,'Done: leaves learn mode and resumes the clock');
