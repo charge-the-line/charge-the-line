@@ -1,5 +1,5 @@
 // Bump CACHE when you upload a new version so phones pick it up.
-const CACHE = 'charge-the-line-v2.21.0';
+const CACHE = 'charge-the-line-v2.21.1';
 const CORE = ['index.html', 'manifest.json', 'icon-192.png', 'icon-512.png', 'fonts/atkinson-hyperlegible-latin-400-normal.woff2', 'fonts/atkinson-hyperlegible-latin-700-normal.woff2', 'fonts/saira-condensed-latin-500-normal.woff2', 'fonts/saira-condensed-latin-600-normal.woff2', 'fonts/saira-condensed-latin-700-normal.woff2', 'preconnect-core.js'];
 // How long to wait for the network before serving the saved copy. Airplane mode fails at once; one bar
 // of signal can hang for a minute, and the whole app is already on the phone.
@@ -8,6 +8,8 @@ self.addEventListener('install', e => {
   // cache:'reload' skips the browser's own HTTP cache, so a fresh install never stores a stale file.
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
+// The page asks the worker its version after a new worker takes control; a different answer shows the "New version available" bar.
+self.addEventListener('message', e => { if (e.data && e.data.type === 'pc-version?' && e.source) e.source.postMessage({ type: 'pc-version', v: CACHE }); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('charge-the-line-v') && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });

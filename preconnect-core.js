@@ -1,9 +1,9 @@
-/* preconnect-core 1.9.0 sha256:e3eaca8e51bc2140bee9e69e51110a1f88d2ed41032c9084bd70b384f01884ff */
+/* preconnect-core 1.10.0 sha256:f3c3905762de9bb09f7e82aef304866c1600e04fdbc558411c2bfae2efc3c0b0 */
 /* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all five modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
    Never define $ or esc here: every app has its own. */
-const PCORE_VERSION='1.9.0';
+const PCORE_VERSION='1.10.0';
 function pcEsc(t){return String(t===undefined||t===null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* ---------- Settings: one sheet, one key ('preconnect-settings'), honored by every module. Statistics use the Privacy page's key. ---------- */
@@ -21,7 +21,7 @@ function settingsRender(){const s=settings();if(typeof document==='undefined'||!
 function pcA11y(){if(typeof document==='undefined')return;const set=(e,k,v)=>{if(e&&e.setAttribute&&!(e.getAttribute&&e.getAttribute(k)))e.setAttribute(k,v);};
   ['run-now','run-coach','g-now','radio','l-fb','qz-fb','dr-fb','b-msg','d-msg','r-msg','m-session','rc','st-live'].forEach(id=>set(document.getElementById(id),'aria-live','polite'));
   if(document.querySelectorAll){document.querySelectorAll('.overlay').forEach(o=>{set(o,'role','dialog');set(o,'aria-modal','true');});document.querySelectorAll('.pad').forEach(p=>set(p,'role','button'));}}
-function settingsBind(){pcA11y();pcPauseBind();const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const open=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};const gear=g('h-set');if(gear)gear.onclick=open;if(document.querySelectorAll)document.querySelectorAll('[data-pc-set]').forEach(b=>b.onclick=open);pcGearBind(open);}
+function settingsBind(){pcA11y();pcPauseBind();const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const open=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};const gear=g('h-set');if(gear)gear.onclick=open;if(document.querySelectorAll)document.querySelectorAll('[data-pc-set]').forEach(b=>b.onclick=open);pcGearBind(open);pcUpdateBind();}
 /* One voice (milestone 5): Settings reachable from inside every overlay. One floating Settings button, shown whenever an overlay that has no
    Settings button of its own is open (a lesson, a run, a station, a result, a card) and hidden while the settings sheet, the instructor sheet or the
    Drill Night picker is up. The sheet itself sits above every overlay (#setov z-index 40). */
@@ -156,7 +156,7 @@ function pcInstallCSS(){if(typeof document==='undefined'||!document.head||!docum
   +'.pc-tag{display:inline-block;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:13px;letter-spacing:.6px;text-transform:uppercase;padding:1px 7px;border-radius:4px;background:var(--deck2,#1c2026);color:var(--soft,#aab2bd);white-space:nowrap;line-height:1.5;vertical-align:baseline}'
   +'.big.pc-lo{color:#ff6b61!important}.big.pc-mid{color:#ffc23d!important}'
   +'button.pc-ff{width:100%;border:2px dashed var(--acc,#ff7a1a)!important;background:transparent!important;color:var(--acc,#ff7a1a)!important;text-transform:uppercase}.pc-ffwhy{font-size:15px;color:var(--soft,#aab2bd);line-height:1.4;margin:4px 0 10px}'
-  +'#setov{z-index:40!important}.pc-gear{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));z-index:39;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;font-size:22px;line-height:1;background:var(--deck,#14171c)!important}.pc-gear.hidden{display:none}'
+  +'#setov{z-index:40!important}.pc-gear{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));z-index:39;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;font-size:22px;line-height:1;background:var(--deck,#14171c)!important}.pc-gear.hidden{display:none}.pc-update{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:38;display:flex;gap:6px;padding:6px;border:2px solid var(--acc,#ff7a1a);border-radius:8px;background:var(--deck,#14171c)}.pc-update button.go{flex:1}.pc-update.hidden{display:none}'
   +'.overlay:not(#setov):not(#instov):not(#pc-drillov):not(:has(#h-set)):not(:has([data-pc-set])) .box>:first-child{padding-right:52px}';
   document.head.appendChild(st);}
 /* ---------- One voice (milestone 5): the same words and the same pieces on every module. ---------- */
@@ -179,6 +179,16 @@ function pcTag(kind){return `<span class="pc-tag">${pcEsc(PC_TAGS[kind]||kind)}<
 /* One name store: the hub's profile key. Every module reads and writes the same name and organization. */
 function pcProfile(){let h={};try{h=JSON.parse(localStorage.getItem('preconnect'))||{};}catch(e){}return {name:h.name||'',org:h.org||''};}
 function pcProfileSet(name,org){let h={};try{h=JSON.parse(localStorage.getItem('preconnect'))||{};}catch(e){}if(name!==undefined&&name!==null)h.name=String(name).trim();if(org!==undefined&&org!==null)h.org=String(org).trim();try{localStorage.setItem('preconnect',JSON.stringify(h));}catch(e){}}
+/* New version notice (final sweep, milestone 7). Every worker installs a new version behind the open page (skipWaiting + clients.claim),
+   so a page that stays open, a home-screen app resumed days later for instance, keeps running the old copy until it reloads. When a new
+   worker takes control, the page asks it for its version; if it differs from the page's own APP_VERSION (or the worker is too old to
+   answer), a bar offers "New version available — tap to reload". Coming back to the foreground also asks the browser to check for an update. */
+function pcUpdateDecide(cacheName,appVersion){if(!cacheName)return true;const v=String(cacheName).split('-v').pop();return !appVersion||v!==String(appVersion);}
+function pcUpdateShow(){if(typeof document==='undefined'||!document.body||!document.createElement)return null;let b=document.getElementById('pc-update');if(!b){b=document.createElement('div');b.id='pc-update';b.className='pc-update';b.setAttribute('role','status');b.innerHTML='<button class="go" data-pc-update="reload">New version available — tap to reload</button><button data-pc-update="later">Later</button>';b.onclick=e=>{const t=e.target&&e.target.closest&&e.target.closest('[data-pc-update]');if(!t)return;if(t.dataset.pcUpdate==='reload')location.reload();else b.classList.add('hidden');};document.body.appendChild(b);}b.classList.remove('hidden');return b;}
+function pcUpdateBind(){if(typeof navigator==='undefined'||!navigator.serviceWorker||!navigator.serviceWorker.addEventListener)return;const sw=navigator.serviceWorker;const had=!!sw.controller;let shown=false;
+  sw.addEventListener('controllerchange',()=>{if(!had||shown)return;const app=(typeof APP_VERSION!=='undefined')?APP_VERSION:'';let done=false;const show=v=>{if(done)return;done=true;if(pcUpdateDecide(v,app)){shown=true;pcUpdateShow();}};
+    const onMsg=e=>{if(e.data&&e.data.type==='pc-version'){sw.removeEventListener('message',onMsg);show(e.data.v);}};sw.addEventListener('message',onMsg);try{sw.controller&&sw.controller.postMessage({type:'pc-version?'});}catch(e){}setTimeout(()=>show(null),1500);});
+  try{sw.ready.then(reg=>{if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&reg.update)reg.update().catch(()=>{});});}).catch(()=>{});}catch(e){}}
 /* CSV cells (final sweep, milestone 1). A spreadsheet runs a cell that starts with = + - @ (or a tab or return) as a
    formula, so a typed name like =HYPERLINK(...) would execute when a department opens the record. Such cells get a
    leading apostrophe (the spreadsheet shows it as text); quotes are doubled; every cell is quoted. Every CSV writer
