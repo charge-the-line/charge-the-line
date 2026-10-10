@@ -254,7 +254,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.19.2 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:14px;color:var(--muted)">Version 2.19.3 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -269,7 +269,7 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.19.2</span></h1></div>
+  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.19.3</span></h1></div>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div class="card"><div class="small">What this is</div><p style="margin:4px 0 0;font-size:15px;line-height:1.45">Pump operations on Engine 10-2: ten scenarios including five Real Saves from published accounts, a pump lesson, quick drills, pump math and a guide to every control on the panel. Guided shows every step, Recall makes you remember it, Chaos breaks things. <b>Your SOPs and your rig come first.</b></p></div>
   <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
@@ -385,12 +385,16 @@ function describe(cfg){const n=NOZ[cfg.noz];return `${cfg.len} ft of ${cfg.dia==
 /* ===== gauges ===== */
 function drawGauge(svg,val,min,max,redFrom){
   const a0=-210,a1=30,rad=d=>d*Math.PI/180,cx=50,cy=52,r=42,frac=v=>(Math.max(min,Math.min(max,v))-min)/(max-min);
-  const ang=a0+(a1-a0)*frac(val),step=(max-min)>200?50:10,bigEvery=(max-min)>200?100:20;let ticks='';
-  for(let p=min;p<=max;p+=step){const t=a0+(a1-a0)*frac(p),big=(p-min)%bigEvery===0;
-    ticks+=`<line x1="${cx+Math.cos(rad(t))*r}" y1="${cy+Math.sin(rad(t))*r}" x2="${cx+Math.cos(rad(t))*(r-(big?7:4))}" y2="${cy+Math.sin(rad(t))*(r-(big?7:4))}" stroke="#1a1c20" stroke-width="${big?2:1}"/>`;
-    if(big)ticks+=`<text x="${cx+Math.cos(rad(t))*(r-15)}" y="${cy+Math.sin(rad(t))*(r-15)+3}" font-size="7" text-anchor="middle" fill="#1a1c20" font-family="Saira Condensed">${p}</text>`;}
-  const ra=a0+(a1-a0)*frac(redFrom);
-  svg.innerHTML=`<path d="M4 58 A46 46 0 1 1 96 58 Z" fill="#f2f0e8"/><path d="M${cx+Math.cos(rad(ra))*r} ${cy+Math.sin(rad(ra))*r} A${r} ${r} 0 0 1 ${cx+Math.cos(rad(a1))*r} ${cy+Math.sin(rad(a1))*r}" fill="none" stroke="#b3202c" stroke-width="3"/>${ticks}<line x1="${cx}" y1="${cy}" x2="${cx+Math.cos(rad(ang))*(r-4)}" y2="${cy+Math.sin(rad(ang))*(r-4)}" stroke="#b3202c" stroke-width="2" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="3" fill="#1a1c20"/>`;
+  const face=min+'|'+max+'|'+redFrom;
+  if(svg._face!==face){// the dial face is drawn once; only the needle moves after that (it used to be rebuilt four times a second, even on the menu)
+    const step=(max-min)>200?50:10,bigEvery=(max-min)>200?100:20;let ticks='';
+    for(let p=min;p<=max;p+=step){const t=a0+(a1-a0)*frac(p),big=(p-min)%bigEvery===0;
+      ticks+=`<line x1="${cx+Math.cos(rad(t))*r}" y1="${cy+Math.sin(rad(t))*r}" x2="${cx+Math.cos(rad(t))*(r-(big?7:4))}" y2="${cy+Math.sin(rad(t))*(r-(big?7:4))}" stroke="#1a1c20" stroke-width="${big?2:1}"/>`;
+      if(big)ticks+=`<text x="${cx+Math.cos(rad(t))*(r-15)}" y="${cy+Math.sin(rad(t))*(r-15)+3}" font-size="7" text-anchor="middle" fill="#1a1c20" font-family="Saira Condensed">${p}</text>`;}
+    const ra=a0+(a1-a0)*frac(redFrom);
+    svg.innerHTML=`<path d="M4 58 A46 46 0 1 1 96 58 Z" fill="#f2f0e8"/><path d="M${cx+Math.cos(rad(ra))*r} ${cy+Math.sin(rad(ra))*r} A${r} ${r} 0 0 1 ${cx+Math.cos(rad(a1))*r} ${cy+Math.sin(rad(a1))*r}" fill="none" stroke="#b3202c" stroke-width="3"/>${ticks}<line class="needle" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy-(r-4)}" stroke="#b3202c" stroke-width="2" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="3" fill="#1a1c20"/>`;
+    svg._face=face;svg._needle=svg.querySelector('.needle');svg._ang=null;}
+  const ang=a0+(a1-a0)*frac(val);if(svg._needle&&svg._ang!==ang){svg._ang=ang;svg._needle.setAttribute('x2',(cx+Math.cos(rad(ang))*(r-4)).toFixed(2));svg._needle.setAttribute('y2',(cy+Math.sin(rad(ang))*(r-4)).toFixed(2));}
 }
 
 /* ===== state ===== */
@@ -1101,7 +1105,7 @@ function showMenu(){keepAwake(false);exitLearn(false);$('briefov').classList.add
 $('menu').querySelectorAll('[data-tier]').forEach(b=>b.onclick=()=>{TIER=+b.dataset.tier;showMenu();});
 $('scenlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('menu').classList.add('hidden');const i=+b.dataset.i;if(CAMP[i].real)showCase(i);else loadCampaign(i);};
 $('b-start').onclick=()=>{$('intro').classList.add('hidden');const p=load();if(!p.seenIntro){p.seenIntro=true;save(p);}showMenu();};
-$('b-resume').onclick=()=>{$('menu').classList.add('hidden');INSTHOLD=false;if(S.briefing)$('briefov').classList.remove('hidden');else if(S.active)S.running=true;instSync();};
+$('b-resume').onclick=()=>{$('menu').classList.add('hidden');INSTHOLD=false;if(S.active)keepAwake(true);if(S.briefing)$('briefov').classList.remove('hidden');else if(S.active)S.running=true;instSync();};
 $('b-howmore').onclick=()=>$('howov').classList.remove('hidden');$('how-close').onclick=()=>$('howov').classList.add('hidden');
 $('b-howto').onclick=()=>{$('howov').classList.remove('hidden');return;$('menu').classList.add('hidden');$('intro').classList.remove('hidden');};
 $('b-progress').onclick=()=>{const p=load();$('uname').value=p.name||'';const ex=p.extra||[];const bestOf=(kind,id)=>{const r=ex.filter(x=>x.kind===kind&&x.id===id);return r.length?{best:Math.max(...r.map(x=>x.score)),runs:r.length,last:r[r.length-1].d}:null;};
@@ -1138,7 +1142,7 @@ $('m-exit').onclick=()=>{$('mathov').classList.add('hidden');showMenu();};
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.19.2';
+const APP_VERSION='2.19.3';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1621,7 +1625,7 @@ if(load().seenIntro){$('intro').classList.add('hidden');showMenu();}
 /* the home page's daily drill deep-links here: charge-the-line/?drill=friction */
 {const q=new URLSearchParams((typeof location!=='undefined'&&location.search)||'').get('drill');if(q&&DRILLS[q]){$('intro').classList.add('hidden');drillStart(q);}}
 let last=performance.now();
-setInterval(()=>{const now=performance.now();const dt=Math.min(0.5,(now-last)/1000);last=now;if(S.running)tick(dt);else render();},250);
+render();setInterval(()=>{const now=performance.now();const dt=Math.min(0.5,(now-last)/1000);last=now;if(S.running)tick(dt);else if(S.active)render();/* idle on the menu: nothing moves, nothing is redrawn */},250);
 </script>
 </body>
 </html>

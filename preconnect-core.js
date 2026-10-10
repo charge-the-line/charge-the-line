@@ -1,4 +1,4 @@
-/* preconnect-core 1.6.0 sha256:cb0d8c2813291894a550ab8e968d5661f0e64132944348c294526f448508a2b5 */
+/* preconnect-core 1.7.0 sha256:95d68eeb709d8c88be2d8d58931602a24f8f991ce0578cd23cafb0fccd51c725 */
 /* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all five modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
@@ -21,7 +21,7 @@ function settingsRender(){const s=settings();if(typeof document==='undefined'||!
 function pcA11y(){if(typeof document==='undefined')return;const set=(e,k,v)=>{if(e&&e.setAttribute&&!(e.getAttribute&&e.getAttribute(k)))e.setAttribute(k,v);};
   ['run-now','run-coach','g-now','radio','l-fb','qz-fb','dr-fb','b-msg','d-msg','r-msg','m-session','rc','st-live'].forEach(id=>set(document.getElementById(id),'aria-live','polite'));
   if(document.querySelectorAll){document.querySelectorAll('.overlay').forEach(o=>{set(o,'role','dialog');set(o,'aria-modal','true');});document.querySelectorAll('.pad').forEach(p=>set(p,'role','button'));}}
-function settingsBind(){pcA11y();const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const gear=g('h-set');if(gear)gear.onclick=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};}
+function settingsBind(){pcA11y();pcPauseBind();const g=id=>document.getElementById(id);const ov=g('setov');if(!ov)return;ov.onclick=e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-set] button');if(b)setSetting(b.closest('[data-set]').dataset.set,b.dataset.val);};const c=g('set-close');if(c)c.onclick=()=>ov.classList.add('hidden');const gear=g('h-set');if(gear)gear.onclick=()=>{settingsRender();ov.classList.remove('hidden');ov.scrollTop=0;};}
 function motionOK(){if(settings().motion==='off')return false;try{if(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches)return false;}catch(e){}return true;}
 /* A score that counts up to its final value (about 0.6 s). Stamps data-final at once; without animation frames or with motion off it lands immediately. */
 function countUp(el,to,ms){if(!el)return;if(el.setAttribute)el.setAttribute('data-final',String(to));if(el.dataset)el.dataset.final=String(to);const n=+to||0,raf=(typeof requestAnimationFrame==='function')?requestAnimationFrame:null;if(!raf||!motionOK()){el.textContent=String(to);return;}const t0=performance.now();const step=t=>{const p=Math.min(1,(t-t0)/(ms||600)),e=1-Math.pow(1-p,3);el.textContent=String(Math.round(n*e));if(p<1)raf(step);else el.textContent=String(to);};raf(step);}
@@ -150,4 +150,14 @@ function pcInstallCSS(){if(typeof document==='undefined'||!document.head||!docum
    on the platform goes through pcCsv. */
 function pcCsvCell(v){v=v===undefined||v===null?'':String(v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"';}
 function pcCsv(rows){return rows.map(r=>r.map(pcCsvCell).join(',')).join('\n');}
+/* Rule 15 (final sweep, milestone 2): a clock that measures the person stops when the screen does. When the page is hidden
+   (the phone locks, a call comes in, another app comes up) every subscriber is told; when it comes back, every subscriber
+   gets the seconds away and shifts its real-time clock forward, so nobody is penalized for time they were not here.
+   Game clocks already behave (their tick is clamped). The metronome stops on hide; the app restarts it where it belongs.
+   An instructor's "Freeze and discuss" always wins: an app must not thaw a run its instructor froze. */
+const PC_PAUSE={hidden:false,at:0,subs:[],bound:false};
+function pcOnPause(onHide,onShow){PC_PAUSE.subs.push({onHide,onShow});}
+function pcPauseHide(){if(PC_PAUSE.hidden)return;PC_PAUSE.hidden=true;PC_PAUSE.at=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();try{pcMetro(0);}catch(e){}PC_PAUSE.subs.forEach(s=>{try{s.onHide&&s.onHide();}catch(e){}});}
+function pcPauseShow(){if(!PC_PAUSE.hidden)return;PC_PAUSE.hidden=false;const now=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();const away=Math.max(0,(now-PC_PAUSE.at)/1000);PC_PAUSE.subs.forEach(s=>{try{s.onShow&&s.onShow(away);}catch(e){}});}
+function pcPauseBind(){if(PC_PAUSE.bound||typeof document==='undefined'||!document.addEventListener)return;PC_PAUSE.bound=true;document.addEventListener('visibilitychange',()=>{document.visibilityState==='hidden'?pcPauseHide():pcPauseShow();});if(typeof addEventListener==='function'){addEventListener('pagehide',pcPauseHide);addEventListener('pageshow',pcPauseShow);}}
 pcInstallCSS();

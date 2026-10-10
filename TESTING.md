@@ -154,3 +154,7 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 - CSV: a name typed as `=HYPERLINK(...)` (and `-2+3`, `+1`, `@SUM(1)`) exports with a leading apostrophe; every cell quoted.
 - Wrong-shape saved data (`[]`, `5`, `{"runs":5}`, a null run) loads as an empty record and a new run still saves.
 - `tests/fixtures/`: saved data from every older format of this module, loaded on every run: home/progress render, the CSV exports, a new run is added and no field is lost or list shrunk. Proven to fail (scratch): removing the `load()` normalizing fails the wrong-shape check.
+
+## Rule 15 and the wake lock (final sweep milestone 2, October 10, 2026)
+- The real clock stops while the screen is off: tests call `pcPauseHide()`, advance the fake clock, `pcPauseShow()`, and assert no penalty and no metric change (and that an instructor freeze is left alone where there is one). Proven to fail (scratch): removing the hookup (BLS Ready) or scoring on the wall clock again (Bleed Control) fails the check.
+- The wake lock is released on every quit path added in this milestone (stubbed `navigator.wakeLock`, one request per one release).
