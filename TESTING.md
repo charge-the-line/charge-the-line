@@ -149,3 +149,8 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 
 ## Offline helper (final sweep milestone 1, October 10, 2026)
 - `syntax`: the page and the shared core are network-first with a short wait (`NET_WAIT` ≤ 4 s, `Promise.race`), only 2xx answers are saved, installs use `cache:'reload'`, index.html is cached once. Proven in a browser (scratch): the first launch after a deploy runs the new page with the new core; a hanging network shows the saved page in under 4 s; a 404 serves the saved page.
+
+## Saved data (final sweep milestone 1, October 10, 2026)
+- CSV: a name typed as `=HYPERLINK(...)` (and `-2+3`, `+1`, `@SUM(1)`) exports with a leading apostrophe; every cell quoted.
+- Wrong-shape saved data (`[]`, `5`, `{"runs":5}`, a null run) loads as an empty record and a new run still saves.
+- `tests/fixtures/`: saved data from every older format of this module, loaded on every run: home/progress render, the CSV exports, a new run is added and no field is lost or list shrunk. Proven to fail (scratch): removing the `load()` normalizing fails the wrong-shape check.

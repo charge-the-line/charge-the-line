@@ -1,5 +1,5 @@
-/* preconnect-core 1.5.0 sha256:ab80f5789d1aa5064d7693049f2d393a55090d68244140f4b97a374719542eb7 */
-/* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all four modules).
+/* preconnect-core 1.6.0 sha256:cb0d8c2813291894a550ab8e968d5661f0e64132944348c294526f448508a2b5 */
+/* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all five modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
    Never define $ or esc here: every app has its own. */
@@ -144,4 +144,10 @@ function pcInstallCSS(){if(typeof document==='undefined'||!document.head||!docum
   +'.pc-table{width:100%;border-collapse:collapse;font-size:15px}.pc-table td{padding:8px 0;border-top:1px solid var(--line,#2a2f37);vertical-align:top}.pc-table tr:first-child td{border-top:0}.pc-table td.l{color:var(--soft,#aab2bd)}.pc-table td:last-child{text-align:right;font-family:"Saira Condensed","Barlow Condensed","Arial Narrow",sans-serif;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}'
   +'.pc-compare{font-size:14px;color:var(--soft,#aab2bd);margin:0 0 8px}.pc-kicker{font-size:15px;line-height:1.45;margin:0 0 10px}.pc-feedback{margin:0;padding-left:18px;font-size:15px;line-height:1.45}.pc-clean{font-size:15px;color:var(--soft,#aab2bd);margin:8px 0 0}.pc-ok{color:#7fe3a4}.pc-miss{color:#ffc23d}.pc-detail{color:var(--soft,#aab2bd)}';
   document.head.appendChild(st);}
+/* CSV cells (final sweep, milestone 1). A spreadsheet runs a cell that starts with = + - @ (or a tab or return) as a
+   formula, so a typed name like =HYPERLINK(...) would execute when a department opens the record. Such cells get a
+   leading apostrophe (the spreadsheet shows it as text); quotes are doubled; every cell is quoted. Every CSV writer
+   on the platform goes through pcCsv. */
+function pcCsvCell(v){v=v===undefined||v===null?'':String(v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"';}
+function pcCsv(rows){return rows.map(r=>r.map(pcCsvCell).join(',')).join('\n');}
 pcInstallCSS();

@@ -1,5 +1,5 @@
 // Bump CACHE when you upload a new version so phones pick it up.
-const CACHE = 'charge-the-line-v2.19.1';
+const CACHE = 'charge-the-line-v2.19.2';
 const CORE = ['index.html', 'manifest.json', 'icon-192.png', 'icon-512.png', 'fonts/atkinson-hyperlegible-latin-400-normal.woff2', 'fonts/atkinson-hyperlegible-latin-700-normal.woff2', 'fonts/saira-condensed-latin-500-normal.woff2', 'fonts/saira-condensed-latin-600-normal.woff2', 'fonts/saira-condensed-latin-700-normal.woff2', 'preconnect-core.js'];
 // How long to wait for the network before serving the saved copy. Airplane mode fails at once; one bar
 // of signal can hang for a minute, and the whole app is already on the phone.
