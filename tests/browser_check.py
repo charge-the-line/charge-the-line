@@ -5,8 +5,9 @@ Usage:  python3 tests/browser_check.py"""
 import re, pathlib, sys
 from playwright.sync_api import sync_playwright
 URL = (pathlib.Path(__file__).resolve().parent.parent / 'index.html').as_uri()
-OVER = "(()=>{let m=0;document.querySelectorAll('body *').forEach(e=>{if(e.offsetParent===null)return;const r=e.getBoundingClientRect();m=Math.max(m,r.right-window.innerWidth);});return Math.round(m);})()"
-SMALL = "(()=>{let n=0;document.querySelectorAll('button').forEach(e=>{if(e.offsetParent===null)return;const r=e.getBoundingClientRect();if(r.width<2||r.height<2||r.bottom<0||r.top>innerHeight)return;if(r.height<44)n++;});return n;})()"
+OVER = "(()=>{let m=0;const vis=e=>e.checkVisibility?e.checkVisibility({visibilityProperty:true}):e.offsetParent!==null;document.querySelectorAll('body *').forEach(e=>{if(!vis(e))return;const r=e.getBoundingClientRect();if(r.width<1||r.height<1)return;m=Math.max(m,r.right-window.innerWidth);});return Math.round(m);})()"   # fixed elements count too (the hub header slipped past offsetParent)
+TEXT = "(()=>{let n=0;const vis=e=>e.checkVisibility?e.checkVisibility({visibilityProperty:true}):e.offsetParent!==null;document.querySelectorAll('body *').forEach(e=>{if(e.closest('svg')||!vis(e))return;const t=[...e.childNodes].filter(x=>x.nodeType===3).map(x=>x.textContent).join(' ').replace(/\\s+/g,' ').trim();if(t.length<2)return;const r=e.getBoundingClientRect();if(r.width<1||r.height<1)return;const fs=parseFloat(getComputedStyle(e).fontSize),w=t.split(' ').filter(x=>/[A-Za-z0-9]/.test(x)).length;if(fs<(w>=6?15:13)-.01)n++;});return n;})()"   # the text floor: 15 px for anything read as a sentence (six words or more), 13 px for captions; SVG numerals exempt
+SMALL = "(()=>{let n=0;const vis=e=>e.checkVisibility?e.checkVisibility({visibilityProperty:true}):e.offsetParent!==null;document.querySelectorAll('button').forEach(e=>{if(!vis(e))return;const r=e.getBoundingClientRect();if(r.width<2||r.height<2||r.bottom<0||r.top>innerHeight)return;if(r.height<44||r.width<44)n++;});return n+100*(()=>{let n=0;const vis=e=>e.checkVisibility?e.checkVisibility({visibilityProperty:true}):e.offsetParent!==null;document.querySelectorAll('body *').forEach(e=>{if(e.closest('svg')||!vis(e))return;const t=[...e.childNodes].filter(x=>x.nodeType===3).map(x=>x.textContent).join(' ').replace(/\\s+/g,' ').trim();if(t.length<2)return;const r=e.getBoundingClientRect();if(r.width<1||r.height<1)return;const fs=parseFloat(getComputedStyle(e).fontSize),w=t.split(' ').filter(x=>/[A-Za-z0-9]/.test(x)).length;if(fs<(w>=6?15:13)-.01)n++;});return n;})();})()"   # buttons under 44 px tall or wide, plus 100 per text under the floor
 errs, rows = [], []
 def play_real(pg, w, idx, variant, label, need):   # a scenario played to the end with real taps: decisions by visible text, valve, governor, supply and panel buttons, the fast-forward button
     pg.goto(URL); pg.wait_for_timeout(250)
@@ -161,6 +162,6 @@ with sync_playwright() as p:
     rows.append((844, 'settings land', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL))))
     pg.close()
     b.close()
-for r in rows: print(f"{'PASS' if r[2] <= 1 else 'FAIL'}  {r[0]}px  {r[1]:<30} overflow {r[2]%1000}px · buttons under 44px: {r[2]//1000}")
+for r in rows: print(f"{'PASS' if r[2] <= 1 else 'FAIL'}  {r[0]}px  {r[1]:<30} overflow {r[2]%1000}px · buttons under 44px: {(r[2]//1000)%100} · text under floor: {r[2]//100000}")
 print('JavaScript errors:', errs or 'none')
 sys.exit(1 if [r for r in rows if r[2] > 1] or errs else 0)

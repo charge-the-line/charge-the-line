@@ -69,7 +69,7 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 - Fonts self-hosted in `fonts/`, no Google reference, every file in the cache list.
 - Screen wake lock: requested when a mission starts (`brief-go`), released at the menu.
 - Intro and menu version text equal `APP_VERSION`.
-- Browser check: any visible button under 44 px tall fails the screen.
+- Browser check: any visible button under 44 px tall or wide fails the screen, so does any text under the floor (15 px for a sentence, 13 px for a caption) and anything past the right edge, fixed elements included.
 
 ## Milestone 3 checks (added October 2026)
 

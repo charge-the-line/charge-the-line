@@ -59,16 +59,17 @@ button{min-height:48px}
   .brand{font-family:"Saira Condensed",sans-serif;font-weight:700;letter-spacing:2px;font-size:14px;color:var(--yellow);padding:2px 2px 0}
   .strip{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:4px 2px 10px}
   .strip h1{font-size:24px;font-weight:600;margin:0} .strip .meta{font-size:15px;color:var(--muted)} .strip .meta b{color:var(--text);font-weight:500}
+  .nowbar{position:sticky;top:0;z-index:5;background:#15181c;border:1px solid var(--chrome);border-left:4px solid var(--yellow);border-radius:6px;padding:7px 10px;margin:0 0 10px;font-size:15px;line-height:1.3;display:grid;gap:2px;box-shadow:0 4px 12px rgba(0,0,0,.5)} .nowbar b{font-weight:600} .nowbar span{color:var(--muted)} .nowbar span.bad{color:#ff9d8f} .nowbar span.good{color:#8fe3ad} .nowbar span:empty{display:none}
   .panel{background:linear-gradient(#2a2e34,#1f2226);border:2px solid var(--chrome);border-radius:8px;padding:10px;box-shadow:inset 0 0 0 1px #000,0 6px 20px rgba(0,0,0,.5)}
   .gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
   .gauge{background:var(--panel);border-radius:8px;padding:6px 3px 4px;text-align:center;border:1px solid var(--panel-edge)}
-  .gauge svg{width:100%;height:auto;display:block} .gauge .lab{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.1}
+  .gauge svg{width:100%;height:auto;display:block} .gauge .lab{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.1}
   .gauge .val{font-family:"Saira Condensed";font-size:20px;font-weight:600;line-height:1}
   .row2{display:grid;grid-template-columns:1fr 64px;gap:8px;margin-bottom:10px}
   .gov{background:#0d1a2a;border:2px solid var(--blue);border-radius:8px;padding:8px}
   .gov .readouts{display:flex;justify-content:space-around;margin-bottom:6px} .gov .ro{text-align:center}
   .gov .digits{font-family:"Saira Condensed";font-size:34px;font-weight:700;color:#ff5d3a;letter-spacing:1px;line-height:1;text-shadow:0 0 8px rgba(255,93,58,.5)}
-  .gov .lab{font-size:13px;color:#7fa7d6} .gov .btns{display:grid;grid-template-columns:repeat(5,1fr);gap:4px} .gov .btns button{padding:8px 4px;font-size:15px}
+  .gov .lab{font-size:13px;color:#7fa7d6} .gov .btns{display:grid;grid-template-columns:repeat(6,1fr);gap:4px} .gov .btns button{padding:8px 4px;font-size:15px;min-width:0} .gov .btns button:nth-child(-n+3){grid-column:span 2} .gov .btns button:nth-child(n+4){grid-column:span 3;font-size:20px}
   .tank{background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;display:flex;flex-direction:column;align-items:center;padding:6px 4px}
   .tank .bar{width:22px;height:110px;background:#0e0f11;border-radius:4px;position:relative;overflow:hidden;border:1px solid #000}
   .tank .fill{position:absolute;bottom:0;left:0;right:0;background:var(--blue);transition:height .3s} .tank .lab{font-size:13px;color:var(--muted);text-align:center;margin-top:4px;line-height:1.1}
@@ -77,7 +78,7 @@ button{min-height:48px}
   .sw{flex-wrap:wrap;row-gap:6px}
   .sw .lab{font-size:15px;line-height:1.15;min-width:0;flex:1 1 84px}
   .sw>div{flex:0 0 auto;margin-left:auto} .sw .lamp{width:12px;height:12px;border-radius:50%;background:#3a1010;border:1px solid #000;margin-left:8px;flex:0 0 auto}
-  .sw .lamp.on{background:#38d66a;box-shadow:0 0 8px #38d66a} .sw .lamp.amber{background:#f0b323;box-shadow:0 0 8px #f0b323} .sw button{padding:6px 10px;font-size:15px}
+  .sw .lamp.on{background:#38d66a;box-shadow:0 0 8px #38d66a} .sw .lamp.amber{background:#f0b323;box-shadow:0 0 8px #f0b323} .sw button{padding:6px 10px;font-size:15px;min-width:48px}
   .miv{background:#1b1e22;border:1px solid var(--panel-edge);border-radius:8px;padding:8px 10px;margin-bottom:10px}
   .miv h3{margin:0 0 4px;font-size:16px;font-weight:600;color:#7fc0ff} .miv .r{display:flex;gap:6px;align-items:center}
   .miv .r button{padding:8px 10px;font-size:15px} .miv .trk{flex:1;height:8px;background:#0e0f11;border-radius:4px;overflow:hidden} .miv .trk div{height:100%;background:#5aa9ff;width:0}
@@ -88,13 +89,13 @@ button{min-height:48px}
   .valve{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;padding:8px 10px;margin-bottom:8px}
   .valve.burst{border-color:#ff5d3a;box-shadow:0 0 0 1px #ff5d3a}
   .valve .top{display:flex;justify-content:space-between;align-items:baseline} .valve .name{font-size:15px}
-  .valve .tag{font-size:13px;color:#1a1c20;background:var(--yellow);border-radius:3px;padding:1px 6px;font-weight:500}
+  .valve .tag{font-size:15px;color:#1a1c20;background:var(--yellow);border-radius:3px;padding:1px 6px;font-weight:500}
   .valve .tag.red{background:var(--red);color:#fff} .valve .tag.blue{background:#5aa9ff} .valve .tag.grn{background:#8fd39a} .valve .tag.org{background:#f19a4a}
   .valve .pct{font-family:"Saira Condensed";font-size:18px;color:var(--muted)}
   .valve .track{height:8px;background:#0e0f11;border-radius:4px;overflow:hidden;margin-top:6px} .valve .open{height:100%;background:var(--red);width:0;transition:width .15s}
   .valve .acts{display:flex;gap:4px;grid-column:1/-1} .valve .acts button{flex:1;padding:8px 4px;font-size:15px}
   .card{background:var(--panel);border:1px solid var(--panel-edge);border-radius:8px;padding:12px;margin-top:12px}
-  .card h2{margin:0 0 8px;font-size:22px;font-weight:600} .card .jpr{font-size:14px;color:var(--muted);margin:0 0 8px;line-height:1.35}
+  .card h2{margin:0 0 8px;font-size:22px;font-weight:600} .card .jpr{font-size:15px;color:var(--muted);margin:0 0 8px;line-height:1.4}
   .steps{list-style:none;padding:0;margin:0} .steps li{display:flex;gap:10px;padding:6px 0;font-size:15px;border-top:1px solid #33373e} .steps li:first-child{border-top:0}
   .steps .box{width:18px;height:18px;border:2px solid var(--muted);border-radius:4px;flex:0 0 auto;margin-top:1px}
   .steps li.done .box{background:var(--green);border-color:var(--green)} .steps li.done{color:var(--muted);text-decoration:line-through}
@@ -110,9 +111,9 @@ button{min-height:48px}
   #menu h3{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:2.5px;text-transform:uppercase;color:var(--soft);margin:18px 0 8px;display:flex;align-items:center;gap:10px}#menu h3:after{content:"";flex:1;height:1px;background:var(--line)}
   .scen b{display:block;font-family:"Saira Condensed";font-size:20px;font-weight:600;margin-bottom:2px} .scen span{font-size:15px;color:var(--muted)}
   .scen .due{position:static;display:table;margin-top:6px;font-size:13px;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--yellow);color:#1a1c20}
-  .scen .ok{background:var(--green);color:#fff}
+  .scen .ok{background:var(--green);color:#fff} .scen .dim{background:#2a2e34;color:var(--muted);border:1px solid #3a3f48}
   .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 12px} .tiers button{padding:8px 4px;font-size:15px}
-  .tierhelp{font-size:14px;color:var(--muted);margin:0 0 10px;line-height:1.4}
+  .tierhelp{font-size:15px;color:var(--muted);margin:0 0 10px;line-height:1.4}
   .stat{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #33373e;font-size:15px} .stat:first-child{border-top:0} .stat span{color:var(--muted)}
   .math .prob{font-size:17px;line-height:1.5;margin-bottom:12px} .math .prob b{color:var(--yellow);font-weight:500}
   .math .work{font-size:15px;color:var(--muted);line-height:1.5;margin-top:10px;white-space:pre-line}
@@ -131,7 +132,7 @@ button{min-height:48px}
   .fab{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:9;border-radius:24px;padding:12px 16px;background:#3b2a6b;border-color:#7a5cff;color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4)}
   #b-inst.on,#b-std.on{background:#3b2a6b;border-color:#7a5cff;color:#fff}
   .gcard h2{margin-bottom:2px}
-  .gcard .gsub{font-size:14px;color:var(--muted);margin:0 0 12px}
+  .gcard .gsub{font-size:15px;color:var(--muted);margin:0 0 12px;line-height:1.4}
   .gsec{margin:0 0 12px}.gsec b{display:block;font-family:"Saira Condensed",sans-serif;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);margin-bottom:2px}
   .gsec p{margin:0;font-size:15px;line-height:1.45;color:#dcdcd6}
   .gsec.rig{background:#13202f;border:1px solid #2f6fb7;border-radius:8px;padding:8px 10px}.gsec.rig b{color:#7fc0ff}
@@ -154,6 +155,7 @@ button{min-height:48px}
   <div class="meta" style="text-align:right"><button id="b-guide" class="guidebtn">Panel guide</button><div style="margin-top:4px">Score <b id="score">100</b> &nbsp; <span id="clock">0:00</span></div></div>
 </div>
 
+<div class="nowbar hidden" id="nowbar" aria-live="polite"><b id="now-step"></b><span id="now-radio"></span></div>
 <div class="panel" aria-label="Pump panel">
   <div class="gauges">
     <div class="gauge" data-g="master"><svg viewBox="0 0 100 62" id="g-master"></svg><div class="val" id="v-master">0</div><div class="lab">Master discharge</div></div>
@@ -191,24 +193,24 @@ button{min-height:48px}
   </div>
   <div class="miv hidden" id="xferp" data-g="transfer">
     <h3>Transfer valve — two-stage pump</h3>
-    <div class="r"><button id="x-vol">Volume</button><button id="x-pres">Pressure</button><span id="x-txt" style="font-size:14px;color:var(--muted);margin-left:6px"></span></div>
+    <div class="r"><button id="x-vol">Volume</button><button id="x-pres">Pressure</button><span id="x-txt" style="font-size:15px;color:var(--muted);margin-left:6px"></span></div>
   </div>
   <div class="miv hidden" id="pondp" data-g="pond">
     <h3>Portable pond · dump site</h3>
     <div class="r"><div class="trk" style="height:14px"><div id="pondbar" style="background:#5aa9ff"></div></div><span id="pondgal" style="font-family:'Saira Condensed';font-size:16px;min-width:92px;text-align:right">0 gal</span></div>
-    <div id="pondtxt" style="font-size:14px;color:var(--muted);margin-top:6px"></div>
-    <div id="coldtxt" style="font-size:14px;color:#7fc0ff;margin-top:2px"></div>
+    <div id="pondtxt" style="font-size:15px;color:var(--muted);margin-top:6px"></div>
+    <div id="coldtxt" style="font-size:15px;color:#7fc0ff;margin-top:2px"></div>
   </div>
   <div class="miv hidden" id="evp" data-g="evbatt">
     <h3>The SUV's battery</h3>
     <div id="ev-st" style="font-size:16px"></div>
-    <div id="ev-tank" style="font-size:14px;color:var(--muted);margin-top:4px"></div>
+    <div id="ev-tank" style="font-size:15px;color:var(--muted);margin-top:4px"></div>
     <button id="ev-cam" style="width:100%;margin-top:6px">Thermal camera on the pack</button>
   </div>
   <div class="miv hidden" id="fillp" data-g="dryhyd">
     <h3>Fill site · dry hydrant</h3>
     <div id="fill-st" style="font-size:16px"></div>
-    <div id="fill-next" style="font-size:14px;color:var(--muted);margin-top:4px"></div>
+    <div id="fill-next" style="font-size:15px;color:var(--muted);margin-top:4px"></div>
     <div class="r" style="margin-top:6px"><button id="dh-ice" class="hidden" style="flex:1">Clear the ice off the head</button><button id="dh-flush" class="hidden" style="flex:1">Back-flush the dry hydrant</button></div>
   </div>
   <div class="miv hidden" id="depthp" data-g="depth">
@@ -219,7 +221,7 @@ button{min-height:48px}
         <div class="r" style="margin-bottom:6px"><button id="d-up">Raise</button><button id="d-dn">Lower</button><button id="d-clear">Clear strainer</button></div>
         <div style="font-size:13px;color:var(--muted)">Strainer debris</div>
         <div class="trk"><div id="clogbar" style="background:#c9a24a"></div></div>
-        <div id="d-txt" style="font-size:14px;color:var(--muted);margin-top:4px"></div>
+        <div id="d-txt" style="font-size:15px;color:var(--muted);margin-top:4px"></div>
       </div>
     </div>
   </div>
@@ -228,7 +230,7 @@ button{min-height:48px}
     <div class="foamrow"><button id="e-in">Put eductor in line</button><button id="e-pick">Pickup tube in pail</button></div>
     <div class="foamrow" style="margin-top:6px"><span style="font-size:14px;color:var(--muted)">Metering</span><button data-ep="1">1%</button><button data-ep="3">3%</button><button data-ep="6">6%</button><button id="e-rerig">Re-rig foam line</button></div>
     <div class="foamrow" style="margin-top:6px"><span style="font-size:14px;color:var(--muted)">Concentrate</span><div class="foambar"><div id="concfill" style="width:100%"></div></div><span id="concgal" style="font-size:14px">15 gal</span></div>
-    <div id="e-txt" style="font-size:14px;margin-top:6px;color:var(--muted)"></div>
+    <div id="e-txt" style="font-size:15px;margin-top:6px;color:var(--muted)"></div>
   </div>
   <div class="sub hidden" id="foam" data-g="foam">
     <h3>Foam system</h3>
@@ -254,7 +256,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:14px;color:var(--muted)">Version 2.19.4 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:15px;color:var(--muted)">Version 2.19.5 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -268,8 +270,8 @@ button{min-height:48px}
 </div></div>
 
 <div class="overlay hidden" id="menu"><div class="box">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-block;font-size:14px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="font-size:14px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.19.4</span></h1></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:15px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
+  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.19.5</span></h1></div>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div class="card"><div class="small">What this is</div><p style="margin:4px 0 0;font-size:15px;line-height:1.45">Pump operations on Engine 10-2: fourteen scenarios including six Real Saves from published accounts, a pump lesson, quick drills, pump math and a guide to every control on the panel. Guided shows every step, Recall makes you remember it, Chaos breaks things. <b>Your SOPs and your rig come first.</b></p></div>
   <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
@@ -298,7 +300,7 @@ button{min-height:48px}
   <h2>Progress</h2>
   <input id="uname" placeholder="Your name (for the training record)" style="margin-bottom:10px">
   <div id="proglist"></div>
-  <p style="font-size:14px;color:var(--muted);margin-top:10px">Spacing: clear a scenario at 70+ and it's due again in 1, 3, 7, 14, then 30 days. A miss resets the interval. Saved on this phone only.</p>
+  <p style="font-size:15px;color:var(--muted);margin-top:10px">Spacing: clear a scenario at 70+ and it's due again in 1, 3, 7, 14, then 30 days. A miss resets the interval. Saved on this phone only.</p>
   <div style="display:flex;gap:8px"><button id="b-export" style="flex:1">Download training record (CSV)</button><button id="b-progclose">Close</button></div>
 </div></div>
 
@@ -315,7 +317,7 @@ button{min-height:48px}
   <span class="tag-real">BASED ON REAL EVENTS</span>
   <h2 id="case-t"></h2>
   <div id="case-body"></div>
-  <p id="case-src" style="font-size:14px;color:var(--muted)"></p>
+  <p id="case-src" style="font-size:15px;color:var(--muted)"></p>
   <div style="display:flex;gap:8px"><button class="warn" id="case-go" style="flex:1;font-size:18px">Begin</button><button id="case-back">Back</button></div>
 </div></div>
 <div class="overlay hidden" id="decov"><div class="box">
@@ -325,7 +327,7 @@ button{min-height:48px}
   <div id="dec-fb" class="hidden"><p id="dec-res"></p><p id="dec-real" style="font-size:15px"></p><button class="warn" id="dec-go" style="width:100%;font-size:18px">Continue</button></div>
 </div></div>
 <div class="overlay hidden" id="lessonov" style="z-index:12"><div class="box slide" id="lesson-box"></div></div>
-<div class="overlay hidden" id="quizov" style="z-index:12"><div class="box"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 id="qz-title" style="margin:0">Drills</h2><span id="qz-meta" style="font-size:14px;color:var(--muted)"></span></div><div id="qz-body" style="margin-top:10px"></div><div id="qz-foot" style="margin-top:10px"></div></div></div>
+<div class="overlay hidden" id="quizov" style="z-index:12"><div class="box"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 id="qz-title" style="margin:0">Drills</h2><span id="qz-meta" style="font-size:15px;color:var(--muted)"></span></div><div id="qz-body" style="margin-top:10px"></div><div id="qz-foot" style="margin-top:10px"></div></div></div>
 <div class="overlay hidden" id="ldone" style="z-index:13"><div class="box"><h2>Lesson complete</h2><div class="big" id="ld-score"></div><div id="ld-body"></div><div style="display:flex;gap:8px;margin-top:10px"><button id="ld-again" style="flex:1">Again</button><button class="warn" id="ld-menu" style="flex:1">Menu</button></div></div></div>
 <div class="overlay hidden" id="briefov"><div class="box">
   <span class="tag-real" style="background:#2f6fb7;color:#fff">MISSION BRIEFING</span>
@@ -333,7 +335,7 @@ button{min-height:48px}
   <p id="brief-intro" style="font-size:15px"></p>
   <div style="font-family:'Saira Condensed';font-size:16px;letter-spacing:1px;color:var(--yellow)">CONTROLS YOU'LL USE — TAP TO LEARN</div>
   <div class="chips" id="brief-chips"></div>
-  <p id="brief-tier" style="font-size:14px;color:var(--muted)"></p>
+  <p id="brief-tier" style="font-size:15px;color:var(--muted)"></p>
   <div style="display:flex;gap:8px"><button class="warn" id="brief-go" style="flex:1;font-size:18px">Start mission</button><button id="brief-back">Back to menu</button></div>
 </div></div>
 <div class="overlay hidden" id="guideov"><div class="box gcard">
@@ -411,7 +413,7 @@ const VALVES={
   booster:{n:'Booster reel',tag:'1" reel',cls:'',gpm:40}
 };
 const S={};const $=id=>document.getElementById(id);
-function radio(who,msg,cls=''){RADIO_N++;const cc=(typeof CAMP!=='undefined')&&CAMP[S.camp];if(cc&&cc.noise&&!S.earpiece&&S.rpm>1300&&!['Engineer','Guide','Officer'].includes(who)){msg='▒▒ unreadable over the pump ▒▒';cls='bad';if(TIER===0&&!S.noiseHint){S.noiseHint=true;setTimeout(()=>radio('Guide','You can\'t make out crew traffic over the pump. That is the real problem at the heart of this fire — keep playing.'),0);}}if(cls==='bad')pcFx('bad');else if(cls==='good')pcCue('good');const r=$('radio');const d=document.createElement('div');d.innerHTML=`<span class="who">${who}:</span> <span class="${cls}">${msg}</span>`;r.prepend(d);while(r.children.length>16)r.lastChild.remove();}
+function radio(who,msg,cls=''){RADIO_N++;const cc=(typeof CAMP!=='undefined')&&CAMP[S.camp];if(cc&&cc.noise&&!S.earpiece&&S.rpm>1300&&!['Engineer','Guide','Officer'].includes(who)){msg='▒▒ unreadable over the pump ▒▒';cls='bad';if(TIER===0&&!S.noiseHint){S.noiseHint=true;setTimeout(()=>radio('Guide','You can\'t make out crew traffic over the pump. That is the real problem at the heart of this fire — keep playing.'),0);}}if(cls==='bad')pcFx('bad');else if(cls==='good')pcCue('good');const r=$('radio');const d=document.createElement('div');d.innerHTML=`<span class="who">${who}:</span> <span class="${cls}">${msg}</span>`;r.prepend(d);while(r.children.length>16)r.lastChild.remove();{const nr=$('now-radio');if(nr&&S.active){nr.textContent=`${who}: ${msg}`;nr.className=cls;}}}
 function ding(pts,why){S.score=Math.max(0,S.score-pts);S.incidents.push(why);radio('Engineer',`${why} (−${pts})`,'bad');if(TIER===0&&typeof incidentKey==='function'){const k=incidentKey(why);if(k)radio('Guide',`Why it matters: Panel guide → ${GUIDE[k].name}`);}}
 function freshState(){
   Object.assign(S,{pump:false,ttp:true,supply:false,hydrant:false,hydCap:60,bled:false,fill:false,fdcLine:false,relayLine:false,
@@ -610,7 +612,13 @@ function applyFault(f){const m=CAMP[S.camp].missions[S.mission];S.fault=f;S.faul
 
 /* ===== render ===== */
 function intakeVal(){const sup=supplied();if(CAMP[S.camp].draft&&S.vac>0)return -S.vac;if(sup.hyd)return Math.max(0,CAMP[S.camp].def&&S.cavOn?resDemand():residual());return 0;}
-function render(){
+/* D-M8 (final sweep, milestone 4): the step list and the radio sit two screens below the panel on a phone, so a sticky strip under the header
+   keeps the current step and the crew's last line in view. Text only, updated in place; nothing is rebuilt. */
+function nowUpd(){const bar=$('nowbar');if(!bar)return;const on=!!(S.active&&!S.briefing&&CAMP[S.camp]&&$('menu').classList.contains('hidden'));bar.classList.toggle('hidden',!on);if(!on)return;
+  const j=stepsDone.findIndex(x=>!x);const m=CAMP[S.camp].missions[S.mission];let t;
+  if(j<0||!m)t='All steps done';else if(TIER===0)t=`Step ${j+1} of ${m.steps.length}: ${m.steps[j].t.replace(/<[^>]+>/g,'')}`;else t=`Checklist hidden — step ${j+1} of ${m.steps.length}`;
+  const el=$('now-step');if(el.textContent!==t)el.textContent=t;}
+function render(){nowUpd();
   const aux=S.valves[CAMP[S.camp].aux];
   drawGauge($('g-master'),S.psi,0,400,300);const gA=S.valves[CAMP[S.camp].gA||'front'];drawGauge($('g-front'),linePsi(gA),0,400,300);drawGauge($('g-aux'),linePsi(aux),0,400,300);
   const iv=intakeVal();drawGauge($('g-intake'),iv,-30,100,100);
@@ -1075,11 +1083,11 @@ function finish(){keepAwake(false);pcFx('done');
   $('done-title').textContent=m.title+(last?' — scenario complete':' — complete');countUp($('done-score'),S.score,600);
   const learnKeys=[...new Set(S.incidents.map(incidentKey).filter(Boolean))];
   const prev=(load().log||[]).filter(r=>+r.i===S.camp);const compare=last?pcBestPrev(prev.map(r=>({d:r.d,score:r.score}))):null;
-  let extra='';if(c.real&&last){const g=S.decisions.filter(d=>d.r==='good').length;extra=`<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:14px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
+  let extra='';if(c.real&&last){const g=S.decisions.filter(d=>d.r==='good').length;extra=`<p><b>Your calls:</b> ${g} of ${S.decisions.length} matched what crews did.</p><p><b>What really happened.</b> ${c.outcome}</p><p style="font-size:15px;color:var(--muted)">${c.source}${c.url?` <a href="${c.url}" target="_blank" rel="noopener" style="color:#7fc0ff">Read the account</a>`:''}</p>`;}
   if(c.fillSite&&last&&S.turns.length){const avg=S.turns.reduce((a,b)=>a+b,0)/S.turns.length,tgt=c.tkCap/800+1.25;extra+=`<p><b>Turn times:</b> ${S.turns.map(t=>mss(t)).join(', ')} min; average ${mss(avg)} against a target of ${mss(tgt)} (modeled: the fill at about 800 gpm plus a minute and a quarter to hook up and pull out).</p>`;}
   if(c.ev&&last)extra+=`<p><b>The battery:</b> ${S.rekN?`it rekindled ${S.rekN===1?'once':S.rekN+' times'} when the water came off it.`:'it never came back while you had it.'} ${S.tankerReq===null?'':''}</p><p><b>From Guide 147 (ERG2024), UN3556:</b> large amounts of water, sprayed directly onto the battery if possible; check the manufacturer's emergency response guide before disabling the vehicle; never cut high-voltage or medium-voltage cabling; never pierce, cut, pry or dismantle to reach the battery; reignition can come at any point after the fire is out, up to weeks later, so monitor it with a thermal camera. Gallon figures in this scenario are modeled.</p><p>The same battery from the hazmat side: <a href="../upwind/?scn=liion&amp;v=A" style="color:#7fc0ff">Upwind's lithium-ion battery fire, Layout A</a>.</p>`;
   if(S.injects&&S.injects.length)extra=`<p><b>Instructor injects:</b> ${esc(S.injects.join(', '))}.</p>`+extra;
-  if(S.vtext&&last)extra=`<p style="font-size:14px;color:var(--muted)">Layout ${S.variant}: ${esc(S.vtext)}</p>`+extra;
+  if(S.vtext&&last)extra=`<p style="font-size:15px;color:var(--muted)">Layout ${S.variant}: ${esc(S.vtext)}</p>`+extra;
   $('done-body').innerHTML=pcDebriefBody({score:S.score,compare,feedback:S.incidents,lessons:learnKeys.map(k=>({k,name:GUIDE[k].name})),steps:m.steps.map((st,j)=>({name:st.t,ok:!!stepsDone[j],missed:!stepsDone[j]})),extra});
   $('b-next').textContent=last?'Back to menu':'Next mission';
   if(last){const pr=load(),ps=pr.scen&&pr.scen[S.camp];pca('end',`${['guided','recall','chaos'][TIER]}/${pca('att',(ps?ps.runs:0)+1)}/${pca('bkt',S.score)}`);recordClear(S.camp,S.score);}
@@ -1098,11 +1106,11 @@ function save(p){try{localStorage.setItem(KEY,JSON.stringify(p));}catch(e){}}
 function recordClear(i,score){const p=load();const s=p.scen[i]||{level:0,best:0,runs:0,last:null,tier:0};s.runs++;s.best=Math.max(s.best,score);s.last=new Date().toISOString();s.tier=Math.max(s.tier,TIER);s.level=score>=70?Math.min(INT.length-1,s.level+1):0;p.scen[i]=s;p.log=(p.log||[]).concat([pcDrillStamp({i,score,tier:TIER,d:new Date().toISOString(),v:S.variant||undefined,inst:(S.injects&&S.injects.length)?1:undefined})]).slice(-500);save(p);}
 /* due-again spacing comes from the shared core (pcSpacing over this scenario's runs), the same rule the home page uses; scen.level is kept for older records */
 function dueInfo(i){const p=load();const runs=(p.log||[]).filter(r=>+r.i===i).map(r=>({d:r.d,score:r.score}));const s=p.scen[i];if(!runs.length&&s&&s.last)runs.push({d:s.last,score:s.best});const sp=pcSpacing(runs);
-  if(sp.status==='never')return {txt:'Not yet cleared',due:true};if(sp.status==='missed')return {txt:'Try again',due:true};if(sp.status==='due')return {txt:'Due for review',due:true};return {txt:`Next in ${Math.max(1,Math.ceil(sp.dueIn))} d`,due:false};}
+  if(sp.status==='never')return {txt:'Not yet cleared',due:true,cls:'dim'};if(sp.status==='missed')return {txt:'Try again',due:true};if(sp.status==='due')return {txt:'Due for review',due:true};return {txt:`Next in ${Math.max(1,Math.ceil(sp.dueIn))} d`,due:false};}
 function showMenu(){keepAwake(false);exitLearn(false);$('briefov').classList.add('hidden');S.running=false;$('b-resume').classList.toggle('hidden',!S.active||!!DEC);$('tierhelp').textContent=TIERTXT[TIER];$('menu').querySelectorAll('[data-tier]').forEach(b=>b.classList.toggle('on',+b.dataset.tier===TIER));
-  const card=(c,i)=>{const d=dueInfo(i);return `<button class="scen" data-i="${i}"><b>${c.name}</b><span>${c.desc}</span><span class="due ${d.due?'':'ok'}">${d.txt}</span></button>`;};
+  const card=(c,i)=>{const d=dueInfo(i);return `<button class="scen" data-i="${i}"><b>${c.name}</b><span>${c.desc}</span><span class="due ${d.cls||(d.due?'':'ok')}">${d.txt}</span></button>`;};
   $('scenlist').innerHTML=CAMP.map((c,i)=>c.real?'':card(c,i)).join('')+(CAMP.some(c=>c.real)?`<h3 style="margin:16px 0 6px;font-size:18px">Real Saves <span style="font-size:14px;color:var(--muted);font-weight:400">· based on real events</span></h3>`+CAMP.map((c,i)=>c.real?card(c,i):'').join(''):'');
-  $('menu').classList.remove('hidden');instSync();}
+  $('menu').classList.remove('hidden');$('menu').scrollTop=0;instSync();nowUpd();}
 $('menu').querySelectorAll('[data-tier]').forEach(b=>b.onclick=()=>{TIER=+b.dataset.tier;showMenu();});
 $('scenlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('menu').classList.add('hidden');const i=+b.dataset.i;if(CAMP[i].real)showCase(i);else loadCampaign(i);};
 $('b-start').onclick=()=>{$('intro').classList.add('hidden');const p=load();if(!p.seenIntro){p.seenIntro=true;save(p);}showMenu();};
@@ -1146,7 +1154,7 @@ $('m-exit').onclick=mathClose;
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.19.4';
+const APP_VERSION='2.19.5';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1406,7 +1414,7 @@ CAMP.push({name:'One Meridian Plaza — Philadelphia, 1991',real:true,omp:true,p
  story:`<p>February 23, 1991. At 8:23 p.m. a smoke detector activated on the 22nd floor of One Meridian Plaza, a 38-story office building in Center City Philadelphia. Building staff did not call the fire department; the first call came from a passerby at a pay phone. The first alarm was dispatched at 8:27. Engine 43 arrived at 8:31 with fire showing from one window, and a second alarm went out at 8:33. Linseed oil-soaked rags left by a contractor in a vacant office had ignited.</p><p>Shortly after the attack team reached the 11th floor, the building lost all electrical power. The emergency generator failed, and the building's two electric fire pumps lost power. The standpipes now depended on the fire department's engines at the connections.</p><p>You are the pump operator on an engine at the fire department connection. Your pressure is the only thing pushing water up 22 floors — and at every outlet a pressure-reducing valve stands between your pump and the crews.</p><p style="font-size:15px;color:var(--muted)">The engine, its pump and every pressure are modeled; the times, numbers and quotations follow the U.S. Fire Administration's technical report. Chaos plays like Recall.</p>`,
  source:'Routley, Jennings and Chubb, "High-rise Office Building Fire, One Meridian Plaza, Philadelphia, Pennsylvania," USFA-TR-049, U.S. Fire Administration.',
  outcome:`Engines pumped into the fire department connections, but the report found the improperly set pressure-reducing valves "effectively prevented the increased pressure in the standpipes from being discharged through the valves." Near the fire floors, valves set at index 80 delivered 55 to 57 psi, about 40 to 45 psi at the nozzle; 65 psi needed an index of 88 to 91, and 100 psi an index of 150 to 158. The codes had assumed 2½-inch lines with straight-bore nozzles; the department used 1¾-inch hose with automatic fog nozzles needing 100 psi. A technician who could adjust the valves arrived several hours into the fire; later a sprinkler contractor adjusted them.</p><p>Three members of Engine 11, a captain and two firefighters, were sent up the center stair to ventilate at the roof (assignment estimated at 9:30 to 10:00 p.m.; the radio was not recorded). They radioed that they had left the stairway and were disoriented in heavy smoke on the 30th floor, asked to break a window, and then reported that the captain was down. A helicopter's searchlight found a broken window on the 28th floor at 1:17 a.m., and they were found just inside it at about 2:15 a.m. They had run out of air.</p><p>Crews stretched 5-inch lines up the stairs; the first, up the west stair to the 24th floor, was operating by about 2:15 a.m. A 12th alarm went out at 2:21 a.m. In all, 12 alarms brought 51 engine companies, 15 ladder companies, 11 specialized units and about 316 firefighters, with no mutual aid. Twenty-four firefighters were injured.</p><p>At 7:00 a.m., after about 11 hours, the incident commander ordered everyone out of the building: a structural engineer warned of a pancake collapse, three firefighters had been lost, and the fire was still advancing despite finally having pressure. The evacuation was complete by 7:30. The report calls it "the most courageous safety decision."</p><p>The fire was stopped on the fully sprinklered 30th floor by 10 sprinklers; the sprinklered floors included 30, 31, 34 and 35. Eight floors were consumed. It burned more than 19 hours and was declared under control at 3:01 p.m. on February 24. The report concludes the department faced "an essentially impossible situation and did a commendable job."</p><p>Afterward, a revision of NFPA 14, the standpipe standard, was approved in the fall of 1992 for the 1993 edition, and Philadelphia required sprinklers in all existing high-rise buildings by 1997.</p><p><b>In memory of Captain David P. Holcombe, Firefighter Phyllis McAllister and Firefighter James A. Chappell, Philadelphia Fire Department Engine 11.</b>`,
- valves:['rear3','rear2','front'],aux:'rear2',auxLabel:'Discharge 2 · 5" up the west stair',gA:'rear3',gALabel:'Discharge 3 · FDC',hydCap:60,heat:true,
+ valves:['rear3','rear2','front'],aux:'rear2',auxLabel:'Discharge 2 · 5" west stair',gA:'rear3',gALabel:'Discharge 3 · FDC',hydCap:60,heat:true,
  rig:{key:'omp',title:'Pumper at the FDC · modeled',tank:500,rated:1500,twoStage:true,xferStart:'volume',intakeTitle:'Intake gate (hydrant)'},
  valveNames:{rear3:['Discharge 3','3" to the standpipe FDC'],rear2:['Discharge 2','5" up the west stair'],front:['Discharge 1','crosslay']},valveGpm:{rear3:200,rear2:300},
  show:['sw-supply','sw-hyd','sw-bleed','miv','sw-fdc','sw-relay'],

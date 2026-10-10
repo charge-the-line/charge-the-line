@@ -38,6 +38,12 @@ if(want.includes('syntax')){try{new vm.Script(html.split('<script>')[1].split('<
    report('syntax','mission briefing has a way back to the menu',open&&els.briefov.classList.contains('hidden')&&!els.menu.classList.contains('hidden')&&api.S.briefing===false&&api.S.running===false);}
 {const cm=fs.readFileSync(path.join(__dirname,'..','CLAUDE.md'),'utf8'),rd=fs.readFileSync(path.join(__dirname,'..','README.txt'),'utf8');const cv=(cm.match(/\*\*Current version: ([\d.]+)/)||[])[1],av=(html.match(/APP_VERSION='([^']+)'/)||[])[1];
  report('syntax','the briefing names the shipped version and the README lists the core and the fonts (final sweep M3)',cv===av&&/preconnect-core\.js/.test(rd)&&/fonts\//.test(rd),`briefing ${cv}, app ${av}`);}
+{// final sweep M4 (layout and touch): the page's own CSS declares no font size under 13 px (the caption floor; sentences are 15 px, measured for real by browser_check.py), and the shared core carries the platform rules
+  const css=[...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map(m=>m[1]).join('\n');const low=[...css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)].map(m=>+m[1]).filter(v=>v<13);
+  const core=fs.readFileSync(path.join(__dirname,'..','preconnect-core.js'),'utf8');
+  report('syntax','no font size under 13 px in this page\'s CSS (final sweep M4)',low.length===0,low.length?`found ${low.join(', ')} px`:'all 13 px or more');
+  report('syntax','the shared core carries the milestone 4 rules: settings notes 15 px with a padded Details link, segments 44 px wide in rows that wrap, tables that wrap a long value (final sweep M4)',
+    /\.set \.k small\{display:block;font-size:15px/.test(core)&&/\.set \.k small a\{display:inline-block;padding:11px 6px;margin:-11px -6px\}/.test(core)&&/\.seg2 button\{[^}]*min-width:44px/.test(core)&&/\.set\{display:flex;flex-wrap:wrap/.test(core)&&/\.pc-table\{[^}]*overflow-wrap:anywhere/.test(core)&&/\.pc-table td:last-child\{[^}]*white-space:normal/.test(core),'');}
   {const lits=[...html.matchAll(/(?:Version |>v)(\d+\.\d+\.\d+)/g)].map(m=>m[1]);report('syntax','intro and menu show the current version',lits.length>=2&&lits.every(v=>v===ver),`found ${lits.join(', ')}; app ${ver}`);}
   {// Milestone 1: fonts are served from this site; nothing loads from Google (offline fidelity + privacy). Every font file exists and is in the offline cache list.
    const sw3=fs.readFileSync(path.join(__dirname,'..','sw.js'),'utf8');const urls=[...html.matchAll(/url\((fonts\/[^)]+)\)/g)].map(m=>m[1]);
@@ -91,6 +97,16 @@ if(want.includes('learn')){const {boot}=require('./qa_mock.js');
      report('learn','Tank time: eight questions of every kind (one, two and three lines, a second line opening late, a tanker arriving mid-problem, a refill coming in, gallons left); the right answer is not usually the longest or the shortest option',lo/n<=.45&&sh/n<=.45&&api.DRILLS.tank.items().length===8,`longest ${lo}, shortest ${sh} of ${n}`);}}}
 
 /* boot-based checks run before the play harness is created: a later boot() would swap the harness's document and storage out from under it */
+if(want.includes('learn')){const {boot}=require('./qa_mock.js');/* final sweep M4: layout and touch */
+  {const {api,els}=boot();api.setTier(0);api.loadCampaign(0);els['brief-go'].onclick();api.render();
+   const shown=!els.nowbar._cls.has('hidden'),step=els['now-step'].textContent;api.radio('FF Nowak','Too much pressure, back it down','bad');const line=els['now-radio'].textContent,cls=els['now-radio'].className;
+   els.menu.scrollTop=640;api.showMenu();const hid=els.nowbar._cls.has('hidden');
+   report('inject','the sticky strip shows the current step and the crew\'s last radio line while a scenario runs, and goes away at the menu (D-M8)',shown&&/^Step 1 of \d+: /.test(step)&&line==='FF Nowak: Too much pressure, back it down'&&cls==='bad'&&hid,`${step.slice(0,40)} · ${line}`);
+   report('inject','tapping Menu mid-scenario opens the menu at the top, so Resume is in view (D-M9)',els.menu.scrollTop===0,`scrollTop ${els.menu.scrollTop}`);
+   const b=boot();b.api.setTier(1);b.api.loadCampaign(1);b.els['brief-go'].onclick();b.api.render();report('inject','Recall hides the checklist in the strip too: step n of m, no step text',/^Checklist hidden — step 1 of \d+$/.test(b.els['now-step'].textContent),b.els['now-step'].textContent);}
+  {const {api}=boot();const d=api.dueInfo(0);report('inject','a scenario never tried shows a quiet gray chip, not a yellow warning (m5)',d.txt==='Not yet cleared'&&d.cls==='dim'&&/\.scen \.dim\{background:#2a2e34/.test(html)&&/class="due \$\{d\.cls\|\|\(d\.due\?'':'ok'\)\}"/.test(html),JSON.stringify(d));}
+  report('inject','the governor buttons sit in two rows (PSI · RPM · Idle, then − and +), so each is finger-wide on a 320 px phone (D-M2)',/\.gov \.btns\{display:grid;grid-template-columns:repeat\(6,1fr\)/.test(html)&&/button:nth-child\(-n\+3\)\{grid-column:span 2\}/.test(html)&&/button:nth-child\(n\+4\)\{grid-column:span 3/.test(html),'');
+}
 if(want.includes('learn')){const {boot}=require('./qa_mock.js');/* final sweep M3 */
   {// final sweep M3: Pump math is the 21st activity — a set of five or more typed answers is saved as a drill run with statistics; fewer is a quit
    const {api,els}=boot();const W=global.window;const snip=[];W.PCA={begin:(m,a)=>snip.push('begin:'+m+'/'+a),end:d=>snip.push('end:'+d),abandon:()=>snip.push('abandon'),bkt:n=>'score-'+n,err(){}};
