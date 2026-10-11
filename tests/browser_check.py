@@ -124,14 +124,14 @@ def ev_play(pg, w): play_real(pg, w, 10, 'A', 'EV fire', lambda pg: 'upwind/?scn
 def lesson_full(pg, open_sel):   # the lesson to the end: the right answer tapped by its visible text, then Next / Finish
     pg.click(open_sel); pg.wait_for_timeout(300)
     for _ in range(40):
-        if not pg.evaluate("!!(window.LS&&LS.cfg)"): break
+        if not pg.evaluate("(typeof LS!=='undefined'&&!!(LS&&LS.cfg))"): break
         good = pg.evaluate("LS.cfg.slides[LS.i].o.find(o=>o[1]==='good')[0]")
         pg.locator('[data-l="ans"]', has_text=re.compile('^' + re.escape(good) + '$')).first.click(delay=120); pg.wait_for_timeout(150)
         pg.click('#l-next', delay=120); pg.wait_for_timeout(250)
-    return pg.evaluate("!(window.LS&&LS.cfg)")
+    return pg.evaluate("!(typeof LS!=='undefined'&&LS&&LS.cfg)")
 def quiz_full(pg, q='QZ', ans='[data-q="ans"]', nxt='[data-q="next"]'):   # a quiz to the end: the right answer by its visible text, then Next / Results
     for _ in range(40):
-        if not pg.evaluate("!!(window.%s&&%s.qs&&%s.i<%s.qs.length)" % (q, q, q, q)): break
+        if not pg.evaluate("(typeof %s!=='undefined'&&!!(%s&&%s.qs&&%s.i<%s.qs.length))" % (q, q, q, q, q)): break
         a = pg.evaluate("%s.qs[%s.i].a" % (q, q)); pg.locator(ans, has_text=re.compile('^' + re.escape(a) + '$')).first.click(delay=120); pg.wait_for_timeout(120)
         pg.locator(nxt).first.click(delay=120); pg.wait_for_timeout(120)
     pg.wait_for_timeout(300)

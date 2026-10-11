@@ -163,3 +163,6 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 ## Truth and counts (final sweep milestone 3, October 10, 2026)
 - `learn`: Pump math — five right answers and Exit save a drill run of 100 with `ctl/start/drill-math` and a finish event, and the progress table shows the row; one answer and Exit is a quit and saves nothing. Units: no upper-case PSI or GPM outside the governor's labels.
 - `syntax`: the docs guard (CLAUDE.md "Current version" equals `APP_VERSION`; README.txt names `preconnect-core.js` and `fonts/`).
+
+## Every activity with real taps (milestone 10)
+`PC_ALL=1 python3 tests/browser_check.py` (milestone 10, lean finish) also plays every activity to the end with real taps at 390 px: the lesson, the five quick drills, Pump math (five problems typed) and all fourteen scenarios on layout A; about 40 minutes more. Run it before a release.
