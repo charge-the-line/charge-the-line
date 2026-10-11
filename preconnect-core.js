@@ -1,9 +1,9 @@
-/* preconnect-core 1.10.0 sha256:f3c3905762de9bb09f7e82aef304866c1600e04fdbc558411c2bfae2efc3c0b0 */
+/* preconnect-core 1.11.0 sha256:cf3f2d9cc1f4c926ac80e94c10f5dae3576603eb2b20fd5961672112e02de553 */
 /* Preconnect shared core. ONE file, copied byte-for-byte into every repo (the hub and all five modules).
    Rules: no build step, no module system, plain script. Top-level functions become globals the app's own script calls.
    Edit it in one repo, copy it to the others, and regenerate the header hash (tests/core_hash.js in the hub, or any suite tells you the hash it expected).
    Never define $ or esc here: every app has its own. */
-const PCORE_VERSION='1.10.0';
+const PCORE_VERSION='1.11.0';
 function pcEsc(t){return String(t===undefined||t===null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 /* ---------- Settings: one sheet, one key ('preconnect-settings'), honored by every module. Statistics use the Privacy page's key. ---------- */
@@ -156,7 +156,7 @@ function pcInstallCSS(){if(typeof document==='undefined'||!document.head||!docum
   +'.pc-tag{display:inline-block;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:13px;letter-spacing:.6px;text-transform:uppercase;padding:1px 7px;border-radius:4px;background:var(--deck2,#1c2026);color:var(--soft,#aab2bd);white-space:nowrap;line-height:1.5;vertical-align:baseline}'
   +'.big.pc-lo{color:#ff6b61!important}.big.pc-mid{color:#ffc23d!important}'
   +'button.pc-ff{width:100%;border:2px dashed var(--acc,#ff7a1a)!important;background:transparent!important;color:var(--acc,#ff7a1a)!important;text-transform:uppercase}.pc-ffwhy{font-size:15px;color:var(--soft,#aab2bd);line-height:1.4;margin:4px 0 10px}'
-  +'#setov{z-index:40!important}.pc-gear{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));z-index:39;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;font-size:22px;line-height:1;background:var(--deck,#14171c)!important}.pc-gear.hidden{display:none}.pc-update{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:38;display:flex;gap:6px;padding:6px;border:2px solid var(--acc,#ff7a1a);border-radius:8px;background:var(--deck,#14171c)}.pc-update button.go{flex:1}.pc-update.hidden{display:none}'
+  +'#setov{z-index:40!important}.pc-gear{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:calc(10px + env(safe-area-inset-right,0px));z-index:39;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;font-size:22px;line-height:1;background:var(--deck,#14171c)!important}.pc-gear.hidden{display:none}.pc-update{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:38;display:flex;gap:6px;padding:6px;border:2px solid var(--acc,#ff7a1a);border-radius:8px;background:var(--deck,#14171c)}.pc-update button.go{flex:1}.pc-update.hidden{display:none}.cool{opacity:.45;pointer-events:none}'
   +'.overlay:not(#setov):not(#instov):not(#pc-drillov):not(:has(#h-set)):not(:has([data-pc-set])) .box>:first-child{padding-right:52px}';
   document.head.appendChild(st);}
 /* ---------- One voice (milestone 5): the same words and the same pieces on every module. ---------- */
@@ -189,6 +189,11 @@ function pcUpdateBind(){if(typeof navigator==='undefined'||!navigator.serviceWor
   sw.addEventListener('controllerchange',()=>{if(!had||shown)return;const app=(typeof APP_VERSION!=='undefined')?APP_VERSION:'';let done=false;const show=v=>{if(done)return;done=true;if(pcUpdateDecide(v,app)){shown=true;pcUpdateShow();}};
     const onMsg=e=>{if(e.data&&e.data.type==='pc-version'){sw.removeEventListener('message',onMsg);show(e.data.v);}};sw.addEventListener('message',onMsg);try{sw.controller&&sw.controller.postMessage({type:'pc-version?'});}catch(e){}setTimeout(()=>show(null),1500);});
   try{sw.ready.then(reg=>{if(typeof document!=='undefined'&&document.addEventListener)document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&reg.update)reg.update().catch(()=>{});});}).catch(()=>{});}catch(e){}}
+/* Momentum taps (rule 4; final sweep, milestone 9). After a step changes, the new buttons are dimmed and ignore taps for about half a second
+   (pointer-events off through .cool), so a finger still tapping the last step can't land on this one. pcCool(selector, ms) marks them; pcIsCool(el)
+   lets a click handler ignore one that is still cooling. */
+function pcCool(sel,ms){if(typeof document==='undefined'||!document.querySelectorAll)return;const bs=[...document.querySelectorAll(sel)];bs.forEach(b=>b.classList&&b.classList.add('cool'));setTimeout(()=>bs.forEach(b=>b.classList&&b.classList.remove('cool')),ms||450);}
+function pcIsCool(el){return !!(el&&el.classList&&el.classList.contains&&el.classList.contains('cool'));}
 /* CSV cells (final sweep, milestone 1). A spreadsheet runs a cell that starts with = + - @ (or a tab or return) as a
    formula, so a typed name like =HYPERLINK(...) would execute when a department opens the record. Such cells get a
    leading apostrophe (the spreadsheet shows it as text); quotes are doubled; every cell is quoted. Every CSV writer

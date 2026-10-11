@@ -256,7 +256,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:15px;color:var(--muted)">Version 2.21.2 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:15px;color:var(--muted)">Version 2.22.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -274,7 +274,7 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:15px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.21.2</span></h1></div>
+  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.22.0</span></h1></div>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div class="card rdy" id="rdy"><div class="flex"><div><div class="small">Your readiness</div><b id="rdy-t" style="display:block;font-family:'Saira Condensed';font-size:22px;line-height:1.05"></b><div class="stat" id="rdy-s" style="margin-top:2px"></div></div><div class="sp"></div><div class="num" id="rdy-n"></div></div><div style="height:8px;margin-top:10px;background:var(--line,#2a2f37);border-radius:4px;overflow:hidden"><div id="rdy-bar" style="height:100%;width:0;background:var(--acc);transition:width .6s ease-out"></div></div></div>
   <div class="card"><div class="small">What this is</div><p style="margin:4px 0 0;font-size:15px;line-height:1.45">Pump operations on Engine 10-2: fourteen scenarios including six Real Saves from published accounts, a pump lesson, quick drills, pump math and a guide to every control on the panel. Guided shows every step, Recall makes you remember it, Chaos breaks things. <b>Your SOPs and your rig come first.</b></p></div>
@@ -1068,8 +1068,8 @@ let DEC=null;
 function openDecision(s,j){S.running=false;DEC={s,j};const d=s.dec;
   $('dec-q').textContent=typeof d.q==='function'?d.q():d.q;
   $('dec-opts').innerHTML=d.opts.map((o,i)=>[o,i]).sort(()=>Math.random()-.5).map(([o,i])=>`<button class="scen" data-i="${i}"><b style="font-size:17px;font-family:Atkinson Hyperlegible,system-ui,sans-serif;font-weight:500">${o.t}</b></button>`).join('');
-  $('dec-opts').classList.remove('hidden');$('dec-fb').classList.add('hidden');$('decov').classList.remove('hidden');}
-$('dec-opts').onclick=e=>{const b=e.target.closest('button');if(!b||!DEC)return;const d=DEC.s.dec,o=d.opts[+b.dataset.i];
+  $('dec-opts').classList.remove('hidden');$('dec-fb').classList.add('hidden');$('decov').classList.remove('hidden');pcCool('#dec-opts button',450);/* rule 4: momentum taps from the step that just finished can't pick an answer */}
+$('dec-opts').onclick=e=>{const b=e.target.closest('button');if(!b||!DEC||pcIsCool(b))return;const d=DEC.s.dec,o=d.opts[+b.dataset.i];
   const lab=(o.r==='good'&&d.goodLab)||{good:'Matches what crews did.',partial:'Workable — but not what crews chose.',bad:'That would have hurt you.',never:'The ERG says never.'}[o.r];
   const col={good:'#5fd88a',partial:'#f0b323',bad:'#ff7b6b',never:'#ff5d3a'}[o.r];
   $('dec-res').innerHTML=`<b style="color:${col}">${lab}</b> ${o.why}`;
@@ -1095,11 +1095,11 @@ function finish(){keepAwake(false);pcFx('done');
   /* one voice: Again · Home · Next. Between missions: Home pauses (Resume on the home list) and Next is the next mission; after the last mission Again restarts the scenario and Next opens the next one on the list. */
   $('b-again').classList.toggle('hidden',!last);$('b-next').classList.toggle('hidden',last&&S.camp+1>=CAMP.length);$('done-row').classList.toggle('two',!last||S.camp+1>=CAMP.length);$('b-home').classList.toggle('go',last&&S.camp+1>=CAMP.length);
   if(last){const pr=load(),ps=pr.scen&&pr.scen[S.camp];pca('end',`${['guided','recall','chaos'][TIER]}/${pca('att',(ps?ps.runs:0)+1)}/${pca('bkt',S.score)}`);recordClear(S.camp,S.score);}
-  $('done').classList.remove('hidden');instSync();
+  $('done').classList.remove('hidden');pcCool('#done-row button',700);instSync();
 }
 $('done-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-k]');if(b)openCard(b.dataset.k,true);};
-$('b-next').onclick=()=>{$('done').classList.add('hidden');const c=CAMP[S.camp];if(S.mission<c.missions.length-1){loadMission(S.mission+1);if(!S.briefing)S.running=true;}else if(S.camp+1<CAMP.length){S.active=false;const n=S.camp+1;if(CAMP[n].real)showCase(n);else loadCampaign(n);}else showMenu();};
-$('b-home').onclick=()=>{$('done').classList.add('hidden');const c=CAMP[S.camp];if(S.mission>=c.missions.length-1)S.active=false;showMenu();};$('b-again').onclick=()=>{$('done').classList.add('hidden');loadCampaign(S.camp);};
+$('b-next').onclick=e=>{if(pcIsCool(e&&e.target))return;$('done').classList.add('hidden');const c=CAMP[S.camp];if(S.mission<c.missions.length-1){loadMission(S.mission+1);if(!S.briefing)S.running=true;}else if(S.camp+1<CAMP.length){S.active=false;const n=S.camp+1;if(CAMP[n].real)showCase(n);else loadCampaign(n);}else showMenu();};
+$('b-home').onclick=e=>{if(pcIsCool(e&&e.target))return;$('done').classList.add('hidden');const c=CAMP[S.camp];if(S.mission>=c.missions.length-1)S.active=false;showMenu();};$('b-again').onclick=e=>{if(pcIsCool(e&&e.target))return;$('done').classList.add('hidden');loadCampaign(S.camp);};
 $('b-reset').onclick=()=>loadCampaign(S.camp);$('b-ff').onclick=ffRun;$('ev-cam').onclick=evCam;
 $('dh-ice').onclick=()=>{if(!CAMP[S.camp].dryHyd||!S.dhIce||S.iceT>0)return;S.iceT=5;radio('FF Cruz','Chipping the ice off the head with the axe — give me a few seconds');};
 $('dh-flush').onclick=()=>{if(!CAMP[S.camp].dryHyd||S.flushT>0)return;if(!S.dhClog){radio('Engineer','Nothing to flush — the dry hydrant is flowing');return;}if(!S.pump||!S.ttp||S.primerOn){radio('Engineer','To back-flush: primer off, tank-to-pump open, pump engaged — tank water goes back down the pipe');return;}S.flushT=8;radio('Engineer','Back-flushing tank water down the dry hydrant pipe');};$('b-menu').onclick=showMenu;
@@ -1165,7 +1165,7 @@ $('m-exit').onclick=mathClose;
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.21.2';
+const APP_VERSION='2.22.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};

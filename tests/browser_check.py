@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """Real-browser check (optional). Needs:  pip install playwright && playwright install chromium
 Opens every scenario at phone sizes; fails on any JavaScript error or anything off-screen.
@@ -118,6 +119,24 @@ def play_real(pg, w, idx, variant, label, need):   # a scenario played to the en
     if not ok: print(label + ' run detail:', pg.evaluate("JSON.stringify({score:S.score,mission:S.mission,inc:S.incidents,step:(()=>{const m=CAMP[S.camp].missions[S.mission];const j=stepsDone.findIndex(x=>!x);return j<0?'':m.steps[j].t;})()})"))
     rows.append((w, label + ' panel', panel if panel is not None else 99)); rows.append((w, label + ' (full, fast-forward x%d)' % ff_used, (pg.evaluate(OVER) + 1000 * pg.evaluate(SMALL)) + (0 if ok else 99)))
 def ev_play(pg, w): play_real(pg, w, 10, 'A', 'EV fire', lambda pg: 'upwind/?scn=liion' in pg.inner_html('#done-body'))
+
+# ---- Milestone 10 (lean finish): every activity to the end with real taps at 390 px, when PC_ALL=1 ----
+def lesson_full(pg, open_sel):   # the lesson to the end: the right answer tapped by its visible text, then Next / Finish
+    pg.click(open_sel); pg.wait_for_timeout(300)
+    for _ in range(40):
+        if not pg.evaluate("!!(window.LS&&LS.cfg)"): break
+        good = pg.evaluate("LS.cfg.slides[LS.i].o.find(o=>o[1]==='good')[0]")
+        pg.locator('[data-l="ans"]', has_text=re.compile('^' + re.escape(good) + '$')).first.click(delay=120); pg.wait_for_timeout(150)
+        pg.click('#l-next', delay=120); pg.wait_for_timeout(250)
+    return pg.evaluate("!(window.LS&&LS.cfg)")
+def quiz_full(pg, q='QZ', ans='[data-q="ans"]', nxt='[data-q="next"]'):   # a quiz to the end: the right answer by its visible text, then Next / Results
+    for _ in range(40):
+        if not pg.evaluate("!!(window.%s&&%s.qs&&%s.i<%s.qs.length)" % (q, q, q, q)): break
+        a = pg.evaluate("%s.qs[%s.i].a" % (q, q)); pg.locator(ans, has_text=re.compile('^' + re.escape(a) + '$')).first.click(delay=120); pg.wait_for_timeout(120)
+        pg.locator(nxt).first.click(delay=120); pg.wait_for_timeout(120)
+    pg.wait_for_timeout(300)
+def saved(pg, key, test):   # the record on this phone proves the activity finished
+    return pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('%s')||'{}');return %s;})()" % (key, test))
 with sync_playwright() as p:
     b = p.chromium.launch()
     for w in (320, 375, 430):
@@ -161,6 +180,28 @@ with sync_playwright() as p:
     pg.click('#h-set'); pg.wait_for_timeout(200)
     rows.append((844, 'settings land', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL))))
     pg.close()
+    if os.environ.get('PC_ALL'):
+        pg = b.new_page(viewport={'width': 390, 'height': 800}, device_scale_factor=2, is_mobile=True, has_touch=True); pg.on('pageerror', lambda e: errs.append(str(e)))
+        pg.goto(URL); pg.wait_for_timeout(250)
+        if pg.is_visible('#b-start'): pg.click('#b-start')
+        ok = lesson_full(pg, '#b-lesson') and saved(pg, 'e102-pump-trainer', "(p.extra||[]).some(r=>r.kind==='lesson'&&r.score===100)"); rows.append((390, 'ALL lesson (full)', 0 if ok else 99))
+        for k in pg.evaluate("Object.keys(DRILLS)"):
+            pg.goto(URL); pg.wait_for_timeout(250)
+            if pg.is_visible('#b-start'): pg.click('#b-start')
+            pg.click('#b-drills'); pg.wait_for_timeout(200); pg.click(f'[data-q="go"][data-k="{k}"]'); pg.wait_for_timeout(250); quiz_full(pg)
+            rows.append((390, f'ALL drill {k} (full)', 0 if saved(pg, 'e102-pump-trainer', f"(p.extra||[]).some(r=>r.kind==='drill'&&r.id==='{k}'&&r.score===100)") else 99))
+        pg.goto(URL); pg.wait_for_timeout(250)
+        if pg.is_visible('#b-start'): pg.click('#b-start')
+        pg.click('#b-drills'); pg.wait_for_timeout(200); pg.click('#b-math'); pg.wait_for_timeout(250)   # Pump math: five problems typed from the panel's own answer, then Stop and go back saves the set
+        for _ in range(5):
+            pg.fill('#ans', str(pg.evaluate("Math.round(MP.r.total)"))); pg.click('#m-check', delay=120); pg.wait_for_timeout(200); pg.click('#m-next', delay=120); pg.wait_for_timeout(200)
+        pg.click('#m-exit', delay=120); pg.wait_for_timeout(300)
+        rows.append((390, 'ALL pump math (full)', 0 if saved(pg, 'e102-pump-trainer', "(p.extra||[]).some(r=>r.kind==='drill'&&r.id==='math'&&r.score===100)") else 99))
+        for i in range(14):
+            if i == 10: ev_play(pg, 390); continue
+            play_real(pg, 390, i, 'A', 'ALL scenario %d' % (i + 1), lambda pg: True)
+        pg.close()
+
     b.close()
 for r in rows: print(f"{'PASS' if r[2] <= 1 else 'FAIL'}  {r[0]}px  {r[1]:<30} overflow {r[2]%1000}px · buttons under 44px: {(r[2]//1000)%100} · text under floor: {r[2]//100000}")
 print('JavaScript errors:', errs or 'none')
