@@ -121,6 +121,70 @@ def play_real(pg, w, idx, variant, label, need):   # a scenario played to the en
 def ev_play(pg, w): play_real(pg, w, 10, 'A', 'EV fire', lambda pg: 'upwind/?scn=liion' in pg.inner_html('#done-body'))
 
 # ---- Milestone 10 (lean finish): every activity to the end with real taps at 390 px, when PC_ALL=1 ----
+# The suite's pump bot (tests/qa.js) moved into the page: it reads the live step and names the control; this script taps it for real.
+def ctl_policy():
+    src = (pathlib.Path(__file__).resolve().parent / 'qa.js').read_text()
+    def fn(name):
+        i = src.index('function ' + name + '('); j = src.index('\nfunction ', i + 1) if '\nfunction ' in src[i + 1:] else len(src)
+        return src[i:j]
+    body = '\n'.join(fn(n) for n in ('valveKeyFromText', 'band', 'openFull', 'stepAct', 'upkeep'))
+    body = re.sub(r"click\('([a-z0-9-]+)'\)", r"Q.push('\1')", body)
+    body = body.replace("click(want==='volume'?'x-vol':'x-pres')", "Q.push(want==='volume'?'x-vol':'x-pres')")
+    body = re.sub(r"api\.setValve\(([^,]+),'(\w+)'\)", r"Q.push({v:\1,a:'\2'})", body)
+    body = re.sub(r"setPsi\((.+?)\);", r"Q.push({psi:\1});", body)
+    body = re.sub(r"S\.valves\[([^\]]+)\]\.open=(?!=)([^;]+);", r"Q.push({vo:\1,n:\2});", body)
+    body = body.replace("S.foamPct=3;", "Q.push({sel:'#foam [data-pct=\"3\"]'});").replace("S.eductPct=3;", "Q.push({sel:'[data-ep=\"3\"]'});")
+    body = body.replace("api.resDemand()", "resDemand()").replace("api.DEC()", "DEC").replace("api.totalFlow()", "totalFlow()").replace("errors.push(", "ERR.push(")
+    assert "api." not in body and "click(" not in body and "setPsi(" not in body, body
+    return ("window.__ctl=(function(){const Q=[],ERR=[];" + body +
+            "\nreturn function(){Q.length=0;const c=CAMP[S.camp],m=c.missions[S.mission];const j=stepsDone.findIndex(x=>!x);if(j>=0&&S.running&&!DEC)stepAct(c,m,j,m.steps[j]);upkeep(c);return Q.slice();};})();")
+CTL_POLICY = None
+def play_bot(pg, w, idx, variant, label, need):
+    global CTL_POLICY
+    if CTL_POLICY is None: CTL_POLICY = ctl_policy()
+    pg.goto(URL); pg.wait_for_timeout(250)
+    if pg.is_visible('#b-start'): pg.click('#b-start')
+    pg.evaluate("window.FORCE_V={%d:'%s'}" % (idx, variant)); pg.click('.scen[data-i="%d"]' % idx); pg.wait_for_timeout(200); pg.evaluate("window.FORCE_V=undefined"); pg.evaluate(CTL_POLICY)
+    panel = None; ff_used = 0
+    def tapsel(sel):
+        try: pg.locator(sel).first.click(timeout=1500)
+        except Exception: pass
+    def act(a):
+        if isinstance(a, str): tapsel('#' + a); return
+        if 'v' in a: tapsel('#valve-%s [data-a="%s"]' % (a['v'], a['a'])); return
+        if 'vo' in a:
+            o = pg.evaluate("S.valves['%s'].open" % a['vo']); n = a['n']
+            if n == 0 and o > 0: tapsel('#valve-%s [data-a="close"]' % a['vo'])
+            elif o < n: tapsel('#valve-%s [data-a="crack"]' % a['vo'])
+            elif o > n: tapsel('#valve-%s [data-a="gate"]' % a['vo'])
+            return
+        if 'psi' in a:
+            if pg.evaluate("S.mode") != 'psi': tapsel('#b-psi'); return
+            for _ in range(3):
+                sp = pg.evaluate("S.set")
+                if sp < a['psi'] - 5: tapsel('#b-up')
+                elif sp > a['psi'] + 5: tapsel('#b-dn')
+                else: break
+            return
+        if 'sel' in a: tapsel(a['sel'])
+    for _ in range(1100):
+        if pg.is_visible('#done'):
+            if 'scenario complete' in pg.text_content('#done-title'): break
+            pg.click('#b-next'); pg.wait_for_timeout(300); continue
+        if pg.is_visible('#case-go'): pg.click('#case-go'); pg.wait_for_timeout(300); continue
+        if pg.is_visible('#briefov'): pg.click('#brief-go'); pg.wait_for_timeout(300); continue
+        if pg.is_visible('#decov'):
+            if pg.is_visible('#dec-opts'):
+                t = pg.evaluate("DEC.s.dec.opts.find(o=>o.r==='good').t"); pg.locator('#dec-opts button', has_text=re.compile('^' + re.escape(t) + '$')).first.click(); pg.wait_for_timeout(200)
+            pg.click('#dec-go'); pg.wait_for_timeout(300); continue
+        if panel is None and pg.evaluate("S.mission>=1"): panel = pg.evaluate(OVER) + 1000 * pg.evaluate(SMALL)
+        acts = pg.evaluate("__ctl()")
+        for a in acts[:6]: act(a)
+        if not acts and pg.is_visible('#b-ff'): pg.click('#b-ff'); ff_used += 1
+        pg.wait_for_timeout(400)
+    ok = pg.is_visible('#done') and 'scenario complete' in pg.text_content('#done-title') and pg.evaluate('S.score') == 100 and need(pg)
+    if not ok: print(label + ' run detail:', pg.evaluate("JSON.stringify({score:S.score,mission:S.mission,inc:S.incidents,step:(()=>{const m=CAMP[S.camp].missions[S.mission];const j=stepsDone.findIndex(x=>!x);return j<0?'':m.steps[j].t;})(),err:__ctl.ERR||null})"))
+    rows.append((w, label + ' panel', panel if panel is not None else 99)); rows.append((w, label + ' (full, fast-forward x%d)' % ff_used, (pg.evaluate(OVER) + 1000 * pg.evaluate(SMALL)) + (0 if ok else 99)))
 def lesson_full(pg, open_sel):   # the lesson to the end: the right answer tapped by its visible text, then Next / Finish
     pg.click(open_sel); pg.wait_for_timeout(300)
     for _ in range(40):
@@ -199,7 +263,7 @@ with sync_playwright() as p:
         rows.append((390, 'ALL pump math (full)', 0 if saved(pg, 'e102-pump-trainer', "(p.extra||[]).some(r=>r.kind==='drill'&&r.id==='math'&&r.score===100)") else 99))
         for i in range(14):
             if i == 10: ev_play(pg, 390); continue
-            play_real(pg, 390, i, 'A', 'ALL scenario %d' % (i + 1), lambda pg: True)
+            play_bot(pg, 390, i, 'A', 'ALL scenario %d' % (i + 1), lambda pg: True)
         pg.close()
 
     b.close()
