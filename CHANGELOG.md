@@ -2,6 +2,9 @@
 
 Pump panel simulator for Engine 10-2. Plain-language history, newest first. Practice, not certification.
 
+## 2.23.1 — October 11, 2026
+- Found by the every-activity gate: the governor can reach 400 psi on the First Interstate two-stage pumper, so its 315–345 psi standpipe band is reachable with the buttons (it was capped at 300); the Queens eductor's metering chips are finger-sized.
+
 ## 2.23.0 — October 11, 2026 — tester release
 - Every activity (the lesson, five drills, Pump math and all fourteen scenarios) is played to the end with real taps at 390 px before a release.
 - CHANGELOG added; the post-pilot backlog recorded in CLAUDE.md.

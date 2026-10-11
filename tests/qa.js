@@ -9,7 +9,7 @@ function valveKeyFromText(t,c){
   if(/FDC line|to the FDC/i.test(t))return 'rear3';if(/LDH at|#4 rear/i.test(t))return 'rear4';
   return null;}
 function band(t){const m=t.match(/(\d+)–(\d+)/);return m?[+m[1],+m[2]]:null;}
-function setPsi(target){if(S.mode!=='psi')click('b-psi');S.set=Math.round(target);}
+function setPsi(target){if(S.mode!=='psi')click('b-psi');const c=CAMP[S.camp],cap=(c&&c.rig&&c.rig.maxPsi)||300;S.set=Math.min(cap,Math.round(target));}
 function openFull(k){if(S.valves[k].open<100)api.setValve(k,'crack');}
 let reopen=null,strainerFix=0;
 function stepAct(c,m,j,s){
