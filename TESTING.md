@@ -171,3 +171,6 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 
 ## Every activity with real taps (milestone 10)
 `PC_ALL=1 python3 tests/browser_check.py` (milestone 10, lean finish) also plays every activity to the end with real taps at 390 px: the lesson, the five quick drills (Pump math among them) and all fourteen scenarios on layout A; about 40 minutes more. Run it before a release.
+
+## The address (October 18, 2026, preconnect.org)
+- `syntax`: no `CNAME` file in this repo (a module gets no custom domain; GitHub serves it at https://preconnect.org/charge-the-line/), no file anywhere in the repo names the old github.io address, and `manifest.json` names no host (`start_url`, `scope` and `id` are `./`). Proven to fail on a planted `CNAME` and a planted absolute `id`.

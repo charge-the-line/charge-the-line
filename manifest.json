@@ -4,6 +4,7 @@
   "description": "Pump panel simulator for fire apparatus driver/operators. Every call starts at the panel.",
   "start_url": "./",
   "scope": "./",
+  "id": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#15171a",

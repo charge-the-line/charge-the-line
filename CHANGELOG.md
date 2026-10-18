@@ -2,6 +2,9 @@
 
 Pump panel simulator for Engine 10-2. Plain-language history, newest first. Practice, not certification.
 
+## 2.24.1 — October 18, 2026 — preconnect.org
+- Preconnect lives at https://preconnect.org, and this module at https://preconnect.org/charge-the-line/. Nothing in the app names a host: links stay relative, and the install settings (start, scope and id) are relative, so the offline copy, deep links and the new version notice work the same at the new address.
+
 ## 2.24.0 — October 18, 2026
 - One Pump math drill (eight multiple-choice questions: four pump-pressure problems, four tank-time problems) replaces the typing drill and Tank time, so Charge the Line counts 20 activities like every other module.
 - Saved runs of Tank time and the old Pump math merge into one Pump math record; the best score is kept. The old Tank time link opens Pump math.

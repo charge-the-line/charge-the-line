@@ -1,4 +1,4 @@
-CHARGE THE LINE — a Preconnect module (https://charge-the-line.github.io/charge-the-line/)
+CHARGE THE LINE — a Preconnect module (https://preconnect.org/charge-the-line/)
 This folder is the whole app:
   index.html, preconnect-core.js, manifest.json, sw.js, icon-192.png, icon-512.png, fonts/
 (plus tests/, TESTING.md and CLAUDE.md, which do not affect the app).
