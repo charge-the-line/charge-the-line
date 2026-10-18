@@ -115,8 +115,6 @@ button{min-height:48px}
   .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 12px} .tiers button{padding:8px 4px;font-size:15px}
   .tierhelp{font-size:15px;color:var(--muted);margin:0 0 10px;line-height:1.4}
   .stat{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid #33373e;font-size:15px} .stat:first-child{border-top:0} .stat span{color:var(--muted)}
-  .math .prob{font-size:17px;line-height:1.5;margin-bottom:12px} .math .prob b{color:var(--yellow);font-weight:500}
-  .math .work{font-size:15px;color:var(--muted);line-height:1.5;margin-top:10px;white-space:pre-line}
   .wcol{position:relative;width:34px;height:96px;border-radius:5px;overflow:hidden;border:1px solid #000;background:linear-gradient(#2f6fb7,#1d4f86 70%,#6b5a3a 88%,#8a744a);flex:0 0 auto}
   .wcol .zone{position:absolute;left:0;right:0;bottom:35%;height:30%;background:rgba(56,214,106,.22);border-top:1px dashed #38d66a;border-bottom:1px dashed #38d66a}
   .wcol .wmark{position:absolute;left:3px;right:3px;height:8px;border-radius:3px;background:#f0b323;box-shadow:0 0 6px #f0b323;transform:translateY(50%)}
@@ -256,7 +254,7 @@ button{min-height:48px}
   <p>You're the driver/operator on Engine 10-2. Get the crew water, keep it coming, and don't hurt the pump.</p>
   <table class="pc-table" style="margin-bottom:12px"><tr><td class="l">Crack +</td><td>a quarter turn open</td></tr><tr><td class="l">Gate −</td><td>a quarter turn closed</td></tr><tr><td class="l">Snap open</td><td>wide open: water hammer</td></tr></table>
   <p style="font-size:15px;color:var(--muted)">Guided shows every step. Recall hides the checklist. Chaos adds things going wrong. Tap <b>Panel guide</b> any time to learn a control.</p>
-  <p style="font-size:15px;color:var(--muted)">Version 2.23.2 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
+  <p style="font-size:15px;color:var(--muted)">Version 2.24.0 · Training aid only. Your SOPs and the preconnect chart on the rig are the real numbers.</p>
   <div style="display:flex;gap:8px"><button class="warn" id="b-start" style="flex:1;font-size:18px">Start</button><button id="b-howmore">How to play</button></div>
 </div></div>
 <div class="overlay hidden" id="howov" style="z-index:14"><div class="box">
@@ -274,10 +272,10 @@ button{min-height:48px}
 
 <div class="overlay hidden" id="menu"><div class="box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 6px"><a href="../" style="display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;letter-spacing:.5px;color:#ff8a3d;text-decoration:none;margin:0">◂ PRECONNECT</a><a href="../feedback.html?from=ctl" style="display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:15px;font-weight:700;color:#9aa3ad;text-decoration:none">Feedback</a><button class="gear" id="h-set" style="margin-left:12px">Settings</button></div>
-  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.23.2</span></h1></div>
+  <div style="margin:4px 0 10px"><div class="brand" style="font-size:34px;letter-spacing:3px;padding:0">CHARGE THE LINE</div><h1 style="font-size:19px;font-weight:400;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;margin:2px 0 0">Water on the fire, pressure in the line. <span style="font-size:14px;color:var(--muted)">v2.24.0</span></h1></div>
   <button id="b-resume" class="warn hidden" style="width:100%;margin-bottom:8px;font-size:17px">Resume current scenario</button>
   <div class="card rdy" id="rdy"><div class="flex"><div><div class="small">Your readiness</div><b id="rdy-t" style="display:block;font-family:'Saira Condensed';font-size:22px;line-height:1.05"></b><div class="stat" id="rdy-s" style="margin-top:2px"></div></div><div class="sp"></div><div class="num" id="rdy-n"></div></div><div style="height:8px;margin-top:10px;background:var(--line,#2a2f37);border-radius:4px;overflow:hidden"><div id="rdy-bar" style="height:100%;width:0;background:var(--acc);transition:width .6s ease-out"></div></div></div>
-  <div class="card"><div class="small">What this is</div><p style="margin:4px 0 0;font-size:15px;line-height:1.45">Pump operations on Engine 10-2: fourteen scenarios including six Real Saves from published accounts, a pump lesson, quick drills, pump math and a guide to every control on the panel. Guided shows every step, Recall makes you remember it, Chaos breaks things. <b>Your SOPs and your rig come first.</b></p></div>
+  <div class="card"><div class="small">What this is</div><p style="margin:4px 0 0;font-size:15px;line-height:1.45">Pump operations on Engine 10-2: fourteen scenarios including six Real Saves from published accounts, a pump lesson, five quick drills ending in Pump math, and a guide to every control on the panel. Guided shows every step, Recall makes you remember it, Chaos breaks things. <b>Your SOPs and your rig come first.</b></p></div>
   <button class="scen" id="b-lesson" style="margin-bottom:10px"><b>The lesson</b><span>Pump operations in 12 slides, each with a check · about 10 minutes</span></button>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px"><button id="b-drills">Quick drills</button><button id="b-progress">My progress</button><button id="b-gindex" class="guidebtn">Panel guide</button><button id="b-howto">How to play</button></div>
   <div class="sec">Difficulty</div>
@@ -286,17 +284,6 @@ button{min-height:48px}
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px"><button id="b-std">Layouts: varied</button><button id="b-inst">Instructor mode: off</button></div>
   <div class="sec">Scenarios</div>
   <div id="scenlist"></div>
-</div></div>
-
-<div class="overlay hidden" id="mathov"><div class="box math">
-  <h2>Pump discharge pressure</h2>
-  <p style="font-size:15px">PDP = nozzle pressure + friction loss + elevation + appliances. FL = C × (gpm/100)² × (length/100). Coefficients: 1¾" 15.5 · 2½" 2 · 3" 0.8 · 5" 0.08. Answer within ±5 psi counts.</p>
-  <div class="prob" id="prob"></div>
-  <input id="ans" type="number" inputmode="numeric" placeholder="PDP in psi">
-  <div style="display:flex;gap:8px;margin-top:8px"><button id="m-check" class="warn" style="flex:1">Check</button><button id="m-next" style="flex:1">Next problem</button><button id="m-exit">Stop and go back</button></div>
-  <div class="work" id="work"></div>
-  <div class="stat" style="margin-top:12px"><span>This session</span><b id="m-session">0 / 0</b></div>
-  <p class="stat" style="margin:6px 0 0">Answer five or more, then Exit: the set is saved to your record and counts as an activity.</p>
 </div></div>
 
 <div class="overlay hidden" id="progov"><div class="box">
@@ -1107,13 +1094,14 @@ $('dh-flush').onclick=()=>{if(!CAMP[S.camp].dryHyd||S.flushT>0)return;if(!S.dhCl
 
 /* ===== progress / spacing ===== */
 const KEY='e102-pump-trainer';const INT=[1,3,7,14,30];
-function load(){let p=null;try{p=JSON.parse(localStorage.getItem(KEY));}catch(e){}if(!p||typeof p!=='object'||Array.isArray(p))p={};if(typeof p.name!=='string')p.name='';if(!p.scen||typeof p.scen!=='object'||Array.isArray(p.scen))p.scen={};if(!p.math||typeof p.math!=='object')p.math={right:0,total:0};p.math.right=+p.math.right||0;p.math.total=+p.math.total||0;for(const f of ['log','extra'])if(p[f]!==undefined)p[f]=Array.isArray(p[f])?p[f].filter(r=>r&&typeof r==='object'):[];return p;}/* wrong-shape data (a bad backup) never bricks the page */
+function load(){let p=null;try{p=JSON.parse(localStorage.getItem(KEY));}catch(e){}if(!p||typeof p!=='object'||Array.isArray(p))p={};if(typeof p.name!=='string')p.name='';if(!p.scen||typeof p.scen!=='object'||Array.isArray(p.scen))p.scen={};if(!p.math||typeof p.math!=='object')p.math={right:0,total:0};p.math.right=+p.math.right||0;p.math.total=+p.math.total||0;for(const f of ['log','extra'])if(p[f]!==undefined)p[f]=Array.isArray(p[f])?p[f].filter(r=>r&&typeof r==='object'):[];
+  if(p.extra)p.extra.forEach(r=>{if(r.kind==='drill'&&r.id==='tank')r.id='math';});/* 2.24.0: Tank time runs belong to Pump math now (one record, the best kept) */return p;}/* wrong-shape data (a bad backup) never bricks the page */
 function save(p){try{localStorage.setItem(KEY,JSON.stringify(p));}catch(e){}}
 function recordClear(i,score){const p=load();const s=p.scen[i]||{level:0,best:0,runs:0,last:null,tier:0};s.runs++;s.best=Math.max(s.best,score);s.last=new Date().toISOString();s.tier=Math.max(s.tier,TIER);s.level=score>=70?Math.min(INT.length-1,s.level+1):0;p.scen[i]=s;p.log=(p.log||[]).concat([pcDrillStamp({i,score,tier:TIER,d:new Date().toISOString(),v:S.variant||undefined,inst:(S.injects&&S.injects.length)?1:undefined})]).slice(-500);save(p);}
 /* due-again spacing comes from the shared core (pcSpacing over this scenario's runs), the same rule the home page uses; scen.level is kept for older records */
 function dueInfo(i){const p=load();const runs=(p.log||[]).filter(r=>+r.i===i).map(r=>({d:r.d,score:r.score}));const s=p.scen[i];if(!runs.length&&s&&s.last)runs.push({d:s.last,score:s.best});const sp=pcSpacing(runs);
   if(sp.status==='never')return {txt:'Not yet cleared',due:true,cls:'dim'};if(sp.status==='missed')return {txt:'Try again',due:true};if(sp.status==='due')return {txt:'Due for review',due:true};return {txt:`Next in ${Math.max(1,Math.ceil(sp.dueIn))} d`,due:false};}
-const ACTS=()=>[...CAMP.map((c,i)=>['scenario',String(i)]),['lesson','lesson'],...Object.keys(DRILLS).map(k=>['drill',k]),['drill','math']];
+const ACTS=()=>[...CAMP.map((c,i)=>['scenario',String(i)]),['lesson','lesson'],...Object.keys(DRILLS).map(k=>['drill',k])];
 function readiness(){const p=load();const done=new Set();Object.keys(p.scen||{}).forEach(i=>{if(p.scen[i]&&p.scen[i].runs>0)done.add('scenario:'+i);});(p.log||[]).forEach(r=>done.add('scenario:'+r.i));(p.extra||[]).forEach(x=>done.add(x.kind+':'+x.id));
   const A=ACTS();const n=A.filter(([k,i])=>done.has(k+':'+i)).length;return {done:n,total:A.length,pct:Math.round(n/A.length*100)};}
 function homeRender(){const R=readiness(),p=load();const t=`${R.done} of ${R.total} activities`;if($('rdy-t').textContent!==t)$('rdy-t').textContent=t;
@@ -1132,41 +1120,20 @@ $('b-howmore').onclick=()=>$('howov').classList.remove('hidden');$('how-close').
 $('b-howto').onclick=()=>{$('howov').classList.remove('hidden');return;$('menu').classList.add('hidden');$('intro').classList.remove('hidden');};
 $('b-progress').onclick=()=>{const p=load();$('uname').value=pcProfile().name||p.name||'';const ex=p.extra||[];const bestOf=(kind,id)=>{const r=ex.filter(x=>x.kind===kind&&x.id===id);return r.length?{best:Math.max(...r.map(x=>x.score)),runs:r.length,last:r[r.length-1].d}:null;};
   const row=(n,v)=>`<tr><td class="l">${n}</td><td>${v}</td></tr>`;const lay=i=>{const vs=[...new Set((p.log||[]).filter(r=>+r.i===i&&r.v).map(r=>r.v))].sort();return vs.length?` · layouts ${vs.join(' ')}`:'';};const runs=n=>`${n} run${n>1?'s':''}`;
-  $('proglist').innerHTML=`<div class="sec">Scenarios</div><table class="pc-table">`+CAMP.map((c,i)=>{const sc=p.scen[i];return row(esc(c.name),sc?`best ${sc.best} · ${runs(sc.runs)} · ${['Guided','Recall','Chaos'][sc.tier]}${lay(i)} · ${dueInfo(i).txt}`:'—');}).join('')+`</table><div class="sec">Lesson and drills</div><table class="pc-table">`+learnRows().map(([k,id,n])=>{const b=bestOf(k,id);return row(esc(n),b?`best ${b.best} · ${runs(b.runs)} · ${b.last.slice(0,10)}`:'—');}).join('')+row('Pump math, every problem ever typed',p.math.total?Math.round(p.math.right/p.math.total*100)+'% of '+p.math.total:'—')+'</table>';
+  $('proglist').innerHTML=`<div class="sec">Scenarios</div><table class="pc-table">`+CAMP.map((c,i)=>{const sc=p.scen[i];return row(esc(c.name),sc?`best ${sc.best} · ${runs(sc.runs)} · ${['Guided','Recall','Chaos'][sc.tier]}${lay(i)} · ${dueInfo(i).txt}`:'—');}).join('')+`</table><div class="sec">Lesson and drills</div><table class="pc-table">`+learnRows().map(([k,id,n])=>{const b=bestOf(k,id);return row(esc(n),b?`best ${b.best} · ${runs(b.runs)} · ${b.last.slice(0,10)}`:'—');}).join('')+'</table>';
   $('progov').classList.remove('hidden');};
-function learnRows(){return [['lesson','lesson','Pump lesson'],...Object.keys(DRILLS).map(k=>['drill',k,DRILLS[k].name]),['drill','math','Pump math (sets of five or more)']];}
+function learnRows(){return [['lesson','lesson','Pump lesson'],...Object.keys(DRILLS).map(k=>['drill',k,DRILLS[k].name])];}
 $('uname').onchange=()=>{const p=load();p.name=$('uname').value.trim();save(p);pcProfileSet(p.name,undefined);};
 $('b-progclose').onclick=()=>$('progov').classList.add('hidden');
 $('b-export').onclick=()=>{const p=load();if(pcProfile().name)p.name=pcProfile().name;const rows=[['Name','Scenario','Tier','Runs','Best score','Last cleared','Spacing level']];CAMP.forEach((c,i)=>{const s=p.scen[i];rows.push([p.name||'',c.name,s?['Guided','Recall','Chaos'][s.tier]:'',s?s.runs:0,s?s.best:'',s&&s.last?String(s.last).slice(0,10):'',s?s.level:0]);});
   const ex=p.extra||[];learnRows().forEach(([k,id,n])=>{const r=ex.filter(x=>x.kind===k&&x.id===id);rows.push([p.name||'',n,'',r.length,r.length?Math.max(...r.map(x=>x.score)):'',r.length?String(r[r.length-1].d).slice(0,10):'','']);});
-  rows.push([p.name||'','Pump math drills','',p.math.total,p.math.total?Math.round(p.math.right/p.math.total*100)+'%':'','','']);
   const csv=pcCsv(rows);/* the core quotes every cell and defuses =, +, -, @ formulas (this writer never doubled quotes before) */
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='charge-the-line-practice-record.csv';a.click();};
 
-/* ===== pump math drills ===== */
-let MP=null,mSess={r:0,t:0};
-function newProblem(){
-  const pick=a=>a[Math.floor(Math.random()*a.length)];
-  const kind=pick(['hand','hand','big','wye','standpipe']);let cfg;
-  if(kind==='hand')cfg={dia:1.75,len:pick([150,200,250,300]),noz:pick(['lpfog','fog100','sb1516']),floor:pick([1,1,2,3])};
-  else if(kind==='big')cfg={dia:2.5,len:pick([200,250,300]),noz:pick(['sb118','fog250']),floor:pick([1,1,2])};
-  else if(kind==='wye')cfg={dia:1.75,len:pick([150,200]),noz:'lpfog',floor:1,app:0,appTxt:'gated wye (under 350 gpm, no appliance loss)'};
-  else cfg={dia:2.5,len:150,noz:'sb118',floor:pick([2,3,4]),app:25,appTxt:'standpipe (25 psi appliance)'};
-  MP=cfg;const r=pdp(cfg);MP.r=r;
-  $('prob').innerHTML=`Officer: <b>${describe(cfg)}</b>. What do you pump?`;$('ans').value='';$('work').textContent='';$('ans').focus();
-}
-$('m-check').onclick=()=>{if(!MP)return;const a=+$('ans').value;if(!a)return;const r=MP.r,ok=Math.abs(a-r.total)<=5;mSess.t++;if(ok)mSess.r++;const p=load();p.math.total++;if(ok)p.math.right++;save(p);
-  $('work').textContent=`${ok?'Correct':'Off — the answer is '+r.total}.\nNozzle ${r.np} + FL ${r.fl} (${FLC[MP.dia]} × (${r.gpm}/100)² × ${MP.len}/100)${r.el?' + elevation '+r.el:''}${r.ap?' + appliance '+r.ap:''} = ${r.total} psi`;
-  $('work').style.color=ok?'#5fd88a':'#ff7b6b';$('m-session').textContent=`${mSess.r} / ${mSess.t}`;};
-$('m-next').onclick=newProblem;$('ans').onkeydown=e=>{if(e.key==='Enter')$('m-check').click();};
-const MATH_SET=5;/* a set of five typed answers is a recorded activity (Max, October 10, 2026): Pump math is Charge the Line's 21st activity */
-function mathOpen(){keepAwake(true);mSess={r:0,t:0};$('m-session').textContent='0 / 0';$('work').textContent='';pca('begin','ctl','drill-math',()=>`problem-${mSess.t+1}`);$('mathov').classList.remove('hidden');newProblem();}
-function mathClose(){if(mSess.t>=MATH_SET){const sc=Math.round(mSess.r/mSess.t*100);pca('end',pca('bkt',sc));recordX('drill','math',sc);}else pca('abandon');keepAwake(false);$('mathov').classList.add('hidden');showMenu();}
-$('m-exit').onclick=mathClose;
 
 /* ===== version, reporting, offline ===== */
 const pca=(f,...a)=>{try{const P=typeof window!=='undefined'&&window.PCA;if(P&&P[f])return P[f](...a);}catch(e){}};
-const APP_VERSION='2.23.2';
+const APP_VERSION='2.24.0';
 /* Screen wake lock (Milestone 1): keeps the phone from dimming or locking during a timed skill.
    On only while an activity runs: keepAwake(true) when it starts, keepAwake(false) back at the menu or on the result screen. */
 const WAKE={s:null,want:false};
@@ -1270,7 +1237,7 @@ function evCamp(v){const L=v.line,k=v.key,[lo,hi,t]=bandOf(L);const ex=v.expo,[e
     steps:[
      {t:'Decision: how long will the tank last?',dec:{tag:'How long will the tank last?',q:()=>`Your tank reads ${Math.round(S.tank)} gallons and the line is flowing about ${NOZ[L.noz].gpm} gpm. How long until it is empty?`,
        get opts(){return (S.evTankQ?S.evTankQ.o:[]).map(([t,r])=>({t,r,why:r==='good'?'Gallons ÷ gpm. That number is your deadline for the tanker.':`Gallons ÷ gpm: ${Math.round(S.tank)} ÷ ${NOZ[L.noz].gpm} is about ${mss(S.evTankQ.m)} minutes. Know your deadline before the water does.`}));},
-       real:'Tank minutes = gallons ÷ gpm. The Tank time drill on the menu practices exactly this.'},f:()=>true},
+       real:'Tank minutes = gallons ÷ gpm. The Pump math drill practices exactly this.'},f:()=>true},
      {...keep('Keep the water on the battery until the tanker arrives'),f:()=>S.tankerAt!==null,ff:()=>S.tankerReq!==null},
      {t:'Connect the supply line',f:()=>S.supply},{t:'Tanker pumping to you',f:()=>S.hydrant},{t:'Open the MIV',f:()=>S.miv>0},{t:'Bleed the air',f:()=>S.bled},{t:'Close tank-to-pump',f:()=>S.bled&&!S.ttp},
      {t:'Line held on tanker water: hold 10 seconds',hold:10,k,lo,hi,f:()=>inB(k,lo,hi)&&supplied().hyd}],
@@ -1479,7 +1446,7 @@ const HOSE_LABEL={1.75:'1¾"',2.5:'2½"',3:'3"',5:'5"'};
 function flOf(size,gpm,len){return FLC[size]*Math.pow(gpm/100,2)*(len/100);}
 const r5=x=>Math.round(x/5)*5,pk=a=>a[Math.floor(Math.random()*a.length)];
 function numOpts(a,spread){const c=new Set();const tries=[a+spread,a-spread,a+2*spread,a-2*spread,Math.round(a*2/5)*5,Math.round(a/2/5)*5];for(const t of tries){if(t>0&&t!==a)c.add(t);if(c.size===2)break;}return [...c];}
-/* Tank time: every key computed here and recomputed independently in the tests. Times to the nearest half minute, shown as m:ss. */
+/* Tank time problems (part of Pump math since 2.24.0): every key computed here and recomputed independently in the tests. Times to the nearest half minute, shown as m:ss. */
 const mss=x=>{const h=Math.round(x*2)/2;return `${Math.floor(h)}:${h%1?'30':'00'}`;};
 function tankOpts(a,errs){const want=Math.round(a*2)/2,c=[];for(const e of [...errs,want+1,want-1,want+1.5,want-.5,want+.5,want+2]){const v=Math.round(e*2)/2;if(v>0&&v!==want&&!c.includes(v))c.push(v);if(c.length===2)break;}return c.map(v=>mss(v)+' min');}
 function tankQ(t){const T=pk([500,750,800,1000]),L=[95,125,150,185,200,250];
@@ -1490,17 +1457,24 @@ function tankQ(t){const T=pk([500,750,800,1000]),L=[95,125,150,185,200,250];
  if(t==='tanker'){const f=pk([150,185,200,250]),G=pk([1500,2000,2500,3000]),m=T/f>3.5?pk([2,3]):1;const a=(T+G)/f;return {q:`${T}-gallon tank, flowing ${f} gpm. At minute ${m} a tanker carrying ${G} gallons hooks to your intake and feeds you until it is empty. When is all the water gone, counting from the start?`,a:mss(a)+' min',d:tankOpts(a,[m+(T+G)/f,T/f])};}
  if(t==='fill'){const f=pk([185,200,250]),R=pk([50,75,100]);const a=T/(f-R);return {q:`${T}-gallon tank, flowing ${f} gpm while a tanker refills it at ${R} gpm. How long until the tank is empty?`,a:mss(a)+' min',d:tankOpts(a,[T/(f+R),T/f])};}
  const f=pk([125,150,185,200]),m=f*3<T?pk([2,3]):2;const g=T-f*m;const a=Math.max(0,g);const o=[a+f,Math.max(0,a-f),T-f,a+50,Math.max(0,a-50)].filter((v,i,x)=>v!==a&&x.indexOf(v)===i).slice(0,2);return {q:`${T}-gallon tank, one line flowing ${f} gpm for ${m} minutes. How many gallons are left?`,a:a+' gal',d:o.map(v=>v+' gal')};}
+/* Pump math (2.24.0, Max: one drill for all the pump arithmetic, so the module counts 20): four pump-pressure problems (the old typing drill's hand lines, big lines, a gated wye and a standpipe) and four tank-time problems a run, mixed. Every key computed here and recomputed independently in the tests. */
+function mathQ(){const kind=pk(['hand','hand','big','wye','standpipe']);let cfg;
+  if(kind==='hand')cfg={dia:1.75,len:pk([150,200,250,300]),noz:pk(['lpfog','fog100','sb1516']),floor:pk([1,1,2,3])};
+  else if(kind==='big')cfg={dia:2.5,len:pk([200,250,300]),noz:pk(['sb118','fog250']),floor:pk([1,1,2])};
+  else if(kind==='wye')cfg={dia:1.75,len:pk([150,200]),noz:'lpfog',floor:1,app:0,appTxt:'gated wye (under 350 gpm, no appliance loss)'};
+  else cfg={dia:2.5,len:150,noz:'sb118',floor:pk([2,3,4]),app:25,appTxt:'standpipe (25 psi appliance)'};
+  const r=pdp(cfg);return {q:`Officer: ${describe(cfg)}. What do you pump?`,a:r.total+' psi',d:numOpts(r.total,10).map(x=>x+' psi'),why:`Nozzle ${r.np} + FL ${r.fl} (${FLC[cfg.dia]} × (${r.gpm}/100)² × ${cfg.len}/100)${r.el?' + elevation '+r.el:''}${r.ap?' + appliance '+r.ap:''} = ${r.total} psi.`};}
 const DRILLS={
  friction:{name:'Friction loss',why:'FL = C × (gpm ÷ 100)² × (length ÷ 100). Coefficients: 1¾" 15.5, 2½" 2, 3" 0.8, 5" 0.08.',items:()=>Array.from({length:8},()=>{const size=pk([1.75,1.75,2.5,2.5,3,5]);const gpm=size===1.75?pk([125,150,185]):size===2.5?pk([200,250,300]):size===3?pk([300,400,500]):pk([500,750,1000]);const len=pk([100,150,200,250,300]);const a=r5(flOf(size,gpm,len));return {q:`${len} ft of ${HOSE_LABEL[size]} hose flowing ${gpm} gpm. Friction loss?`,a:a+' psi',d:numOpts(a,size===5?5:10).map(x=>x+' psi')};})},
  pdp:{name:'Pump discharge pressure',why:'PDP = nozzle pressure + friction loss + 5 psi per floor above the pump.',items:()=>Array.from({length:8},()=>{const size=pk([1.75,1.75,2.5]);const gpm=size===1.75?pk([125,150,185]):pk([200,250]);const len=pk([150,200,250]);const noz=pk([['75-psi fog',75],['100-psi fog',100],['smooth bore',50]]);const fl=pk([0,1,2,3]);const a=r5(noz[1]+flOf(size,gpm,len)+fl*5);return {q:`${len} ft of ${HOSE_LABEL[size]} at ${gpm} gpm, ${noz[0]} nozzle, ${fl===0?'ground floor':fl===1?'one floor up':fl+' floors up'}. Pump discharge pressure?`,a:a+' psi',d:numOpts(a,10).map(x=>x+' psi')};})},
  control:{name:'Find the control',why:'Every control and gauge on the panel has one job. Know it before the call.',items:()=>{const ks=Object.keys(GUIDE).filter(k=>GUIDE[k].kind==='Control'||GUIDE[k].kind==='Gauge');return pcShuf(ks).slice(0,8).map(k=>{const others=pcShuf(ks.filter(x=>x!==k)).slice(0,2);return {q:GUIDE[k].what,a:GUIDE[k].name,d:others.map(x=>GUIDE[x].name),why:GUIDE[k].when};});}},
- tank:{name:'Tank time',why:'Minutes = gallons ÷ total gpm. Add every open line first. A tanker feeding you adds its gallons; a fill coming in while you flow slows the drain (flow − fill). Answers to the nearest half minute.',items:()=>pcShuf(['one','one','two','three','late','tanker','fill','left']).map(t=>tankQ(t))},
- hydrant:{name:'Hydrant math',why:'Percent drop = (static − residual) ÷ static. 0–10%: three more lines like the first. 11–15%: two. 16–25%: one. Over 25%: none.',items:()=>Array.from({length:8},()=>{const st=pk([60,65,70,80,90,100]);const target=pk([0.05,0.08,0.12,0.14,0.18,0.22,0.3,0.35]);const res=Math.round(st*(1-target));const drop=(st-res)/st*100;const a=drop<=10?'Three more':drop<=15?'Two more':drop<=25?'One more':'None';return {q:`Static ${st} psi. After the first line, residual ${res} psi. How many more lines like the first?`,a,d:pcShuf(['Three more','Two more','One more','None'].filter(x=>x!==a)).slice(0,2)};})}};
+ hydrant:{name:'Hydrant math',why:'Percent drop = (static − residual) ÷ static. 0–10%: three more lines like the first. 11–15%: two. 16–25%: one. Over 25%: none.',items:()=>Array.from({length:8},()=>{const st=pk([60,65,70,80,90,100]);const target=pk([0.05,0.08,0.12,0.14,0.18,0.22,0.3,0.35]);const res=Math.round(st*(1-target));const drop=(st-res)/st*100;const a=drop<=10?'Three more':drop<=15?'Two more':drop<=25?'One more':'None';return {q:`Static ${st} psi. After the first line, residual ${res} psi. How many more lines like the first?`,a,d:pcShuf(['Three more','Two more','One more','None'].filter(x=>x!==a)).slice(0,2)};})},
+ math:{name:'Pump math',why:'PDP = nozzle pressure + friction loss + 5 psi per floor above the first + appliances. Tank minutes = gallons ÷ total gpm: add every open line, a tanker feeding you adds its gallons, a fill coming in slows the drain (flow − fill), to the nearest half minute.',items:()=>pcShuf([...Array.from({length:4},()=>mathQ()),...pcShuf(['one','two','three','late','tanker','fill','left']).slice(0,4).map(t=>tankQ(t))])}};
 let QZ=null;
 function drillMenu(){QZ={kind:'drill'};$('menu').classList.add('hidden');$('qz-title').textContent='Quick drills';$('qz-meta').textContent='';const ex=load().extra||[];const best=k=>{const r=ex.filter(x=>x.kind==='drill'&&x.id===k);return r.length?Math.max(...r.map(x=>x.score)):null;};
-  $('qz-body').innerHTML=Object.keys(DRILLS).map(k=>{const b=best(k);return `<button class="scen" data-q="go" data-k="${k}"><b>${DRILLS[k].name}</b><span>8 questions${b!==null?' · best '+b:''}</span></button>`;}).join('')+`<button class="scen" id="b-math"><b>Pump math</b><span>Type the PDP. Within 5 psi counts · five or more answers make a set</span></button>`;
-  $('qz-foot').innerHTML='<button data-q="quit" style="width:100%">Close</button>';$('quizov').classList.remove('hidden');$('b-math').onclick=()=>{$('quizov').classList.add('hidden');mathOpen();};}
-function drillStart(k){keepAwake(true);pca('begin','ctl','drill-'+k,()=>QZ&&QZ.qs?`question-${QZ.i+1}`:'');QZ=pcQuizStart({name:DRILLS[k].name,qs:DRILLS[k].items(),kind:'drill',id:k,why:DRILLS[k].why,from:'ctl',next:(()=>{const ks=Object.keys(DRILLS),n=ks.indexOf(k)+1;return n<ks.length?()=>drillStart(ks[n]):()=>mathOpen();})(),onDone:sc=>{keepAwake(false);pca('end',pca('bkt',sc));recordX('drill',k,sc);},onQuit:()=>{pca('abandon');keepAwake(false);$('quizov').classList.add('hidden');QZ=null;showMenu();}});}
+  $('qz-body').innerHTML=Object.keys(DRILLS).map(k=>{const b=best(k);return `<button class="scen" data-q="go" data-k="${k}"><b>${DRILLS[k].name}</b><span>8 questions${b!==null?' · best '+b:''}</span></button>`;}).join('');
+  $('qz-foot').innerHTML='<button data-q="quit" style="width:100%">Close</button>';$('quizov').classList.remove('hidden');}
+function drillStart(k){keepAwake(true);pca('begin','ctl','drill-'+k,()=>QZ&&QZ.qs?`question-${QZ.i+1}`:'');QZ=pcQuizStart({name:DRILLS[k].name,qs:DRILLS[k].items(),kind:'drill',id:k,why:DRILLS[k].why,from:'ctl',next:(()=>{const ks=Object.keys(DRILLS),n=ks.indexOf(k)+1;return n<ks.length?()=>drillStart(ks[n]):()=>{$('quizov').classList.add('hidden');QZ=null;loadCampaign(0);};})(),onDone:sc=>{keepAwake(false);pca('end',pca('bkt',sc));recordX('drill',k,sc);},onQuit:()=>{pca('abandon');keepAwake(false);$('quizov').classList.add('hidden');QZ=null;showMenu();}});}
 function quizAct(ds){const a=ds.q;if(a==='menu'){drillMenu();return;}if(a==='again'){drillStart(QZ.id);return;}if(a==='go'){drillStart(ds.k);return;}if(a==='quit'&&QZ&&!QZ.cfg){$('quizov').classList.add('hidden');QZ=null;showMenu();return;}pcQuizAct(QZ,ds);}
 $('qz-body').onclick=e=>{const b=e.target.closest&&e.target.closest('[data-q]');if(b)quizAct(b.dataset);};$('qz-foot').onclick=$('qz-body').onclick;$('b-drills').onclick=drillMenu;
 applySettings();settingsBind();$('how-about').innerHTML=pcAboutFoot('ctl',APP_VERSION);
@@ -1647,7 +1621,7 @@ $('b-std').onclick=()=>{const p=load();p.std=!p.std;save(p);stdSync();};
 freshState();INST=!!load().inst;pcDrillBind();instSync();stdSync();S.camp=0;buildValves(CAMP[0].valves);refreshSwitches();modeUI();render();
 if(load().seenIntro){$('intro').classList.add('hidden');showMenu();}
 /* the home page's daily drill deep-links here: charge-the-line/?drill=friction */
-{const P=new URLSearchParams((typeof location!=='undefined'&&location.search)||'');const q=P.get('drill');if(q&&DRILLS[q]){$('intro').classList.add('hidden');drillStart(q);}else if(q==='math'){$('intro').classList.add('hidden');mathOpen();}
+{const P=new URLSearchParams((typeof location!=='undefined'&&location.search)||'');let q=P.get('drill');if(q==='tank')q='math';/* the old Tank time link opens Pump math */if(q&&DRILLS[q]){$('intro').classList.add('hidden');drillStart(q);}
  /* the hub's Continue opens the activity itself (milestone 8): ?scn=<index> a scenario (a Real Save opens on its card), ?lesson=1 the lesson; unknown values are ignored */
  else{const sc=P.get('scn');if(sc!==null&&CAMP[+sc]){$('intro').classList.add('hidden');if(CAMP[+sc].real)showCase(+sc);else loadCampaign(+sc);}else if(P.get('lesson')){$('intro').classList.add('hidden');lessonStart();}}}
 let last=performance.now();

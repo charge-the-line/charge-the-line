@@ -160,9 +160,14 @@ Foundation fixes: fonts served from this site, screen wake lock, finger-sized bu
 - The real clock stops while the screen is off: tests call `pcPauseHide()`, advance the fake clock, `pcPauseShow()`, and assert no penalty and no metric change (and that an instructor freeze is left alone where there is one). Proven to fail (scratch): removing the hookup (BLS Ready) or scoring on the wall clock again (Bleed Control) fails the check.
 - The wake lock is released on every quit path added in this milestone (stubbed `navigator.wakeLock`, one request per one release).
 
+## One Pump math drill (2.24.0, October 18, 2026)
+- `learn`: the drill keys check recomputes Pump math's pump-pressure problems from their text (length, hose, the nozzle's gpm and pressure, the floor, the standpipe's appliance loss) and its tank-time problems as before; every run is four of each, mixed, with every kind seen over forty runs, and the right answer is not usually the longest or the shortest option; a clean run records `math` with the `drill-math` events, a quit records nothing, the picker shows five drills and no typing drill, readiness counts 20.
+- `learn`, migration: `tests/fixtures/ctl-2.23.2-two-math-drills.json` holds two Tank time runs and two typing-drill runs; after `load()` they are four Pump math runs with the best (90) kept, one progress row, one CSV row, one activity in readiness, and `?drill=tank` opens Pump math.
+- Browser check: Pump math played to the end at 320, 375 and 430 px by tapping the answer text; the every-activity gate plays it through the drill loop.
+
 ## Truth and counts (final sweep milestone 3, October 10, 2026)
-- `learn`: Pump math — five right answers and Exit save a drill run of 100 with `ctl/start/drill-math` and a finish event, and the progress table shows the row; one answer and Exit is a quit and saves nothing. Units: no upper-case PSI or GPM outside the governor's labels.
+- `learn`: Pump math (then a typing drill; one quiz drill since 2.24.0) saves a drill run with `ctl/start/drill-math` and a finish event, and the progress table shows the row; a quit saves nothing. Units: no upper-case PSI or GPM outside the governor's labels.
 - `syntax`: the docs guard (CLAUDE.md "Current version" equals `APP_VERSION`; README.txt names `preconnect-core.js` and `fonts/`).
 
 ## Every activity with real taps (milestone 10)
-`PC_ALL=1 python3 tests/browser_check.py` (milestone 10, lean finish) also plays every activity to the end with real taps at 390 px: the lesson, the five quick drills, Pump math (five problems typed) and all fourteen scenarios on layout A; about 40 minutes more. Run it before a release.
+`PC_ALL=1 python3 tests/browser_check.py` (milestone 10, lean finish) also plays every activity to the end with real taps at 390 px: the lesson, the five quick drills (Pump math among them) and all fourteen scenarios on layout A; about 40 minutes more. Run it before a release.

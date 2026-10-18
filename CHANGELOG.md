@@ -2,6 +2,10 @@
 
 Pump panel simulator for Engine 10-2. Plain-language history, newest first. Practice, not certification.
 
+## 2.24.0 — October 18, 2026
+- One Pump math drill (eight multiple-choice questions: four pump-pressure problems, four tank-time problems) replaces the typing drill and Tank time, so Charge the Line counts 20 activities like every other module.
+- Saved runs of Tank time and the old Pump math merge into one Pump math record; the best score is kept. The old Tank time link opens Pump math.
+
 ## 2.23.2 — October 11, 2026
 - The foam proportioner's and the eductor's percentage chips are finger-sized (the 1% chips were 42 px wide).
 

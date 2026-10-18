@@ -1,9 +1,8 @@
-import os
 #!/usr/bin/env python3
 """Real-browser check (optional). Needs:  pip install playwright && playwright install chromium
 Opens every scenario at phone sizes; fails on any JavaScript error or anything off-screen.
 Usage:  python3 tests/browser_check.py"""
-import re, pathlib, sys
+import os, re, pathlib, sys
 from playwright.sync_api import sync_playwright
 URL = (pathlib.Path(__file__).resolve().parent.parent / 'index.html').as_uri()
 OVER = "(()=>{let m=0;const vis=e=>e.checkVisibility?e.checkVisibility({visibilityProperty:true}):e.offsetParent!==null;document.querySelectorAll('body *').forEach(e=>{if(!vis(e))return;const r=e.getBoundingClientRect();if(r.width<1||r.height<1)return;m=Math.max(m,r.right-window.innerWidth);});return Math.round(m);})()"   # fixed elements count too (the hub header slipped past offsetParent)
@@ -119,6 +118,7 @@ def play_real(pg, w, idx, variant, label, need):   # a scenario played to the en
     if not ok: print(label + ' run detail:', pg.evaluate("JSON.stringify({score:S.score,mission:S.mission,inc:S.incidents,step:(()=>{const m=CAMP[S.camp].missions[S.mission];const j=stepsDone.findIndex(x=>!x);return j<0?'':m.steps[j].t;})()})"))
     rows.append((w, label + ' panel', panel if panel is not None else 99)); rows.append((w, label + ' (full, fast-forward x%d)' % ff_used, (pg.evaluate(OVER) + 1000 * pg.evaluate(SMALL)) + (0 if ok else 99)))
 def ev_play(pg, w): play_real(pg, w, 10, 'A', 'EV fire', lambda pg: 'upwind/?scn=liion' in pg.inner_html('#done-body'))
+EXE = '/opt/pw-browsers/chromium' if os.path.exists('/opt/pw-browsers/chromium') else None   # the preinstalled Chromium, like the other modules' checks
 
 # ---- Milestone 10 (lean finish): every activity to the end with real taps at 390 px, when PC_ALL=1 ----
 # The suite's pump bot (tests/qa.js) moved into the page: it reads the live step and names the control; this script taps it for real.
@@ -202,7 +202,7 @@ def quiz_full(pg, q='QZ', ans='[data-q="ans"]', nxt='[data-q="next"]'):   # a qu
 def saved(pg, key, test):   # the record on this phone proves the activity finished
     return pg.evaluate("(()=>{const p=JSON.parse(localStorage.getItem('%s')||'{}');return %s;})()" % (key, test))
 with sync_playwright() as p:
-    b = p.chromium.launch()
+    b = p.chromium.launch(executable_path=EXE) if EXE else p.chromium.launch()
     for w in (320, 375, 430):
         pg = b.new_page(viewport={'width': w, 'height': 800}, device_scale_factor=2, is_mobile=True, has_touch=True)
         pg.on('pageerror', lambda e: errs.append(str(e)))
@@ -211,10 +211,10 @@ with sync_playwright() as p:
         pg.click('#h-set'); pg.wait_for_timeout(150); rows.append((w, 'settings', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('#set-close')
         pg.click('#b-lesson'); pg.wait_for_timeout(200); rows.append((w, 'lesson', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('[data-l="quit"]'); pg.wait_for_timeout(150)
         pg.click('#b-drills'); pg.wait_for_timeout(200); rows.append((w, 'drills', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('[data-q="go"][data-k="friction"]'); pg.wait_for_timeout(200); rows.append((w, 'drill q', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('[data-q="quit"]'); pg.wait_for_timeout(150)
-        pg.click('#b-drills'); pg.wait_for_timeout(200); pg.locator('[data-q="go"]', has_text='Tank time').first.click(); pg.wait_for_timeout(300)   # the tank-time drill played to the end with real taps on the answer text
+        pg.click('#b-drills'); pg.wait_for_timeout(200); pg.locator('[data-q="go"]', has_text='Pump math').first.click(); pg.wait_for_timeout(300)   # Pump math (the merged drill) played to the end with real taps on the answer text
         for _ in range(8):
             ans = pg.evaluate("QZ.qs[QZ.i].a"); pg.locator('[data-q="ans"]', has_text=re.compile('^' + re.escape(ans) + '$')).first.click(); pg.wait_for_timeout(150); tap_next = pg.locator('[data-q="next"]').first; tap_next.click(); pg.wait_for_timeout(150)
-        rows.append((w, 'tank drill (full)', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)) + (0 if pg.evaluate("QZ.score===100") else 99))); pg.goto(URL); pg.wait_for_timeout(300)
+        rows.append((w, 'pump math drill (full)', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)) + (0 if pg.evaluate("QZ.score===100") else 99))); pg.goto(URL); pg.wait_for_timeout(300)
         if pg.is_visible('#b-start'): pg.click('#b-start')
         pg.click('#b-progress'); pg.wait_for_timeout(200); rows.append((w, 'progress', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('#b-progclose'); pg.wait_for_timeout(150)
         pg.click('#b-inst'); pg.click('.scen[data-i="0"]'); pg.wait_for_timeout(150); pg.click('#brief-go'); pg.wait_for_timeout(400); pg.click('#inst-fab'); pg.wait_for_timeout(200); rows.append((w, 'instructor', (pg.evaluate(OVER)+1000*pg.evaluate(SMALL)))); pg.click('#inst-close'); pg.wait_for_timeout(150)
@@ -254,13 +254,6 @@ with sync_playwright() as p:
             if pg.is_visible('#b-start'): pg.click('#b-start')
             pg.click('#b-drills'); pg.wait_for_timeout(200); pg.click(f'[data-q="go"][data-k="{k}"]'); pg.wait_for_timeout(250); quiz_full(pg)
             rows.append((390, f'ALL drill {k} (full)', 0 if saved(pg, 'e102-pump-trainer', f"(p.extra||[]).some(r=>r.kind==='drill'&&r.id==='{k}'&&r.score===100)") else 99))
-        pg.goto(URL); pg.wait_for_timeout(250)
-        if pg.is_visible('#b-start'): pg.click('#b-start')
-        pg.click('#b-drills'); pg.wait_for_timeout(200); pg.click('#b-math'); pg.wait_for_timeout(250)   # Pump math: five problems typed from the panel's own answer, then Stop and go back saves the set
-        for _ in range(5):
-            pg.fill('#ans', str(pg.evaluate("Math.round(MP.r.total)"))); pg.click('#m-check', delay=120); pg.wait_for_timeout(200); pg.click('#m-next', delay=120); pg.wait_for_timeout(200)
-        pg.click('#m-exit', delay=120); pg.wait_for_timeout(300)
-        rows.append((390, 'ALL pump math (full)', 0 if saved(pg, 'e102-pump-trainer', "(p.extra||[]).some(r=>r.kind==='drill'&&r.id==='math'&&r.score===100)") else 99))
         for i in range(14):
             if i == 10: ev_play(pg, 390); continue
             play_bot(pg, 390, i, 'A', 'ALL scenario %d' % (i + 1), lambda pg: True)
